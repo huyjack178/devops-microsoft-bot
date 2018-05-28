@@ -37,7 +37,7 @@
                 return
                    $"**Category**: {errorLog.Category.CategoryName}\n\n" +
                    $"{errorLog.FullMessage}\n\n" +
-                   $"\n\n----------------------------\n\n";
+                   $"\n\n------------------------------------------------------\n\n";
             }
 
             return string.Empty;

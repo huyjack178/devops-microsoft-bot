@@ -28,7 +28,7 @@
                         if (message.Contains("log"))
                         {
                             await logDialog.NotifyLogAsync(context);
-                            await logDialog.NotifyLogPeriodicallyAsync(context);
+                            logDialog.NotifyLogPeriodically(context);
                         }
                         else if (message.Contains("group"))
                         {

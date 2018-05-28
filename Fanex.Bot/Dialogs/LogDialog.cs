@@ -7,14 +7,17 @@
     using Fanex.Bot.Services;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Connector.Authentication;
+    using Microsoft.Extensions.Configuration;
 
     public class LogDialog : ILogDialog
     {
         private readonly ILogService logService;
+        private IConfiguration configuration;
 
-        public LogDialog(ILogService logService)
+        public LogDialog(ILogService logService, IConfiguration configuration)
         {
             this.logService = logService;
+            this.configuration = configuration;
         }
 
         public async Task NotifyLogAsync(ITurnContext context)
@@ -31,9 +34,12 @@
             }
         }
 
-        public async Task NotifyLogPeriodicallyAsync(ITurnContext context)
+        public void NotifyLogPeriodically(ITurnContext context)
         {
-            var appCredentials = new MicrosoftAppCredentials("c040470a-1234-4675-8808-6e38adce55f4", "ojhjUPFWQ46=#[dvsHN516;");
+            var appCredentials = new MicrosoftAppCredentials(
+                configuration.GetSection("MicrosoftAppId").Value,
+                configuration.GetSection("MicrosoftAppPassword").Value);
+
             var message = context.Activity;
             var messageInfo = new MessageInfo
             {
