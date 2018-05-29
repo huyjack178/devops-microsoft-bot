@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Models
 {
-    using Microsoft.Bot.Connector.Authentication;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public class MessageInfo
     {
@@ -16,10 +17,10 @@
 
         public string ChannelId { get; set; }
 
+        [Key]
         public string ConversationId { get; set; }
 
-        public MicrosoftAppCredentials AppCredentials { get; set; }
-
+        [NotMapped]
         public string Text { get; set; }
     }
 }

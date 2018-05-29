@@ -7,6 +7,6 @@
     {
         Task NotifyLogAsync(ITurnContext context);
 
-        void NotifyLogPeriodically(ITurnContext context);
+        void NotifyLogPeriodically();
     }
 }

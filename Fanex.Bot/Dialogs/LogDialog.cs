@@ -1,32 +1,36 @@
 ﻿namespace Fanex.Bot.Dialogs
 {
     using System;
-    using System.Threading;
+    using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
+    using Hangfire;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Connector.Authentication;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
 
     public class LogDialog : ILogDialog
     {
         private readonly ILogService logService;
         private IConfiguration configuration;
+        private readonly BotDbContext dbContext;
 
-        public LogDialog(ILogService logService, IConfiguration configuration)
+        public LogDialog(ILogService logService, IConfiguration configuration, BotDbContext dbContext)
         {
             this.logService = logService;
             this.configuration = configuration;
+            this.dbContext = dbContext;
         }
 
         public async Task NotifyLogAsync(ITurnContext context)
         {
-            var errorLogText = await logService.GetErrorLog(DateTime.UtcNow.AddHours(-24), DateTime.UtcNow);
+            var errorLogs = await logService.GetErrorLogs(DateTime.UtcNow.AddHours(-24), DateTime.UtcNow);
+            RegisterConversation(context);
 
-            if (!string.IsNullOrEmpty(errorLogText))
+            if (errorLogs.Any())
             {
-                await context.SendActivity(errorLogText);
+                await context.SendActivity(errorLogs.FirstOrDefault().Message);
             }
             else
             {
@@ -34,12 +38,8 @@
             }
         }
 
-        public void NotifyLogPeriodically(ITurnContext context)
+        private void RegisterConversation(ITurnContext context)
         {
-            var appCredentials = new MicrosoftAppCredentials(
-                configuration.GetSection("MicrosoftAppId").Value,
-                configuration.GetSection("MicrosoftAppPassword").Value);
-
             var message = context.Activity;
             var messageInfo = new MessageInfo
             {
@@ -50,20 +50,47 @@
                 ServiceUrl = message.ServiceUrl,
                 ChannelId = message.ChannelId,
                 ConversationId = message.Conversation.Id,
-                AppCredentials = appCredentials
             };
+            if (dbContext.MessageInfo.Any(e => e.ConversationId == messageInfo.ConversationId))
+            {
+                dbContext.Entry(messageInfo).State = EntityState.Modified;
+            }
+            else
+            {
+                dbContext.Entry(messageInfo).State = EntityState.Added;
+            }
 
-            var timer = new Timer(new TimerCallback(TimerEvent), messageInfo, 1000, 30000);
+            dbContext.SaveChanges();
         }
 
-        private async void TimerEvent(object target)
+        public void NotifyLogPeriodically()
         {
-            var messageInfo = (MessageInfo)target;
+            RecurringJob.AddOrUpdate(() => SendLogAsync(), Cron.Minutely);
+        }
 
-            var errorLogText = await logService.GetErrorLog();
-            messageInfo.Text = errorLogText;
+        public async Task SendLogAsync()
+        {
+            var messageInfos = dbContext.MessageInfo.Where(x => x.ChannelId.Contains("skype"));
+            var errorLogs = await logService.GetErrorLogs();
 
-            await ConversationStarter.Resume(messageInfo);
+            if (!errorLogs.Any())
+            {
+                return;
+            }
+
+            if (messageInfos == null && !messageInfos.Any())
+            {
+                return;
+            }
+
+            foreach (var messageInfo in messageInfos)
+            {
+                foreach (var errorLog in errorLogs)
+                {
+                    messageInfo.Text = errorLog.Message;
+                    await ConversationStarter.Resume(messageInfo);
+                }
+            }
         }
     }
 }

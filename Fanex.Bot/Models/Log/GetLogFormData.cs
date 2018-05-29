@@ -18,6 +18,6 @@
 
         public int MachineId { get; set; }
 
-        public bool IsProduction { get; set; } = true;
+        public bool IsProduction { get; set; } = false;
     }
 }
