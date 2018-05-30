@@ -28,22 +28,18 @@ namespace Fanex.Bot.Models
                         .Replace("Timestamp", "**Timestamp**")
                         .Replace("Message", "**Message**")
                         .Replace("REQUEST INFO", "**REQUEST INFO**");
-            var browserInfoIndex = message.IndexOf("browser info", StringComparison.InvariantCultureIgnoreCase);
 
-            if (browserInfoIndex > 0)
+            if (message.Length > 200)
             {
-                message = message.Remove(browserInfoIndex);
-            }
-            else if (message.Length > 500)
-            {
-                message = message.Substring(0, 500);
+                message = message.Substring(0, 200);
             }
 
-            return $"**Log Id**: {LogId}\n\n" +
-                $"**Number of logs**: {NumMessage}\n\n" +
-                $"**Category**: {Category.CategoryName}\n\n" +
-                $"{message}\n\n" +
-                $"\n\n------------------------------------------------------\n\n"; ;
+            return $"**Category**: {Category.CategoryName}\n\n" +
+                    $"**Machine**: {Machine.MachineName} - {Machine.MachineIP}\n\n" +
+                    $"{message}\n\n" +
+                    $"**Log Id**: {LogId}\n\n" +
+                    $"**Number of logs**: {NumMessage}\n\n\n\n" +
+                    $"====================================\n\n";
         }
     }
 }

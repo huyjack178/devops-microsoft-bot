@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <Authors>NexOps Team</Authors>
+    <Company>Nexcel Solutions</Company>
+    <Copyright>2018 Nexdev</Copyright>
+    <RepositoryUrl>https://gitlab.nexcel.vn/NEXOPS/Fanex.Bot</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIconUrl>https://gitlab.nexcel.vn/uploads/-/system/project/avatar/100/new-idea.png</PackageIconUrl>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <IncludeSymbols>false</IncludeSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.1.0.5212">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

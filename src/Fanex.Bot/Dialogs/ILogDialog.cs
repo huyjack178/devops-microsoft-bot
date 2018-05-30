@@ -3,10 +3,10 @@
     using System.Threading.Tasks;
     using Microsoft.Bot.Builder;
 
-    public interface ILogDialog
+    public interface ILogDialog : IDialog
     {
         Task NotifyLogAsync(ITurnContext context);
 
-        void NotifyLogPeriodically();
+        Task RegisterLogCategoryAsync(ITurnContext context, string logCategory);
     }
 }

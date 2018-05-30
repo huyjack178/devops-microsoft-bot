@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using Fanex.Bot.Dialogs;
+    using Fanex.Bot.Dialogs.Impl;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
     using Fanex.Bot.Utilitites;
@@ -14,7 +15,6 @@
     using Microsoft.Bot.Builder.Core.Extensions;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Builder.TraceExtensions;
-    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -33,25 +33,19 @@
         {
             services.AddSingleton(_ => Configuration);
 
-            //var qnaEndpoint = new QnAMakerEndpoint
-            //{
-            //    Host = Configuration.GetSection("QnaKBHost")?.Value,
-            //    EndpointKey = Configuration.GetSection("QnaKBEndpointKey")?.Value,
-            //    KnowledgeBaseId = Configuration.GetSection("QnaKBId")?.Value
-            //};
-            services.AddMemoryCache();
+            services.Configure<MessageInfo>(Configuration.GetSection("AdminMessageInfo"));
+
             services.AddHangfire(config =>
                 config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<BotDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")),
+                    ServiceLifetime.Singleton);
 
             services.AddSingleton<IWebClient>(new JsonWebClient(new Uri(Configuration.GetSection("mSiteUrl")?.Value)));
             services.AddSingleton<ILogService, LogService>();
-            services.AddScoped<ILogDialog, LogDialog>();
-
-            ConversationStarter.AppId = Configuration.GetSection("MicrosoftAppId")?.Value;
-            ConversationStarter.AppPassword = Configuration.GetSection("MicrosoftAppPassword")?.Value;
+            services.AddSingleton<ILogDialog, LogDialog>();
 
             services.AddBot<Bot>(options =>
             {
