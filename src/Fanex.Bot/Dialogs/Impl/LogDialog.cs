@@ -1,6 +1,5 @@
 ﻿namespace Fanex.Bot.Dialogs.Impl
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -19,34 +18,83 @@
         public LogDialog(
             ILogService logService,
             IConfiguration configuration,
-            BotDbContext dbContext,
-            IOptions<MessageInfo> adminMessageInfo)
-                : base(configuration, dbContext, adminMessageInfo)
+            BotDbContext dbContext)
+                : base(configuration, dbContext)
         {
             _logService = logService;
             _dbContext = dbContext;
         }
 
-        public async Task NotifyLogAsync(ITurnContext context)
+        public async Task HandleLogMessageAsync(ITurnContext context, string message)
         {
+            if (message.StartsWith("log add"))
+            {
+                var logCategories = message.Substring(7).Trim();
+
+                if (string.IsNullOrEmpty(logCategories))
+                {
+                    await SendMissingLogCategoriesMessage(context);
+                    return;
+                }
+
+                await AddLogCategoriesAsync(context, logCategories);
+            }
+            else if (message.StartsWith("log remove"))
+            {
+                var logCategories = message.Substring(9).Trim();
+
+                if (string.IsNullOrEmpty(logCategories))
+                {
+                    await SendMissingLogCategoriesMessage(context);
+                    return;
+                }
+
+                await RemoveLogCategoriesAsync(context, logCategories);
+            }
+            else if (message.StartsWith("log viewstatus"))
+            {
+                await GetLogCategoriesAsync(context);
+            }
+            else if (message.StartsWith("log start"))
+            {
+                await StartNotifyingLogAsync(context);
+            }
+            else if (message.StartsWith("log stop"))
+            {
+                await StopNotifyingLogAsync(context);
+            }
+            else if (message.StartsWith("log adminstopall"))
+            {
+                await StopNotifyingLogAllAsync(context);
+            }
+            else if (message.StartsWith("log adminstartall"))
+            {
+                await StartNotifyingLogAllAsync(context);
+            }
+            else
+            {
+                await context.SendActivity(Bot.GetCommandMessages());
+            }
+        }
+
+        public async Task StartNotifyingLogAsync(ITurnContext context)
+        {
+            var messageInfo = GetMessageInfo(context);
+            messageInfo.IsActive = true;
+            await SaveMessageInfoAsync(messageInfo);
+
             RecurringJob.AddOrUpdate("NotifyLogPeriodically", () => GetAndSendLogAsync(), Cron.Minutely);
 
             await context.SendActivity("Log will be sent to you soon!");
         }
 
-        public async Task RegisterLogCategoryAsync(ITurnContext context, string logCategory)
+        public async Task StopNotifyingLogAsync(ITurnContext context)
         {
-            var message = context.Activity;
-            var messageInfo = _dbContext.MessageInfo.FirstOrDefault(e => e.ConversationId == message.Conversation.Id);
+            var messageInfo = GetMessageInfo(context);
+            messageInfo.IsActive = false;
+            await SaveMessageInfoAsync(messageInfo);
 
-            if (messageInfo == null)
-            {
-                messageInfo = GenerateMessageInfo(context);
-            }
-
-            messageInfo.LogCategory += $"{logCategory};";
-
-            await SaveMessageInfo(messageInfo);
+            await context.SendActivity("Log will not be sent to you more!");
         }
 
         public async Task GetAndSendLogAsync()
@@ -57,17 +105,109 @@
 
             foreach (var messageInfo in messageInfos)
             {
-                await SendLogAsync(errorLogs, messageInfo);
+                if (messageInfo.IsActive)
+                {
+                    await SendLogAsync(errorLogs, messageInfo);
+                }
             }
+        }
+
+        public async Task RemoveLogCategoriesAsync(ITurnContext context, string logCategories)
+        {
+            var messageInfo = GetMessageInfo(context);
+            var logCategoryList = logCategories.Split(";");
+
+            foreach (var logCategory in logCategoryList)
+            {
+                messageInfo.LogCategories = messageInfo.LogCategories.Replace(logCategory, "");
+            }
+
+            await SaveMessageInfoAsync(messageInfo);
+
+            await context.SendActivity($"You will not receive log with categories contain **[{logCategories}]**");
+        }
+
+        public async Task AddLogCategoriesAsync(ITurnContext context, string logCategories)
+        {
+            var messageInfo = GetMessageInfo(context);
+            messageInfo.LogCategories += $"{logCategories};";
+            await SaveMessageInfoAsync(messageInfo);
+
+            await context.SendActivity($"You will receive log with categories contain **[{logCategories}]**");
+        }
+
+        public async Task GetLogCategoriesAsync(ITurnContext context)
+        {
+            var messageInfo = GetMessageInfo(context);
+
+            var message = $"Your log status \n\n" +
+                $"**Log Categories:** [{messageInfo.LogCategories}]\n\n";
+
+            message += messageInfo.IsActive ? $"**Running**\n\n" : $"**Stopped**\n\n";
+
+            await context.SendActivity(message);
+        }
+
+        public async Task StopNotifyingLogAllAsync(ITurnContext context)
+        {
+            if (!CheckAdmin(context))
+            {
+                await context.SendActivity("Sorry! You are not admin.");
+                return;
+            }
+
+            var messageInfos = _dbContext.MessageInfo;
+
+            foreach (var messageInfo in messageInfos)
+            {
+                messageInfo.IsActive = false;
+            }
+
+            await _dbContext.SaveChangesAsync();
+            await SendAdminAsync("All clients is inactive now!");
+        }
+
+        public async Task StartNotifyingLogAllAsync(ITurnContext context)
+        {
+            if (!CheckAdmin(context))
+            {
+                await context.SendActivity("Sorry! You are not admin.");
+                return;
+            }
+
+            await context.SendActivity("Your request is accepted!");
+
+            var messageInfos = _dbContext.MessageInfo;
+
+            foreach (var messageInfo in messageInfos)
+            {
+                messageInfo.IsActive = true;
+            }
+
+            await _dbContext.SaveChangesAsync();
+            await SendAdminAsync("All clients is active now!");
+        }
+
+        private bool CheckAdmin(ITurnContext context)
+        {
+            var currentConversationId = context.Activity.Conversation.Id;
+            var isAdmin = _dbContext.MessageInfo.Any(
+                messageInfo => messageInfo.IsAdmin &&
+                messageInfo.ConversationId == currentConversationId);
+
+            return isAdmin;
         }
 
         private async Task SendLogAsync(IEnumerable<Log> errorLogs, MessageInfo messageInfo)
         {
-            var filterCategories = messageInfo.LogCategory?.Split(";");
-            //var groupErrorLogs = errorLogs.GroupBy(log => new { log.Category.CategoryName, log.Machine.MachineIP });
+            var filterCategories = messageInfo
+                                    .LogCategories?.Split(";")
+                                    .Where(category => !string.IsNullOrEmpty(category));
+            var groupErrorLogs = errorLogs.GroupBy(log => new { log.Category.CategoryName, log.Machine.MachineIP });
 
-            foreach (var errorLog in errorLogs)
+            foreach (var groupErrorLog in groupErrorLogs)
             {
+                var errorLog = groupErrorLog.First();
                 var logCategory = errorLog.Category.CategoryName.ToLowerInvariant();
                 var hasLogCategory = filterCategories.Any(filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant()));
 
@@ -77,6 +217,11 @@
                     await SendAsync(messageInfo);
                 }
             }
+        }
+
+        private static async Task SendMissingLogCategoriesMessage(ITurnContext context)
+        {
+            await context.SendActivity("You need to add [LogCategory], otherwise, you will not get any log info");
         }
     }
 }

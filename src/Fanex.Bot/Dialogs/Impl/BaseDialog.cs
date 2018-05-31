@@ -11,33 +11,24 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
 
-    public class BaseDialog : IDialog
+    public class BaseDialog
     {
         private readonly IConfiguration _configuration;
-        private readonly MessageInfo _adminMessageInfo;
         private readonly BotDbContext _dbContext;
 
         public BaseDialog(
             IConfiguration configuration,
-            BotDbContext dbContext,
-            IOptions<MessageInfo> adminMessageInfo)
+            BotDbContext dbContext)
         {
             _configuration = configuration;
             _dbContext = dbContext;
-            _adminMessageInfo = adminMessageInfo.Value;
         }
 
         public async Task SendAsync(MessageInfo messageInfo)
         {
-            var connector = new ConnectorClient(
-                new Uri(messageInfo.ServiceUrl),
-                _configuration.GetSection("MicrosoftAppId").Value,
-                _configuration.GetSection("MicrosoftAppPassword").Value);
+            ConnectorClient connector = CreateConnectorClient(messageInfo);
 
             var message = CreateMessageActivity(messageInfo);
-
-            var adminMessage = CreateMessageActivity(_adminMessageInfo);
-            adminMessage.Text = $"Log has been sent to client {messageInfo.ConversationId}";
 
             try
             {
@@ -49,22 +40,42 @@
             }
             catch (Exception ex)
             {
-                adminMessage.Text =
-                  $"Error happen in client {messageInfo.ConversationId}\n\n" +
-                  $"Exception: {ex.InnerException.Message}";
+                await SendAdminAsync(
+                    $"Error happen in client {messageInfo.ConversationId}\n\n" +
+                    $"Exception: {ex.InnerException.Message}");
             }
 
-            await connector.Conversations.SendToConversationAsync((Activity)adminMessage);
+            await SendAdminAsync($"Log has been sent to client {messageInfo.ConversationId}");
         }
 
-        public async Task RegisterConversation(ITurnContext context)
+        protected async Task SendAdminAsync(string message)
         {
-            var messageInfo = GenerateMessageInfo(context);
+            var adminMessageInfos = _dbContext.MessageInfo.Where(messageInfo => messageInfo.IsAdmin);
 
-            await SaveMessageInfo(messageInfo);
+            foreach (var adminMessageInfo in adminMessageInfos)
+            {
+                var connector = CreateConnectorClient(adminMessageInfo);
+                var adminMessage = CreateMessageActivity(adminMessageInfo);
+                adminMessage.Text = message;
+
+                await connector.Conversations.SendToConversationAsync((Activity)adminMessage);
+            }
         }
 
-        protected async Task SaveMessageInfo(MessageInfo messageInfo)
+        protected virtual MessageInfo GetMessageInfo(ITurnContext context)
+        {
+            var message = context.Activity;
+            var messageInfo = _dbContext.MessageInfo.FirstOrDefault(e => e.ConversationId == message.Conversation.Id);
+
+            if (messageInfo == null)
+            {
+                messageInfo = GenerateMessageInfo(context);
+            }
+
+            return messageInfo;
+        }
+
+        protected virtual async Task SaveMessageInfoAsync(MessageInfo messageInfo)
         {
             _dbContext.Entry(messageInfo).State =
                 _dbContext.MessageInfo.Any(e => e.ConversationId == messageInfo.ConversationId) ?
@@ -73,7 +84,7 @@
             await _dbContext.SaveChangesAsync();
         }
 
-        protected static MessageInfo GenerateMessageInfo(ITurnContext context)
+        protected virtual MessageInfo GenerateMessageInfo(ITurnContext context)
         {
             var message = context.Activity;
             var messageInfo = new MessageInfo
@@ -85,9 +96,18 @@
                 ServiceUrl = message.ServiceUrl,
                 ChannelId = message.ChannelId,
                 ConversationId = message.Conversation.Id,
+                IsActive = true
             };
 
             return messageInfo;
+        }
+
+        private ConnectorClient CreateConnectorClient(MessageInfo messageInfo)
+        {
+            return new ConnectorClient(
+                            new Uri(messageInfo.ServiceUrl),
+                            _configuration.GetSection("MicrosoftAppId").Value,
+                            _configuration.GetSection("MicrosoftAppPassword").Value);
         }
 
         private static IMessageActivity CreateMessageActivity(MessageInfo messageInfo)

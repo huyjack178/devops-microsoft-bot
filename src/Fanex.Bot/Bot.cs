@@ -8,95 +8,101 @@
 
     public class Bot : IBot
     {
-        private readonly ILogDialog logDialog;
+        private readonly ILogDialog _logDialog;
 
         public Bot(ILogDialog logDialog)
         {
-            this.logDialog = logDialog;
+            _logDialog = logDialog;
         }
 
-        public async Task OnTurn(ITurnContext context)
+        public async Task OnTurn(ITurnContext turnContext)
         {
-            switch (context.Activity.Type)
+            switch (turnContext.Activity.Type)
             {
                 case ActivityTypes.Message:
-                    var messageActivity = context.Activity.AsMessageActivity();
+                    var messageActivity = turnContext.Activity.AsMessageActivity();
                     var message = messageActivity.Text.ToLowerInvariant();
 
-                    if (message.StartsWith("@"))
-                    {
-                        var indexOfCommand = message.IndexOf(' ');
+                    message = GenerateMessage(message);
 
-                        if (indexOfCommand > 0)
-                        {
-                            message = message.Remove(0, indexOfCommand).Trim();
-                        }
-                    }
+                    await HandleMessageCommands(turnContext, message);
 
-                    if (message.StartsWith("log"))
-                    {
-                        if (message.StartsWith("log subscribe"))
-                        {
-                            await ProcessSubcribingLogAsync(context, message);
-                        }
-                        else
-                        {
-                            await context.SendActivity(GetCommandMessage());
-                        }
-                    }
-                    else if (message.StartsWith("group"))
-                    {
-                        await context.SendActivity($"Your group id is: {context.Activity.Conversation.Id}");
-                    }
-                    else
-                    {
-                        await context.SendActivity(GetCommandMessage());
-                    }
-
-                    if (!context.Responded)
-                    {
-                        await context.SendActivity("Sorry, I don't understand. Ask Harrison for it");
-                    }
+                    await HandleNotResponded(turnContext);
 
                     break;
 
                 case ActivityTypes.ConversationUpdate:
-                    foreach (var newMember in context.Activity.MembersAdded)
-                    {
-                        if (newMember.Id != context.Activity.Recipient.Id)
-                        {
-                            await context.SendActivity($"Hello {newMember.Name}. I am Megatron.");
-                        }
-                    }
-
+                    await HandleConverationUpdate(turnContext);
                     break;
 
                 default:
-                    await context.SendActivity($"Hello all. I am Megatron. My current mission is getting error log from mSite");
+                    await turnContext.SendActivity($"Hello all. I am SkyNex.");
                     break;
             }
         }
 
-        private async Task ProcessSubcribingLogAsync(ITurnContext context, string message)
+        public static string GetCommandMessages()
         {
-            var logCategory = message.Substring(13).Trim();
+            return $"SkyNex's available commands: \n\n" +
+                    $"**log add [Contains-LogCategory]** " +
+                        $"==> Register to get log which has category name **contains [Contains-LogCategory]**. Example: log add Alpha;NAP \n\n" +
+                    $"**log remove [LogCategory]**\n\n" +
+                    $"**log start** ==> Start receiving logs \n\n" +
+                    $"**log stop** ==> Stop receiving logs \n\n" +
+                    $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status \n\n" +
+                    $"**group** ==> Get your group ID";
+        }
 
-            if (string.IsNullOrEmpty(logCategory))
+        private static async Task HandleNotResponded(ITurnContext context)
+        {
+            if (!context.Responded)
             {
-                await context.SendActivity("You need to add [LogCategory], otherwise, you will not get any log info");
-            }
-            else
-            {
-                await logDialog.RegisterLogCategoryAsync(context, logCategory);
-                await logDialog.NotifyLogAsync(context);
+                await context.SendActivity("Sorry, I don't understand. Ask Harrison for it");
             }
         }
 
-        private static string GetCommandMessage()
+        private static string GenerateMessage(string message)
         {
-            return $"Megatron's available commands: \n\n" +
-                                       $"**log subscribe [LogCategory]** ==> Register to get log notification with specific [LogCategory]. Example: log add Alpha;NAP \n\n" +
-                                       $"**group** ==> Get your group ID";
+            var returnMessage = message;
+
+            if (message.StartsWith("@"))
+            {
+                var indexOfCommand = message.IndexOf(' ');
+
+                if (indexOfCommand > 0)
+                {
+                    returnMessage = message.Remove(0, indexOfCommand).Trim();
+                }
+            }
+
+            return returnMessage;
+        }
+
+        private async Task HandleMessageCommands(ITurnContext context, string message)
+        {
+            if (message.StartsWith("log"))
+            {
+                await _logDialog.HandleLogMessageAsync(context, message);
+            }
+            else if (message.StartsWith("group"))
+            {
+                await context.SendActivity($"Your group id is: {context.Activity.Conversation.Id}");
+            }
+            else
+            {
+                await context.SendActivity(GetCommandMessages());
+            }
+        }
+
+        private static async Task HandleConverationUpdate(ITurnContext context)
+        {
+            foreach (var newMember in context.Activity.MembersAdded)
+            {
+                if (newMember.Id != context.Activity.Recipient.Id)
+                {
+                    await context.SendActivity($"Hello {newMember.Name}. I am SkyNex.");
+                }
+            }
         }
     }
 }

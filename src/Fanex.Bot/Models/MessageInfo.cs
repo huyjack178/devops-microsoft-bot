@@ -22,7 +22,11 @@
 
         public string ChannelId { get; set; }
 
-        public string LogCategory { get; set; }
+        public string LogCategories { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public bool IsAdmin { get; set; }
 
         [NotMapped]
         public string Text { get; set; }

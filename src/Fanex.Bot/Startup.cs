@@ -33,8 +33,6 @@
         {
             services.AddSingleton(_ => Configuration);
 
-            services.Configure<MessageInfo>(Configuration.GetSection("AdminMessageInfo"));
-
             services.AddHangfire(config =>
                 config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
 

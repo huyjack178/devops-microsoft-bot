@@ -18,14 +18,22 @@
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeType));
         }
 
-        public Task<HttpResponseMessage> GetAsync(string url)
+#pragma warning disable S3994 // URI Parameters should not be strings
+#pragma warning disable S4005 // "System.Uri" arguments should be used instead of strings
+
+        public async Task<HttpResponseMessage> GetAsync(string url)
+        {
+            CheckArgument(url);
+
+            return await _client.GetAsync(url);
+        }
+
+        private static void CheckArgument(string url)
         {
             if (string.IsNullOrEmpty(url))
             {
                 throw new ArgumentNullException(nameof(url));
             }
-
-            return _client.GetAsync(url);
         }
 
         public async Task<TOut> PostAsync<TIn, TOut>(string url, TIn content)
@@ -35,6 +43,9 @@
 
             return JsonConvert.DeserializeObject<TOut>(response.Content.ReadAsStringAsync().Result);
         }
+
+#pragma warning restore S4005 // "System.Uri" arguments should be used instead of strings
+#pragma warning restore S3994 // URI Parameters should not be strings
 
         public void Dispose()
         {
