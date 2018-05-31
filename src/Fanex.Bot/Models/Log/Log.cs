@@ -28,9 +28,9 @@ namespace Fanex.Bot.Models
         {
             string message = FormatMessage();
 
-            if (!isFullMessage && message.Length > 200)
+            if (!isFullMessage && message.Length > 400)
             {
-                message = message.Substring(0, 200);
+                message = message.Substring(0, 400);
             }
 
             return $"**Category**: {Category.CategoryName}\n\n" +
