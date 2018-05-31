@@ -8,5 +8,7 @@
     public interface ILogService
     {
         Task<IEnumerable<Log>> GetErrorLogs(DateTime? fromDate = null, DateTime? toDate = null, bool isProduction = true);
+
+        Task<Log> GetErrorLogDetail(long logId);
     }
 }

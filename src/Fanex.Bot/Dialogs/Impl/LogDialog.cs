@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.Dialogs.Impl
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -41,7 +42,7 @@
             }
             else if (message.StartsWith("log remove"))
             {
-                var logCategories = message.Substring(9).Trim();
+                var logCategories = message.Substring(10).Trim();
 
                 if (string.IsNullOrEmpty(logCategories))
                 {
@@ -70,6 +71,18 @@
             else if (message.StartsWith("log adminstartall"))
             {
                 await StartNotifyingLogAllAsync(context);
+            }
+            else if (message.StartsWith("log detail"))
+            {
+                var logId = message.Substring(10).Trim();
+
+                if (string.IsNullOrEmpty(logId))
+                {
+                    await context.SendActivity("I need [LogId].");
+                    return;
+                }
+
+                await GetLogDetailAsync(context, logId);
             }
             else
             {
@@ -186,6 +199,13 @@
 
             await _dbContext.SaveChangesAsync();
             await SendAdminAsync("All clients is active now!");
+        }
+
+        public async Task GetLogDetailAsync(ITurnContext context, string logId)
+        {
+            var logDetail = await _logService.GetErrorLogDetail(Convert.ToInt64(logId));
+
+            await context.SendActivity(logDetail.FullMessage);
         }
 
         private bool CheckAdmin(ITurnContext context)

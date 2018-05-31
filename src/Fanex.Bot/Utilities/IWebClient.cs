@@ -8,7 +8,7 @@
     {
 #pragma warning disable S3994 // URI Parameters should not be strings
 
-        Task<HttpResponseMessage> GetAsync(string url);
+        Task<T> GetAsync<T>(string url);
 
         Task<TOut> PostAsync<TIn, TOut>(string url, TIn content);
 

@@ -34,5 +34,12 @@
 
             return errorLogs.Any() ? errorLogs : new List<Log>();
         }
+
+        public async Task<Log> GetErrorLogDetail(long logId)
+        {
+            var logMessageDetail = await _webClient.GetAsync<Log>($"PublicLog/Log?logId={logId}");
+
+            return logMessageDetail;
+        }
     }
 }

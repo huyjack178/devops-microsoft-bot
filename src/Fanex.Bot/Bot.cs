@@ -49,6 +49,7 @@
                     $"**log remove [LogCategory]**\n\n" +
                     $"**log start** ==> Start receiving logs \n\n" +
                     $"**log stop** ==> Stop receiving logs \n\n" +
+                    $"**log detail [LogId] ==> Get log detail" +
                     $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status \n\n" +
                     $"**group** ==> Get your group ID";
         }
@@ -57,7 +58,7 @@
         {
             if (!context.Responded)
             {
-                await context.SendActivity("Sorry, I don't understand. Ask Harrison for it");
+                await context.SendActivity("Sorry, I don't understand. Please contact NexOps.");
             }
         }
 

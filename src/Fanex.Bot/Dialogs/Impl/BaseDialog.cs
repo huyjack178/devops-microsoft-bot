@@ -41,11 +41,11 @@
             catch (Exception ex)
             {
                 await SendAdminAsync(
-                    $"Error happen in client {messageInfo.ConversationId}\n\n" +
+                    $"Error happen in client {messageInfo?.ConversationId}\n\n" +
                     $"Exception: {ex.InnerException.Message}");
             }
 
-            await SendAdminAsync($"Log has been sent to client {messageInfo.ConversationId}");
+            await SendAdminAsync($"Log has been sent to client {messageInfo?.ConversationId}");
         }
 
         protected async Task SendAdminAsync(string message)

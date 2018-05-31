@@ -14,6 +14,8 @@ namespace Fanex.Bot.Models
 
         public string Message => AnalyzeMessage();
 
+        public string FullMessage => AnalyzeMessage(isFullMessage: true);
+
         public string GroupMessageIds { get; set; }
 
         public int NumMessage { get; set; }
@@ -22,14 +24,11 @@ namespace Fanex.Bot.Models
 
         public Machine Machine { get; set; }
 
-        private string AnalyzeMessage()
+        private string AnalyzeMessage(bool isFullMessage = false)
         {
-            var message = FormattedMessage.Replace("\r", "\n").Replace("\t", string.Empty)
-                        .Replace("Timestamp", "**Timestamp**")
-                        .Replace("Message", "**Message**")
-                        .Replace("REQUEST INFO", "**REQUEST INFO**");
+            string message = FormatMessage();
 
-            if (message.Length > 200)
+            if (!isFullMessage && message.Length > 200)
             {
                 message = message.Substring(0, 200);
             }
@@ -40,6 +39,14 @@ namespace Fanex.Bot.Models
                     $"**Log Id**: {LogId}\n\n" +
                     $"**Number of logs**: {NumMessage}\n\n\n\n" +
                     $"====================================\n\n";
+        }
+
+        private string FormatMessage()
+        {
+            return FormattedMessage.Replace("\r", "\n").Replace("\t", string.Empty)
+                        .Replace("Timestamp", "**Timestamp**")
+                        .Replace("Message", "**Message**")
+                        .Replace("REQUEST INFO", "**REQUEST INFO**");
         }
     }
 }

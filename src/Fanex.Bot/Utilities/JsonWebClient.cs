@@ -21,11 +21,13 @@
 #pragma warning disable S3994 // URI Parameters should not be strings
 #pragma warning disable S4005 // "System.Uri" arguments should be used instead of strings
 
-        public async Task<HttpResponseMessage> GetAsync(string url)
+        public async Task<T> GetAsync<T>(string url)
         {
             CheckArgument(url);
 
-            return await _client.GetAsync(url);
+            var response = await _client.GetAsync(url);
+
+            return JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result);
         }
 
         private static void CheckArgument(string url)
