@@ -49,7 +49,7 @@
                     $"**log remove [LogCategory]**\n\n" +
                     $"**log start** ==> Start receiving logs \n\n" +
                     $"**log stop** ==> Stop receiving logs \n\n" +
-                    $"**log detail [LogId] ==> Get log detail" +
+                    $"**log detail [LogId] (BETA)** ==> Get log detail \n\n" +
                     $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status \n\n" +
                     $"**group** ==> Get your group ID";
         }
