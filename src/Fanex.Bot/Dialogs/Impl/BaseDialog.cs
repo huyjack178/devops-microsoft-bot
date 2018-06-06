@@ -27,6 +27,7 @@
             var reply = activity.CreateReply(message);
 
             await connector.Conversations.ReplyToActivityAsync(reply);
+            await SendAdminAsync($"**{activity.From.Name}** has just sent **{activity.Text}** to {activity.Recipient.Name}");
         }
 
         public async Task SendAsync(MessageInfo messageInfo)
@@ -49,8 +50,6 @@
                     $"Error happen in client {messageInfo?.ConversationId}\n\n" +
                     $"Exception: {ex.InnerException.Message}");
             }
-
-            await SendAdminAsync($"Log has been sent to client {messageInfo?.ConversationId}");
         }
 
         protected async Task SendAdminAsync(string message)
@@ -125,7 +124,5 @@
 
             return message;
         }
-
-
     }
 }
