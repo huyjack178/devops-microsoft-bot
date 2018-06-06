@@ -4,10 +4,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Fanex.Bot.Controllers;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
     using Hangfire;
-    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Connector;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
 
@@ -26,7 +27,7 @@
             _dbContext = dbContext;
         }
 
-        public async Task HandleLogMessageAsync(ITurnContext context, string message)
+        public async Task HandleLogMessageAsync(Activity activity, string message)
         {
             if (message.StartsWith("log add"))
             {
@@ -34,11 +35,11 @@
 
                 if (string.IsNullOrEmpty(logCategories))
                 {
-                    await SendMissingLogCategoriesMessage(context);
+                    await SendMissingLogCategoriesMessage(activity);
                     return;
                 }
 
-                await AddLogCategoriesAsync(context, logCategories);
+                await AddLogCategoriesAsync(activity, logCategories);
             }
             else if (message.StartsWith("log remove"))
             {
@@ -46,31 +47,31 @@
 
                 if (string.IsNullOrEmpty(logCategories))
                 {
-                    await SendMissingLogCategoriesMessage(context);
+                    await SendMissingLogCategoriesMessage(activity);
                     return;
                 }
 
-                await RemoveLogCategoriesAsync(context, logCategories);
+                await RemoveLogCategoriesAsync(activity, logCategories);
             }
             else if (message.StartsWith("log viewstatus"))
             {
-                await GetLogCategoriesAsync(context);
+                await GetLogCategoriesAsync(activity);
             }
             else if (message.StartsWith("log start"))
             {
-                await StartNotifyingLogAsync(context);
+                await StartNotifyingLogAsync(activity);
             }
             else if (message.StartsWith("log stop"))
             {
-                await StopNotifyingLogAsync(context);
+                await StopNotifyingLogAsync(activity);
             }
             else if (message.StartsWith("log adminstopall"))
             {
-                await StopNotifyingLogAllAsync(context);
+                await StopNotifyingLogAllAsync(activity);
             }
             else if (message.StartsWith("log adminstartall"))
             {
-                await StartNotifyingLogAllAsync(context);
+                await StartNotifyingLogAllAsync(activity);
             }
             else if (message.StartsWith("log detail"))
             {
@@ -78,36 +79,36 @@
 
                 if (string.IsNullOrEmpty(logId))
                 {
-                    await context.SendActivity("I need [LogId].");
+                    await SendActivity(activity, "I need [LogId].");
                     return;
                 }
 
-                await GetLogDetailAsync(context, logId);
+                await GetLogDetailAsync(activity, logId);
             }
             else
             {
-                await context.SendActivity(Bot.GetCommandMessages());
+                await SendActivity(activity, MessagesController.GetCommandMessages());
             }
         }
 
-        public async Task StartNotifyingLogAsync(ITurnContext context)
+        public async Task StartNotifyingLogAsync(Activity activity)
         {
-            var messageInfo = GetMessageInfo(context);
+            var messageInfo = GetMessageInfo(activity);
             messageInfo.IsActive = true;
             await SaveMessageInfoAsync(messageInfo);
 
             RecurringJob.AddOrUpdate("NotifyLogPeriodically", () => GetAndSendLogAsync(), Cron.Minutely);
 
-            await context.SendActivity("Log will be sent to you soon!");
+            await SendActivity(activity, "Log will be sent to you soon!");
         }
 
-        public async Task StopNotifyingLogAsync(ITurnContext context)
+        public async Task StopNotifyingLogAsync(Activity activity)
         {
-            var messageInfo = GetMessageInfo(context);
+            var messageInfo = GetMessageInfo(activity);
             messageInfo.IsActive = false;
             await SaveMessageInfoAsync(messageInfo);
 
-            await context.SendActivity("Log will not be sent to you more!");
+            await SendActivity(activity, "Log will not be sent to you more!");
         }
 
         public async Task GetAndSendLogAsync()
@@ -125,9 +126,9 @@
             }
         }
 
-        public async Task RemoveLogCategoriesAsync(ITurnContext context, string logCategories)
+        public async Task RemoveLogCategoriesAsync(Activity activity, string logCategories)
         {
-            var messageInfo = GetMessageInfo(context);
+            var messageInfo = GetMessageInfo(activity);
             var logCategoryList = logCategories.Split(";");
 
             foreach (var logCategory in logCategoryList)
@@ -137,35 +138,35 @@
 
             await SaveMessageInfoAsync(messageInfo);
 
-            await context.SendActivity($"You will not receive log with categories contain **[{logCategories}]**");
+            await SendActivity(activity, $"You will not receive log with categories contain **[{logCategories}]**");
         }
 
-        public async Task AddLogCategoriesAsync(ITurnContext context, string logCategories)
+        public async Task AddLogCategoriesAsync(Activity activity, string logCategories)
         {
-            var messageInfo = GetMessageInfo(context);
+            var messageInfo = GetMessageInfo(activity);
             messageInfo.LogCategories += $"{logCategories};";
             await SaveMessageInfoAsync(messageInfo);
 
-            await context.SendActivity($"You will receive log with categories contain **[{logCategories}]**");
+            await SendActivity(activity, $"You will receive log with categories contain **[{logCategories}]**");
         }
 
-        public async Task GetLogCategoriesAsync(ITurnContext context)
+        public async Task GetLogCategoriesAsync(Activity activity)
         {
-            var messageInfo = GetMessageInfo(context);
+            var messageInfo = GetMessageInfo(activity);
 
             var message = $"Your log status \n\n" +
                 $"**Log Categories:** [{messageInfo.LogCategories}]\n\n";
 
             message += messageInfo.IsActive ? $"**Running**\n\n" : $"**Stopped**\n\n";
 
-            await context.SendActivity(message);
+            await SendActivity(activity, message);
         }
 
-        public async Task StopNotifyingLogAllAsync(ITurnContext context)
+        public async Task StopNotifyingLogAllAsync(Activity activity)
         {
-            if (!CheckAdmin(context))
+            if (!CheckAdmin(activity))
             {
-                await context.SendActivity("Sorry! You are not admin.");
+                await SendActivity(activity, "Sorry! You are not admin.");
                 return;
             }
 
@@ -180,15 +181,15 @@
             await SendAdminAsync("All clients is inactive now!");
         }
 
-        public async Task StartNotifyingLogAllAsync(ITurnContext context)
+        public async Task StartNotifyingLogAllAsync(Activity activity)
         {
-            if (!CheckAdmin(context))
+            if (!CheckAdmin(activity))
             {
-                await context.SendActivity("Sorry! You are not admin.");
+                await SendActivity(activity, "Sorry! You are not admin.");
                 return;
             }
 
-            await context.SendActivity("Your request is accepted!");
+            await SendActivity(activity, "Your request is accepted!");
 
             var messageInfos = _dbContext.MessageInfo;
 
@@ -201,16 +202,16 @@
             await SendAdminAsync("All clients is active now!");
         }
 
-        public async Task GetLogDetailAsync(ITurnContext context, string logId)
+        public async Task GetLogDetailAsync(Activity activity, string logId)
         {
             var logDetail = await _logService.GetErrorLogDetail(Convert.ToInt64(logId));
 
-            await context.SendActivity(logDetail.FullMessage);
+            await SendActivity(activity, logDetail.FullMessage);
         }
 
-        private bool CheckAdmin(ITurnContext context)
+        private bool CheckAdmin(Activity activity)
         {
-            var currentConversationId = context.Activity.Conversation.Id;
+            var currentConversationId = activity.Conversation.Id;
             var isAdmin = _dbContext.MessageInfo.Any(
                 messageInfo => messageInfo.IsAdmin &&
                 messageInfo.ConversationId == currentConversationId);
@@ -239,9 +240,9 @@
             }
         }
 
-        private static async Task SendMissingLogCategoriesMessage(ITurnContext context)
+        private async Task SendMissingLogCategoriesMessage(Activity activity)
         {
-            await context.SendActivity("You need to add [LogCategory], otherwise, you will not get any log info");
+            await SendActivity(activity, "You need to add [LogCategory], otherwise, you will not get any log info");
         }
     }
 }

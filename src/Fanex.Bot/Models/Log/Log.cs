@@ -8,17 +8,11 @@ namespace Fanex.Bot.Models
 
         public long LogId { get; set; }
 
-        public bool IsMonitored { get; set; }
-
-        public DateTime TimeStamp { get; set; }
-
         public string FormattedMessage { get; set; }
 
         public string Message => FormatMessage();
 
         public string FullMessage => FormatMessage(isDetail: true);
-
-        public string GroupMessageIds { get; set; }
 
         public int NumMessage { get; set; }
 
@@ -77,9 +71,18 @@ namespace Fanex.Bot.Models
 
             if (exceptionInfoIndex > 0)
             {
-                var exceptionInfo = FormattedMessage.Substring(exceptionInfoIndex, 100).Replace("EXCEPTION INFO", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+                var detailsIndex = FormattedMessage.IndexOf(
+                    "Details:", exceptionInfoIndex, StringComparison.InvariantCultureIgnoreCase);
+                var exceptionInfo = string.Empty;
 
-                returnMessage = message + $"{NewLine} **Exception:** {NewLine} {exceptionInfo}";
+                exceptionInfo = detailsIndex > 0 ?
+                    FormattedMessage.Substring(exceptionInfoIndex, detailsIndex - exceptionInfoIndex) :
+                    FormattedMessage.Substring(exceptionInfoIndex);
+
+                exceptionInfo = exceptionInfo.Replace(
+                    "EXCEPTION INFO", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+
+                returnMessage = message + $"{NewLine}**Exception:** {NewLine}{exceptionInfo}";
             }
 
             return returnMessage;
@@ -87,7 +90,7 @@ namespace Fanex.Bot.Models
 
         private string FormatServerAndDatabaseInfo(string message)
         {
-            var returnMessage = message + $"{NewLine} **Server:** {Machine.MachineName} ({Machine.MachineIP})";
+            var returnMessage = message + $"{NewLine}**Server:** {Machine.MachineName} ({Machine.MachineIP})";
 
             var databaseInfoIndex = FormattedMessage.IndexOf("DATABASE INFO", StringComparison.InvariantCultureIgnoreCase);
 
@@ -102,7 +105,7 @@ namespace Fanex.Bot.Models
                     databaseInfo = FormattedMessage.Substring(serverIndex, parameterIndex - serverIndex);
                 }
 
-                returnMessage += $"{NewLine}**Database:** {NewLine} {databaseInfo}";
+                returnMessage += $"{NewLine}**Database:**{NewLine}{databaseInfo}";
             }
 
             return returnMessage;
@@ -133,7 +136,7 @@ namespace Fanex.Bot.Models
                     mobileDeviceModel = FormattedMessage.Substring(mobileDeviceModelIndex, serverInfoIndex - mobileDeviceModelIndex);
                 }
 
-                returnMessage = message + $"{NewLine} **Browser:** {browser} {mobileDeviceModel}";
+                returnMessage = message + $"{NewLine}**Browser:** {browser} {mobileDeviceModel}";
             }
 
             return returnMessage;
@@ -156,7 +159,7 @@ namespace Fanex.Bot.Models
                 }
 
                 returnMessage = message + FormattedMessage.Remove(requestInfoIndex);
-                returnMessage += $"{NewLine} **Request** {requestUrl}";
+                returnMessage += $"{NewLine}**Request:** {requestUrl}";
             }
 
             return returnMessage;

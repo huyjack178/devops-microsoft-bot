@@ -1,18 +1,18 @@
 ﻿namespace Fanex.Bot.Dialogs
 {
     using System.Threading.Tasks;
-    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Connector;
 
     public interface ILogDialog
     {
-        Task HandleLogMessageAsync(ITurnContext context, string message);
+        Task HandleLogMessageAsync(Activity activity, string message);
 
-        Task StartNotifyingLogAsync(ITurnContext context);
+        Task StartNotifyingLogAsync(Activity activity);
 
-        Task StopNotifyingLogAsync(ITurnContext context);
+        Task StopNotifyingLogAsync(Activity activity);
 
-        Task AddLogCategoriesAsync(ITurnContext context, string logCategories);
+        Task AddLogCategoriesAsync(Activity activity, string logCategories);
 
-        Task RemoveLogCategoriesAsync(ITurnContext context, string logCategories);
+        Task RemoveLogCategoriesAsync(Activity activity, string logCategories);
     }
 }

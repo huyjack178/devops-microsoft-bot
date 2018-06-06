@@ -9,12 +9,10 @@
     using Fanex.Bot.Utilitites;
     using Hangfire;
     using Hangfire.Dashboard;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Bot.Builder.BotFramework;
-    using Microsoft.Bot.Builder.Core.Extensions;
-    using Microsoft.Bot.Builder.Integration.AspNet.Core;
-    using Microsoft.Bot.Builder.TraceExtensions;
+    using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -45,14 +43,23 @@
             services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<ILogDialog, LogDialog>();
 
-            services.AddBot<Bot>(options =>
+            var credentialProvider = new StaticCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
+                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
+
+            services.AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    }
+                )
+                .AddBotAuthentication(credentialProvider);
+
+            services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
+
+            services.AddMvc(options =>
             {
-                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
-                options.Middleware.Add(new CatchExceptionMiddleware<Exception>(async (context, exception) =>
-                {
-                    await context.TraceActivity("Bot Exception", exception);
-                    await context.SendActivity(exception.InnerException.Message);
-                }));
+                options.Filters.Add(typeof(TrustServiceUrlAttribute));
             });
         }
 
@@ -68,10 +75,9 @@
                 Authorization = Enumerable.Empty<IDashboardAuthorizationFilter>()
             });
 
-            app.UseDefaultFiles()
-                .UseStaticFiles()
-                .UseAuthentication()
-                .UseBotFramework();
+            app.UseStaticFiles();
+            app.UseAuthentication();
+            app.UseMvc();
         }
     }
 }

@@ -4,12 +4,9 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
-    using Microsoft.Bot.Builder;
     using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Schema;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Options;
 
     public class BaseDialog
     {
@@ -24,9 +21,17 @@
             _dbContext = dbContext;
         }
 
+        public async Task SendActivity(Activity activity, string message)
+        {
+            var connector = CreateConnectorClient(new Uri(activity.ServiceUrl));
+            var reply = activity.CreateReply(message);
+
+            await connector.Conversations.ReplyToActivityAsync(reply);
+        }
+
         public async Task SendAsync(MessageInfo messageInfo)
         {
-            ConnectorClient connector = CreateConnectorClient(messageInfo);
+            ConnectorClient connector = CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
 
             var message = CreateMessageActivity(messageInfo);
 
@@ -54,7 +59,7 @@
 
             foreach (var adminMessageInfo in adminMessageInfos)
             {
-                var connector = CreateConnectorClient(adminMessageInfo);
+                var connector = CreateConnectorClient(new Uri(adminMessageInfo.ServiceUrl));
                 var adminMessage = CreateMessageActivity(adminMessageInfo);
                 adminMessage.Text = message;
 
@@ -62,14 +67,13 @@
             }
         }
 
-        protected virtual MessageInfo GetMessageInfo(ITurnContext context)
+        protected virtual MessageInfo GetMessageInfo(Activity activity)
         {
-            var message = context.Activity;
-            var messageInfo = _dbContext.MessageInfo.FirstOrDefault(e => e.ConversationId == message.Conversation.Id);
+            var messageInfo = _dbContext.MessageInfo.FirstOrDefault(e => e.ConversationId == activity.Conversation.Id);
 
             if (messageInfo == null)
             {
-                messageInfo = GenerateMessageInfo(context);
+                messageInfo = GenerateMessageInfo(activity);
             }
 
             return messageInfo;
@@ -84,28 +88,27 @@
             await _dbContext.SaveChangesAsync();
         }
 
-        protected virtual MessageInfo GenerateMessageInfo(ITurnContext context)
+        protected virtual MessageInfo GenerateMessageInfo(Activity activity)
         {
-            var message = context.Activity;
             var messageInfo = new MessageInfo
             {
-                ToId = message.From.Id,
-                ToName = message.From.Name,
-                FromId = message.Recipient.Id,
-                FromName = message.Recipient.Name,
-                ServiceUrl = message.ServiceUrl,
-                ChannelId = message.ChannelId,
-                ConversationId = message.Conversation.Id,
+                ToId = activity.From.Id,
+                ToName = activity.From.Name,
+                FromId = activity.Recipient.Id,
+                FromName = activity.Recipient.Name,
+                ServiceUrl = activity.ServiceUrl,
+                ChannelId = activity.ChannelId,
+                ConversationId = activity.Conversation.Id,
                 IsActive = true
             };
 
             return messageInfo;
         }
 
-        private ConnectorClient CreateConnectorClient(MessageInfo messageInfo)
+        private ConnectorClient CreateConnectorClient(Uri serviceUrl)
         {
             return new ConnectorClient(
-                            new Uri(messageInfo.ServiceUrl),
+                            serviceUrl,
                             _configuration.GetSection("MicrosoftAppId").Value,
                             _configuration.GetSection("MicrosoftAppPassword").Value);
         }
@@ -122,5 +125,7 @@
 
             return message;
         }
+
+
     }
 }
