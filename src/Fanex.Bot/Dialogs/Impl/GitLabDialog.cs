@@ -1,8 +1,10 @@
 ﻿namespace Fanex.Bot.Dialogs.Impl
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Xml.Linq;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.GitLab;
     using Microsoft.Bot.Connector;
@@ -65,24 +67,24 @@
 
         private GitLabInfo GetGitLabInfo(Activity activity, string projectUrl)
         {
+            string formatedProjectUrl = ExtractProjectLink(projectUrl);
+
             var gitLabInfo = _dbContext.GitLabInfo.FirstOrDefault(
                 info =>
                     info.ConversationId == activity.Conversation.Id &&
-                    info.ProjectUrl.Contains(projectUrl.ToLowerInvariant()));
+                    formatedProjectUrl.Contains(info.ProjectUrl));
 
             if (gitLabInfo == null)
             {
                 gitLabInfo = new GitLabInfo
                 {
                     ConversationId = activity.Conversation.Id,
-                    ProjectUrl = projectUrl
+                    ProjectUrl = formatedProjectUrl
                 };
             }
 
             return gitLabInfo;
         }
-
-#pragma warning restore S3994 // URI Parameters should not be strings
 
         public async Task HandlePushEventAsync(PushEvent pushEvent)
         {
@@ -98,17 +100,19 @@
             }
         }
 
-        private static string GeneratePushMasterMessage(Project project, System.Collections.Generic.List<Commit> commits)
+        private static string GeneratePushMasterMessage(Project project, IList<Commit> commits)
         {
-            var message = $"**GitLab:** Master branch changes{Constants.NewLine}" +
+            var message = $"**GitLab Master Branch Change** (bell){Constants.NewLine}" +
                             $"**Repository:** {project.WebUrl}{Constants.NewLine}";
-
             var commitMessageBuilder = new StringBuilder();
 
             foreach (var commit in commits)
             {
-                commitMessageBuilder.Append($"**Author:** {commit.Author.Name}{Constants.NewLine}");
+                var commitUrl = $"{project.WebUrl}/commit/{commit.Id}";
+
+                commitMessageBuilder.Append($"**Commit:** [{commit.Id.Substring(0, 8)}]({commitUrl}){Constants.NewLine}");
                 commitMessageBuilder.Append($"**Message:** {commit.Message}{Constants.NewLine}");
+                commitMessageBuilder.Append($"**Author:** {commit.Author.Name}{Constants.NewLine}");
                 commitMessageBuilder.Append($"--------------{Constants.NewLine}");
             }
 
@@ -124,12 +128,29 @@
                 .Replace("https://", string.Empty);
 
             var gitlabInfos = _dbContext.GitLabInfo.Where(
-                info => info.ProjectUrl.Contains(projectUrl));
+                info => projectUrl.Contains(info.ProjectUrl));
 
             foreach (var gitlabInfo in gitlabInfos)
             {
                 await SendAsync(gitlabInfo.ConversationId, message);
             }
         }
+
+        private static string ExtractProjectLink(string projectUrl)
+        {
+            var formatedProjectUrl = XElement.Parse(projectUrl)
+                       .Attribute("href").Value;
+
+            if (string.IsNullOrEmpty(formatedProjectUrl))
+            {
+                formatedProjectUrl = projectUrl;
+            }
+
+            return formatedProjectUrl
+                    .Replace("http://", string.Empty)
+                    .Replace("https://", string.Empty);
+        }
     }
+
+#pragma warning restore S3994 // URI Parameters should not be strings
 }

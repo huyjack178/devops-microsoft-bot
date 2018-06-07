@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-
-namespace Fanex.Bot.Models
+﻿namespace Fanex.Bot.Models
 {
+    using System.IO;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Design;
+    using Microsoft.Extensions.Configuration;
+
     public class BotDbContextFactory : IDesignTimeDbContextFactory<BotDbContext>
     {
         public BotDbContext CreateDbContext(string[] args)
