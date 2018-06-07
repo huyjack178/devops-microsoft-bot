@@ -11,6 +11,7 @@
 
     public class GitLabDialog : Dialog, IGitLabDialog
     {
+        private const string MasterBranchName = "heads/master";
         private readonly BotDbContext _dbContext;
 
         public GitLabDialog(
@@ -87,12 +88,17 @@
         {
             var project = pushEvent.Project;
             var commits = pushEvent.Commits;
-            var message = GeneratePushEventMessage(project, commits);
+            var branchName = pushEvent.Ref.ToLowerInvariant();
 
-            await SendEventMessageAsync(project, message);
+            if (branchName.Contains(MasterBranchName))
+            {
+                var message = GeneratePushMasterMessage(project, commits);
+
+                await SendEventMessageAsync(project, message);
+            }
         }
 
-        private static string GeneratePushEventMessage(Project project, System.Collections.Generic.List<Commit> commits)
+        private static string GeneratePushMasterMessage(Project project, System.Collections.Generic.List<Commit> commits)
         {
             var message = $"**GitLab:** Master branch changes{Constants.NewLine}" +
                             $"**Repository:** {project.WebUrl}{Constants.NewLine}";
@@ -103,7 +109,7 @@
             {
                 commitMessageBuilder.Append($"**Author:** {commit.Author.Name}{Constants.NewLine}");
                 commitMessageBuilder.Append($"**Message:** {commit.Message}{Constants.NewLine}");
-                commitMessageBuilder.Append($"-----------{Constants.NewLine}");
+                commitMessageBuilder.Append($"--------------{Constants.NewLine}");
             }
 
             message += commitMessageBuilder;

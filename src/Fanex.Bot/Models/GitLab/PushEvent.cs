@@ -18,6 +18,9 @@
         [JsonProperty("project")]
         public Project Project { get; set; }
 
+        [JsonProperty("ref")]
+        public string Ref { get; set; }
+
         [JsonProperty("commits")]
         public List<Commit> Commits { get; set; }
 
