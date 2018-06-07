@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Models
+﻿namespace Fanex.Bot.Models.Log
 {
     public class Machine
     {

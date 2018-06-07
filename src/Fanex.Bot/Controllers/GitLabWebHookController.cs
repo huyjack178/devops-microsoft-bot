@@ -1,15 +1,24 @@
 ﻿namespace Fanex.Bot.Controllers
 {
+    using System.Threading.Tasks;
+    using Fanex.Bot.Dialogs;
     using Fanex.Bot.Models.GitLab;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]
     public class GitLabWebHookController : Controller
     {
-        [HttpPost]
-        public int PushEventInfo([FromBody]PushEvent push)
+        private readonly IGitLabDialog _gitLabDialog;
+
+        public GitLabWebHookController(IGitLabDialog gitLabDialog)
         {
-            //var projectUrl = push.Project.WebUrl;
+            _gitLabDialog = gitLabDialog;
+        }
+
+        [HttpPost]
+        public async Task<int> PushEventInfo([FromBody]PushEvent pushEvent)
+        {
+            await _gitLabDialog.HandlePushEventAsync(pushEvent);
 
             return 0;
         }

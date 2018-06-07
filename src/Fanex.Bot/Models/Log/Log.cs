@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Fanex.Bot.Models
+﻿namespace Fanex.Bot.Models.Log
 {
+    using System;
+
     public class Log
     {
         private const string NewLine = "\n\n";

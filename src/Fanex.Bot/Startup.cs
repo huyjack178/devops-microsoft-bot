@@ -39,9 +39,14 @@
                     Configuration.GetConnectionString("DefaultConnection")),
                     ServiceLifetime.Singleton);
 
-            services.AddSingleton<IWebClient>(new JsonWebClient(new Uri(Configuration.GetSection("mSiteUrl")?.Value)));
+            services.AddSingleton<IWebClient>(new JsonWebClient(
+                new Uri(Configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value)));
             services.AddSingleton<ILogService, LogService>();
+
+            services.AddSingleton<IDialog, Dialog>();
+            services.AddSingleton<IRootDialog, RootDialog>();
             services.AddSingleton<ILogDialog, LogDialog>();
+            services.AddSingleton<IGitLabDialog, GitLabDialog>();
 
             var credentialProvider = new StaticCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);

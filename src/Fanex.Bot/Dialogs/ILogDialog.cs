@@ -3,10 +3,8 @@
     using System.Threading.Tasks;
     using Microsoft.Bot.Connector;
 
-    public interface ILogDialog
+    public interface ILogDialog : IRootDialog
     {
-        Task HandleLogMessageAsync(Activity activity, string message);
-
         Task StartNotifyingLogAsync(Activity activity);
 
         Task StopNotifyingLogAsync(Activity activity);

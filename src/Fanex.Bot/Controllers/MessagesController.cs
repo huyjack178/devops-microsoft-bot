@@ -1,88 +1,70 @@
 ﻿namespace Fanex.Bot.Controllers
 {
-    using System;
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Connector;
-    using Microsoft.Extensions.Configuration;
 
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
+        private readonly IDialog _dialog;
+        private readonly IRootDialog _rootDialog;
         private readonly ILogDialog _logDialog;
-        private readonly IConfiguration _configuration;
+        private readonly IGitLabDialog _gitLabDialog;
 
-        public MessagesController(IConfiguration configuration, ILogDialog logDialog)
+        public MessagesController(
+            IDialog dialog,
+            IRootDialog rootDialog,
+            ILogDialog logDialog,
+            IGitLabDialog gitLabDialog)
         {
+            _dialog = dialog;
+            _rootDialog = rootDialog;
             _logDialog = logDialog;
-            _configuration = configuration;
-        }
-
-        public static string GetCommandMessages()
-        {
-            return $"SkyNex's available commands: \n\n" +
-                    $"**log add [Contains-LogCategory]** " +
-                        $"==> Register to get log which has category name **contains [Contains-LogCategory]**. Example: log add Alpha;NAP \n\n" +
-                    $"**log remove [LogCategory]**\n\n" +
-                    $"**log start** ==> Start receiving logs \n\n" +
-                    $"**log stop** ==> Stop receiving logs \n\n" +
-                    $"**log detail [LogId] (BETA)** ==> Get log detail \n\n" +
-                    $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status \n\n" +
-                    $"**group** ==> Get your group ID";
+            _gitLabDialog = gitLabDialog;
         }
 
         [Authorize(Roles = "Bot")]
         [HttpPost]
         public async Task<OkResult> Post([FromBody] Activity activity)
         {
-            var appCredentials = new MicrosoftAppCredentials(_configuration);
-            var connector = new ConnectorClient(new Uri(activity.ServiceUrl), appCredentials);
-
             switch (activity.Type)
             {
                 case ActivityTypes.Message:
-
-                    await HandleMessageCommands(activity, connector);
+                    await HandleMessageCommands(activity);
                     break;
 
                 case ActivityTypes.ConversationUpdate:
-                    await HandleConverationUpdate(activity, connector);
+                    await _dialog.RegisterMessageInfo(activity);
+                    await HandleConverationUpdate(activity);
                     break;
 
                 default:
-                    await connector.Conversations.ReplyToActivityAsync(
-                        activity.CreateReply($"Hello all. I am SkyNex."));
+                    await _dialog.SendAsync(activity, $"Hello all. I am SkyNex.");
                     break;
             }
 
             return Ok();
         }
 
-        private async Task HandleMessageCommands(Activity activity, ConnectorClient connector)
+        private async Task HandleMessageCommands(Activity activity)
         {
             var message = activity.Text.ToLowerInvariant();
             message = GenerateMessage(message);
 
             if (message.StartsWith("log"))
             {
-                await _logDialog.HandleLogMessageAsync(activity, message);
+                await _logDialog.HandleMessageAsync(activity, message);
             }
-            else if (message.StartsWith("group"))
+            else if (message.StartsWith("gitlab"))
             {
-                await connector.Conversations.ReplyToActivityAsync(
-                    activity.CreateReply($"Your group id is: {activity.Conversation.Id}"));
-            }
-            else if (message.StartsWith("help"))
-            {
-                await connector.Conversations.ReplyToActivityAsync(
-                    activity.CreateReply(GetCommandMessages()));
+                await _gitLabDialog.HandleMessageAsync(activity, message);
             }
             else
             {
-                await connector.Conversations.ReplyToActivityAsync(
-                    activity.CreateReply("Please send **help** to get my commands"));
+                await _rootDialog.HandleMessageAsync(activity, message);
             }
         }
 
@@ -103,14 +85,13 @@
             return returnMessage;
         }
 
-        private static async Task HandleConverationUpdate(Activity activity, ConnectorClient connector)
+        private async Task HandleConverationUpdate(Activity activity)
         {
             foreach (var newMember in activity.MembersAdded)
             {
                 if (newMember.Id != activity.Recipient.Id)
                 {
-                    await connector.Conversations.ReplyToActivityAsync(
-                        activity.CreateReply($"Hello {newMember.Name}. I am SkyNex."));
+                    await _dialog.SendAsync(activity, $"Hello {newMember.Name}. I am SkyNex.");
                 }
             }
         }

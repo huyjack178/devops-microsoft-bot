@@ -14,6 +14,12 @@
 
   <ItemGroup>
     <Compile Remove="Bot.cs" />
+    <Compile Remove="Migrations\20180607033805_AddLogInfo.cs" />
+    <Compile Remove="Migrations\20180607033805_AddLogInfo.Designer.cs" />
+    <Compile Remove="Migrations\20180607071242_AddGitLabInfo.cs" />
+    <Compile Remove="Migrations\20180607071242_AddGitLabInfo.Designer.cs" />
+    <Compile Remove="Migrations\20180607073446_AddGitLabInfoKey.cs" />
+    <Compile Remove="Migrations\20180607073446_AddGitLabInfoKey.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

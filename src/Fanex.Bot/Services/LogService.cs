@@ -5,7 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.Log;
     using Fanex.Bot.Utilitites;
 
     public class LogService : ILogService

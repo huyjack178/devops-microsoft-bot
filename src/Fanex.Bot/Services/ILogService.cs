@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.Log;
 
     public interface ILogService
     {
