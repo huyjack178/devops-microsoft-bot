@@ -13,6 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Bot.cs" />
     <Compile Remove="Migrations\20180607033805_AddLogInfo.cs" />
     <Compile Remove="Migrations\20180607033805_AddLogInfo.Designer.cs" />
@@ -25,7 +32,6 @@
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="Utilities\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>

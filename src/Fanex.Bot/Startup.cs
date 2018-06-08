@@ -4,6 +4,7 @@
     using System.Linq;
     using Fanex.Bot.Dialogs;
     using Fanex.Bot.Dialogs.Impl;
+    using Fanex.Bot.Filters;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
     using Fanex.Bot.Utilitites;
@@ -38,7 +39,8 @@
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")),
                     ServiceLifetime.Singleton);
-
+            services.AddOptions();
+            services.AddScoped<GitLabAttribute>();
             services.AddSingleton<IWebClient>(new JsonWebClient(
                 new Uri(Configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value)));
             services.AddSingleton<ILogService, LogService>();
