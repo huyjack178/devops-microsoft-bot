@@ -37,16 +37,20 @@
                     break;
 
                 case ActivityTypes.ConversationUpdate:
-                    await HandleConverationUpdate(activity);
                     break;
 
                 case ActivityTypes.InstallationUpdate:
+                case ActivityTypes.ContactRelationUpdate:
+                    await _dialog.SendAsync(activity, $"Hello. I am SkyNex.", notifyAdmin: false);
                     await _dialog.RegisterMessageInfo(activity);
                     break;
 
-                default:
-                    await _dialog.SendAsync(activity, $"Hello all. I am SkyNex.", notifyAdmin: false);
+                case ActivityTypes.EndOfConversation:
+                    // TODO: Remove message info
                     break;
+
+                default:
+                    return Ok();
             }
 
             return Ok();
@@ -86,17 +90,6 @@
             }
 
             return returnMessage;
-        }
-
-        private async Task HandleConverationUpdate(Activity activity)
-        {
-            foreach (var newMember in activity.MembersAdded)
-            {
-                if (newMember.Id != activity.Recipient.Id)
-                {
-                    await _dialog.SendAsync(activity, $"Hello {newMember.Name}. I am SkyNex.", notifyAdmin: false);
-                }
-            }
         }
     }
 }

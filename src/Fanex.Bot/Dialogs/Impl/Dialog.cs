@@ -65,14 +65,10 @@
 
             await connector.Conversations.ReplyToActivityAsync(reply);
 
-            if (!_dbContext.MessageInfo.Any(e => e.ConversationId == activity.Conversation.Id))
-            {
-                await RegisterMessageInfo(activity);
-            }
-
             if (notifyAdmin)
             {
-                await SendAdminAsync($"**{activity.From.Name} ({activity.From.Id})** has just sent **{activity.Text}** to {activity.Recipient.Name}");
+                await SendAdminAsync($"**{activity.From.Name} ({activity.From.Id})** has just sent **" +
+                    $"{activity.Text}** to {activity.Recipient.Name}");
             }
         }
 
