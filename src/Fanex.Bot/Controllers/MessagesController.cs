@@ -37,12 +37,15 @@
                     break;
 
                 case ActivityTypes.ConversationUpdate:
-                    await _dialog.RegisterMessageInfo(activity);
                     await HandleConverationUpdate(activity);
                     break;
 
+                case ActivityTypes.InstallationUpdate:
+                    await _dialog.RegisterMessageInfo(activity);
+                    break;
+
                 default:
-                    await _dialog.SendAsync(activity, $"Hello all. I am SkyNex.");
+                    await _dialog.SendAsync(activity, $"Hello all. I am SkyNex.", notifyAdmin: false);
                     break;
             }
 
@@ -91,7 +94,7 @@
             {
                 if (newMember.Id != activity.Recipient.Id)
                 {
-                    await _dialog.SendAsync(activity, $"Hello {newMember.Name}. I am SkyNex.");
+                    await _dialog.SendAsync(activity, $"Hello {newMember.Name}. I am SkyNex.", notifyAdmin: false);
                 }
             }
         }

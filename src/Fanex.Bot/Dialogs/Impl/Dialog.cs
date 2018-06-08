@@ -65,6 +65,11 @@
 
             await connector.Conversations.ReplyToActivityAsync(reply);
 
+            if (!_dbContext.MessageInfo.Any(e => e.ConversationId == activity.Conversation.Id))
+            {
+                await RegisterMessageInfo(activity);
+            }
+
             if (notifyAdmin)
             {
                 await SendAdminAsync($"**{activity.From.Name} ({activity.From.Id})** has just sent **{activity.Text}** to {activity.Recipient.Name}");
@@ -94,7 +99,7 @@
 
             if (!isExisted)
             {
-                await SendAdminAsync($"New client **{activity.From.Name} ({activity.From.Id})** has been added");
+                await SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
             }
         }
 
@@ -118,7 +123,16 @@
 
             if (messageInfo == null)
             {
-                messageInfo = GenerateMessageInfo(activity);
+                messageInfo = new MessageInfo
+                {
+                    ToId = activity.From.Id,
+                    ToName = activity.From.Name,
+                    FromId = activity.Recipient.Id,
+                    FromName = activity.Recipient.Name,
+                    ServiceUrl = activity.ServiceUrl,
+                    ChannelId = activity.ChannelId,
+                    ConversationId = activity.Conversation.Id,
+                };
             }
 
             return messageInfo;
@@ -126,7 +140,7 @@
 
         protected async Task<bool> SaveMessageInfoAsync(MessageInfo messageInfo)
         {
-            var existMessageInfo = _dbContext.MessageInfo.Any(e => e.ConversationId == messageInfo.ConversationId);
+            bool existMessageInfo = ExistMessageInfo(messageInfo);
             _dbContext.Entry(messageInfo).State = existMessageInfo ? EntityState.Modified : EntityState.Added;
 
             await _dbContext.SaveChangesAsync();
@@ -134,29 +148,14 @@
             return existMessageInfo;
         }
 
-        protected MessageInfo GenerateMessageInfo(Activity activity)
-        {
-            var messageInfo = new MessageInfo
-            {
-                ToId = activity.From.Id,
-                ToName = activity.From.Name,
-                FromId = activity.Recipient.Id,
-                FromName = activity.Recipient.Name,
-                ServiceUrl = activity.ServiceUrl,
-                ChannelId = activity.ChannelId,
-                ConversationId = activity.Conversation.Id,
-            };
-
-            return messageInfo;
-        }
+        private bool ExistMessageInfo(MessageInfo messageInfo)
+            => _dbContext.MessageInfo.Any(e => e.ConversationId == messageInfo.ConversationId);
 
         protected ConnectorClient CreateConnectorClient(Uri serviceUrl)
-        {
-            return new ConnectorClient(
+            => new ConnectorClient(
                             serviceUrl,
                             _configuration.GetSection("MicrosoftAppId").Value,
                             _configuration.GetSection("MicrosoftAppPassword").Value);
-        }
 
         private static IMessageActivity CreateMessageActivity(MessageInfo messageInfo)
         {
