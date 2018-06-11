@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
-namespace Fanex.Bot.Migrations
+﻿namespace Fanex.Bot.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class AddTimeToModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -10,37 +10,31 @@ namespace Fanex.Bot.Migrations
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedTime",
                 table: "MessageInfo",
-                nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "ModifiedTime",
                 table: "MessageInfo",
-                nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedTime",
                 table: "LogInfo",
-                nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "ModifiedTime",
                 table: "LogInfo",
-                nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedTime",
                 table: "GitLabInfo",
-                nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "ModifiedTime",
                 table: "GitLabInfo",
-                nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }
 
