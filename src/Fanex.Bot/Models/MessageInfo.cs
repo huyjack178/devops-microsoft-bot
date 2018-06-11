@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.Models
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +24,10 @@
         public string ChannelId { get; set; }
 
         public bool IsAdmin { get; set; }
+
+        public DateTime CreatedTime { get; set; }
+
+        public DateTime ModifiedTime { get; set; }
 
         [NotMapped]
         public string Text { get; set; }

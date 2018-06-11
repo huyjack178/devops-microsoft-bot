@@ -37,12 +37,9 @@
                     break;
 
                 case ActivityTypes.ConversationUpdate:
-                    break;
-
                 case ActivityTypes.InstallationUpdate:
                 case ActivityTypes.ContactRelationUpdate:
                     await _dialog.SendAsync(activity, $"Hello. I am SkyNex.", notifyAdmin: false);
-                    await _dialog.RegisterMessageInfo(activity);
                     break;
 
                 case ActivityTypes.EndOfConversation:

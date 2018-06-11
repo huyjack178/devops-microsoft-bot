@@ -128,6 +128,7 @@
                     ServiceUrl = activity.ServiceUrl,
                     ChannelId = activity.ChannelId,
                     ConversationId = activity.Conversation.Id,
+                    CreatedTime = DateTime.UtcNow.AddHours(7)
                 };
             }
 

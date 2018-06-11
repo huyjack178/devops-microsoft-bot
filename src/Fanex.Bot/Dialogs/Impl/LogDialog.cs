@@ -98,6 +98,7 @@
             var logInfo = GetLogInfo(activity);
             logInfo.IsActive = true;
             await SaveLogInfoAsync(logInfo);
+            await RegisterMessageInfo(activity);
 
             RecurringJob.AddOrUpdate("NotifyLogPeriodically", () => GetAndSendLogAsync(), Cron.Minutely);
 
@@ -210,7 +211,8 @@
                 {
                     ConversationId = activity.Conversation.Id,
                     LogCategories = string.Empty,
-                    IsActive = true
+                    IsActive = true,
+                    CreatedTime = DateTime.UtcNow.AddHours(7)
                 };
             }
 

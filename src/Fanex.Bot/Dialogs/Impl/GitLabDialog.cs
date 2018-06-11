@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.Dialogs.Impl
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -46,6 +47,7 @@
                 return;
             }
 
+            await RegisterMessageInfo(activity);
             var gitLabInfo = GetGitLabInfo(activity, projectUrl);
 
             await SaveGitLabInfoAsync(gitLabInfo);
@@ -79,7 +81,8 @@
                 gitLabInfo = new GitLabInfo
                 {
                     ConversationId = activity.Conversation.Id,
-                    ProjectUrl = formatedProjectUrl
+                    ProjectUrl = formatedProjectUrl,
+                    CreatedTime = DateTime.UtcNow.AddHours(7)
                 };
             }
 

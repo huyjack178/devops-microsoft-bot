@@ -40,18 +40,17 @@
 
             services.AddDbContext<BotDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")),
-                    ServiceLifetime.Singleton);
+                    Configuration.GetConnectionString("DefaultConnection")));
             services.AddOptions();
             services.AddScoped<GitLabAttribute>();
             services.AddSingleton<IWebClient>(new JsonWebClient(
                 new Uri(Configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value)));
             services.AddSingleton<ILogService, LogService>();
 
-            services.AddSingleton<IDialog, Dialog>();
-            services.AddSingleton<IRootDialog, RootDialog>();
-            services.AddSingleton<ILogDialog, LogDialog>();
-            services.AddSingleton<IGitLabDialog, GitLabDialog>();
+            services.AddScoped<IDialog, Dialog>();
+            services.AddScoped<IRootDialog, RootDialog>();
+            services.AddScoped<ILogDialog, LogDialog>();
+            services.AddScoped<IGitLabDialog, GitLabDialog>();
 
             var credentialProvider = new StaticCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
