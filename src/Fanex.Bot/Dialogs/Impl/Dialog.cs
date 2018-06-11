@@ -99,7 +99,7 @@
             }
         }
 
-        protected async Task SendAdminAsync(string message)
+        public async Task SendAdminAsync(string message)
         {
             var adminMessageInfos = _dbContext.MessageInfo.Where(messageInfo => messageInfo.IsAdmin);
 

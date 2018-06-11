@@ -10,6 +10,8 @@
 
         Task SendAsync(Activity activity, string message, bool notifyAdmin = true);
 
+        Task SendAdminAsync(string message);
+
         Task RegisterMessageInfo(Activity activity);
     }
 }
