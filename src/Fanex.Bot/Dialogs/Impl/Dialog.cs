@@ -33,13 +33,13 @@
                     $"**log detail [LogId] (BETA)** ==> Get log detail{Constants.NewLine}" +
                     $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
                     $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +
+                    $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{Constants.NewLine}" +
                     $"**group** ==> Get your group ID";
         }
 
         public async Task SendAsync(MessageInfo messageInfo)
         {
             ConnectorClient connector = CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
-
             var message = CreateMessageActivity(messageInfo);
 
             try

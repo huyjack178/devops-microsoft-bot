@@ -15,6 +15,8 @@
     public class GitLabDialog : Dialog, IGitLabDialog
     {
         private const string MasterBranchName = "heads/master";
+        private const string RemoveProjectCmd = "gitlab removeproject";
+        private const string AddProjectCmd = "gitlab addproject";
         private readonly BotDbContext _dbContext;
 
         public GitLabDialog(
@@ -27,9 +29,13 @@
 
         public async Task HandleMessageAsync(Activity activity, string message)
         {
-            if (message.StartsWith("gitlab addproject"))
+            if (message.StartsWith(AddProjectCmd))
             {
                 await AddProjectAsync(activity, message);
+            }
+            else if (message.StartsWith(RemoveProjectCmd))
+            {
+                await DisableProjectAsync(activity, message);
             }
             else
             {
@@ -39,7 +45,7 @@
 
         private async Task AddProjectAsync(Activity activity, string message)
         {
-            var projectUrl = message.Replace("gitlab addproject", string.Empty).Trim();
+            var projectUrl = ExtractProjectLink(message.Replace(AddProjectCmd, string.Empty).Trim());
 
             if (string.IsNullOrEmpty(projectUrl))
             {
@@ -48,10 +54,34 @@
             }
 
             await RegisterMessageInfo(activity);
-            var gitLabInfo = GetGitLabInfo(activity, projectUrl);
+            var gitLabInfo = await GetGitLabInfo(activity, projectUrl);
+            gitLabInfo.IsActive = true;
 
             await SaveGitLabInfoAsync(gitLabInfo);
             await SendAsync(activity, $"You will receive notification of project **{projectUrl}**");
+        }
+
+        private async Task DisableProjectAsync(Activity activity, string message)
+        {
+            var projectUrl = ExtractProjectLink(message.Replace(RemoveProjectCmd, string.Empty).Trim());
+
+            if (string.IsNullOrEmpty(projectUrl))
+            {
+                await SendAsync(activity, "Please input project url");
+                return;
+            }
+
+            var gitLabInfo = await GetExistingGitLabInfo(activity, projectUrl);
+
+            if (gitLabInfo == null)
+            {
+                await SendAsync(activity, "Project not found");
+                return;
+            }
+
+            gitLabInfo.IsActive = false;
+            await SaveGitLabInfoAsync(gitLabInfo);
+            await SendAsync(activity, $"You will not receive notification of project **{projectUrl}**");
         }
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)
@@ -67,27 +97,29 @@
 
 #pragma warning disable S3994 // URI Parameters should not be strings
 
-        private GitLabInfo GetGitLabInfo(Activity activity, string projectUrl)
+        private async Task<GitLabInfo> GetGitLabInfo(Activity activity, string projectUrl)
         {
-            string formatedProjectUrl = ExtractProjectLink(projectUrl);
-
-            var gitLabInfo = _dbContext.GitLabInfo.FirstOrDefault(
-                info =>
-                    info.ConversationId == activity.Conversation.Id &&
-                    formatedProjectUrl.Contains(info.ProjectUrl));
+            var gitLabInfo = await GetExistingGitLabInfo(activity, projectUrl);
 
             if (gitLabInfo == null)
             {
                 gitLabInfo = new GitLabInfo
                 {
                     ConversationId = activity.Conversation.Id,
-                    ProjectUrl = formatedProjectUrl,
+                    ProjectUrl = projectUrl,
                     CreatedTime = DateTime.UtcNow.AddHours(7)
                 };
             }
 
             return gitLabInfo;
         }
+
+        private async Task<GitLabInfo> GetExistingGitLabInfo(Activity activity, string formatedProjectUrl)
+            => await _dbContext.GitLabInfo
+                .AsNoTracking()
+                .FirstOrDefaultAsync(info =>
+                    info.ConversationId == activity.Conversation.Id &&
+                    formatedProjectUrl.Contains(info.ProjectUrl));
 
         public async Task HandlePushEventAsync(PushEvent pushEvent)
         {
@@ -131,7 +163,8 @@
                 .Replace("https://", string.Empty);
 
             var gitlabInfos = _dbContext.GitLabInfo.Where(
-                info => projectUrl.Contains(info.ProjectUrl));
+                    info => projectUrl.Contains(info.ProjectUrl) &&
+                    info.IsActive);
 
             foreach (var gitlabInfo in gitlabInfos)
             {
@@ -141,8 +174,16 @@
 
         private static string ExtractProjectLink(string projectUrl)
         {
-            var formatedProjectUrl = XElement.Parse(projectUrl)
-                       .Attribute("href").Value;
+            string formatedProjectUrl;
+
+            try
+            {
+                formatedProjectUrl = XElement.Parse(projectUrl).Attribute("href").Value;
+            }
+            catch
+            {
+                formatedProjectUrl = string.Empty;
+            }
 
             if (string.IsNullOrEmpty(formatedProjectUrl))
             {
