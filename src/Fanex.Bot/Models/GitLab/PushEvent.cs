@@ -1,6 +1,5 @@
 ﻿namespace Fanex.Bot.Models.GitLab
 {
-    using System;
     using System.Collections.Generic;
     using Newtonsoft.Json;
 

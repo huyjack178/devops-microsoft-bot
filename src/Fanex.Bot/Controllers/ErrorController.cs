@@ -1,22 +1,21 @@
 ﻿namespace Fanex.Bot.Controllers
 {
-    using Fanex.Bot.Dialogs;
+    using Fanex.Bot.Utilitites.Bot;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using NLog.Web;
 
     [Produces("application/json")]
     [Route("api/Error")]
     public class ErrorController : Controller
     {
-        private readonly IDialog _dialog;
+        private readonly IConversation _conversation;
         private readonly ILogger<ErrorController> _logger;
 
-        public ErrorController(IDialog dialog, ILogger<ErrorController> logger)
+        public ErrorController(IConversation conversation, ILogger<ErrorController> logger)
         {
-            _dialog = dialog;
+            _conversation = conversation;
             _logger = logger;
         }
 
@@ -29,7 +28,7 @@
                 var exceptionThatOccurred = exceptionFeature.Error;
                 _logger.LogError(exceptionThatOccurred, "Stopped program because of exception");
 
-                _dialog.SendAdminAsync(exceptionThatOccurred.ToString());
+                _conversation.SendAdminAsync(exceptionThatOccurred.ToString());
             }
 
             return Ok();

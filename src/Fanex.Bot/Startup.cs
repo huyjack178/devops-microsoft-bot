@@ -2,20 +2,18 @@
 {
     using System;
     using System.Linq;
-    using System.Net;
     using Fanex.Bot.Dialogs;
     using Fanex.Bot.Dialogs.Impl;
     using Fanex.Bot.Filters;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
     using Fanex.Bot.Utilitites;
+    using Fanex.Bot.Utilitites.Bot;
     using Hangfire;
     using Hangfire.Dashboard;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -37,34 +35,15 @@
 
             services.AddHangfire(config =>
                 config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
-
             services.AddDbContext<BotDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddOptions();
+
             services.AddScoped<GitLabAttribute>();
-            services.AddSingleton<IWebClient>(new JsonWebClient(
-                new Uri(Configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value)));
-            services.AddSingleton<ILogService, LogService>();
-
-            services.AddScoped<IDialog, Dialog>();
-            services.AddScoped<IRootDialog, RootDialog>();
-            services.AddScoped<ILogDialog, LogDialog>();
-            services.AddScoped<IGitLabDialog, GitLabDialog>();
-
-            var credentialProvider = new StaticCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
-                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
-
-            services.AddAuthentication(
-                    options =>
-                    {
-                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    }
-                )
-                .AddBotAuthentication(credentialProvider);
-
-            services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
+            RegisterBotServices(services);
+            RegisterBotDialogs(services);
+            RegisterBotAuthentication(services);
 
             services.AddMvc(options =>
             {
@@ -88,6 +67,39 @@
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseMvc();
+        }
+
+        private void RegisterBotAuthentication(IServiceCollection services)
+        {
+            var credentialProvider = new StaticCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
+                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
+
+            services.AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    }
+                )
+                .AddBotAuthentication(credentialProvider);
+
+            services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
+        }
+
+        private void RegisterBotServices(IServiceCollection services)
+        {
+            services.AddSingleton<IWebClient>(new JsonWebClient(
+                new Uri(Configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value)));
+            services.AddSingleton<ILogService, LogService>();
+        }
+
+        private static void RegisterBotDialogs(IServiceCollection services)
+        {
+            services.AddScoped<IConversation, Conversation>();
+            services.AddScoped<IDialog, Dialog>();
+            services.AddScoped<IRootDialog, RootDialog>();
+            services.AddScoped<ILogDialog, LogDialog>();
+            services.AddScoped<IGitLabDialog, GitLabDialog>();
         }
     }
 }

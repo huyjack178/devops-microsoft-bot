@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
+    using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -15,11 +16,15 @@
 
         public Dialog(
             IConfiguration configuration,
-            BotDbContext dbContext)
+            BotDbContext dbContext,
+            IConversation conversation)
         {
             _configuration = configuration;
             _dbContext = dbContext;
+            Conversation = conversation;
         }
+
+        public IConversation Conversation { get; }
 
         public static string GetCommandMessages()
         {
@@ -37,56 +42,6 @@
                     $"**group** ==> Get your group ID";
         }
 
-        public async Task SendAsync(MessageInfo messageInfo)
-        {
-            ConnectorClient connector = CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
-            var message = CreateMessageActivity(messageInfo);
-
-            try
-            {
-                if (!string.IsNullOrEmpty(messageInfo.Text))
-                {
-                    message.Text = messageInfo.Text;
-                    await connector.Conversations.SendToConversationAsync((Activity)message);
-                }
-            }
-            catch (Exception ex)
-            {
-                await SendAdminAsync(
-                    $"Error happen in client {messageInfo?.ConversationId}\n\n" +
-                    $"Exception: {ex.InnerException.Message}");
-            }
-        }
-
-        public async Task SendAsync(Activity activity, string message, bool notifyAdmin = true)
-        {
-            var connector = CreateConnectorClient(new Uri(activity.ServiceUrl));
-            var reply = activity.CreateReply(message);
-
-            await connector.Conversations.ReplyToActivityAsync(reply);
-
-            if (notifyAdmin)
-            {
-                await SendAdminAsync($"**{activity.From.Name} ({activity.From.Id})** has just sent **" +
-                    $"{activity.Text}** to {activity.Recipient.Name}");
-            }
-        }
-
-        public async Task SendAsync(string conversationId, string message)
-        {
-            var messageInfo = _dbContext.MessageInfo.FirstOrDefault(info => info.ConversationId == conversationId);
-
-            if (messageInfo != null)
-            {
-                messageInfo.Text = message;
-                await SendAsync(messageInfo);
-            }
-            else
-            {
-                await SendAdminAsync($"Error: **{conversationId}** not found");
-            }
-        }
-
         public async Task RegisterMessageInfo(Activity activity)
         {
             var messageInfo = GetMessageInfo(activity);
@@ -95,21 +50,7 @@
 
             if (!isExisted)
             {
-                await SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
-            }
-        }
-
-        public async Task SendAdminAsync(string message)
-        {
-            var adminMessageInfos = _dbContext.MessageInfo.Where(messageInfo => messageInfo.IsAdmin);
-
-            foreach (var adminMessageInfo in adminMessageInfos)
-            {
-                var connector = CreateConnectorClient(new Uri(adminMessageInfo.ServiceUrl));
-                var adminMessage = CreateMessageActivity(adminMessageInfo);
-                adminMessage.Text = message;
-
-                await connector.Conversations.SendToConversationAsync((Activity)adminMessage);
+                await Conversation.SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
             }
         }
 
@@ -153,18 +94,5 @@
                             serviceUrl,
                             _configuration.GetSection("MicrosoftAppId").Value,
                             _configuration.GetSection("MicrosoftAppPassword").Value);
-
-        private static IMessageActivity CreateMessageActivity(MessageInfo messageInfo)
-        {
-            var userAccount = new ChannelAccount(messageInfo.ToId, messageInfo.ToName);
-            var botAccount = new ChannelAccount(messageInfo.FromId, messageInfo.FromName);
-            var message = Activity.CreateMessageActivity();
-            message.ChannelId = messageInfo.ChannelId;
-            message.From = botAccount;
-            message.Recipient = userAccount;
-            message.Conversation = new ConversationAccount(id: messageInfo.ConversationId);
-
-            return message;
-        }
     }
 }

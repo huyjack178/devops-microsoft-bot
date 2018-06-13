@@ -8,6 +8,7 @@
     using System.Xml.Linq;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.GitLab;
+    using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -21,25 +22,26 @@
 
         public GitLabDialog(
            IConfiguration configuration,
-           BotDbContext dbContext)
-           : base(configuration, dbContext)
+           BotDbContext dbContext,
+           IConversation conversation)
+           : base(configuration, dbContext, conversation)
         {
             _dbContext = dbContext;
         }
 
-        public async Task HandleMessageAsync(Activity activity, string message)
+        public async Task HandleMessageAsync(Activity activity, string messageCmd)
         {
-            if (message.StartsWith(AddProjectCmd))
+            if (messageCmd.StartsWith(AddProjectCmd))
             {
-                await AddProjectAsync(activity, message);
+                await AddProjectAsync(activity, messageCmd);
             }
-            else if (message.StartsWith(RemoveProjectCmd))
+            else if (messageCmd.StartsWith(RemoveProjectCmd))
             {
-                await DisableProjectAsync(activity, message);
+                await DisableProjectAsync(activity, messageCmd);
             }
             else
             {
-                await SendAsync(activity, GetCommandMessages());
+                await Conversation.SendAsync(activity, GetCommandMessages());
             }
         }
 
@@ -49,7 +51,7 @@
 
             if (string.IsNullOrEmpty(projectUrl))
             {
-                await SendAsync(activity, "Please input project url");
+                await Conversation.SendAsync(activity, "Please input project url");
                 return;
             }
 
@@ -58,7 +60,7 @@
             gitLabInfo.IsActive = true;
 
             await SaveGitLabInfoAsync(gitLabInfo);
-            await SendAsync(activity, $"You will receive notification of project **{projectUrl}**");
+            await Conversation.SendAsync(activity, $"You will receive notification of project **{projectUrl}**");
         }
 
         private async Task DisableProjectAsync(Activity activity, string message)
@@ -67,7 +69,7 @@
 
             if (string.IsNullOrEmpty(projectUrl))
             {
-                await SendAsync(activity, "Please input project url");
+                await Conversation.SendAsync(activity, "Please input project url");
                 return;
             }
 
@@ -75,13 +77,13 @@
 
             if (gitLabInfo == null)
             {
-                await SendAsync(activity, "Project not found");
+                await Conversation.SendAsync(activity, "Project not found");
                 return;
             }
 
             gitLabInfo.IsActive = false;
             await SaveGitLabInfoAsync(gitLabInfo);
-            await SendAsync(activity, $"You will not receive notification of project **{projectUrl}**");
+            await Conversation.SendAsync(activity, $"You will not receive notification of project **{projectUrl}**");
         }
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)
@@ -168,7 +170,7 @@
 
             foreach (var gitlabInfo in gitlabInfos)
             {
-                await SendAsync(gitlabInfo.ConversationId, message);
+                await Conversation.SendAsync(gitlabInfo.ConversationId, message);
             }
         }
 

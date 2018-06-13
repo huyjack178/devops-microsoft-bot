@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs;
+    using Fanex.Bot.Utilitites.Bot;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Connector;
@@ -13,17 +14,20 @@
         private readonly IRootDialog _rootDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
+        private readonly IConversation _conversation;
 
         public MessagesController(
             IDialog dialog,
             IRootDialog rootDialog,
             ILogDialog logDialog,
-            IGitLabDialog gitLabDialog)
+            IGitLabDialog gitLabDialog,
+             IConversation conversation)
         {
             _dialog = dialog;
             _rootDialog = rootDialog;
             _logDialog = logDialog;
             _gitLabDialog = gitLabDialog;
+            _conversation = conversation;
         }
 
         [Authorize(Roles = "Bot")]
@@ -39,7 +43,7 @@
                 case ActivityTypes.ConversationUpdate:
                 case ActivityTypes.InstallationUpdate:
                 case ActivityTypes.ContactRelationUpdate:
-                    await _dialog.SendAsync(activity, $"Hello. I am SkyNex.", notifyAdmin: false);
+                    await _conversation.SendAsync(activity, $"Hello. I am SkyNex.");
                     break;
 
                 case ActivityTypes.EndOfConversation:
@@ -55,7 +59,7 @@
 
         private async Task HandleMessageCommands(Activity activity)
         {
-            var message = activity.Text.ToLowerInvariant();
+            var message = activity.Text.ToLowerInvariant().Trim();
             message = GenerateMessage(message);
 
             if (message.StartsWith("log"))

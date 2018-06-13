@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
+    using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.Extensions.Configuration;
 
@@ -9,24 +10,25 @@
     {
         public RootDialog(
           IConfiguration configuration,
-          BotDbContext dbContext)
-          : base(configuration, dbContext)
+          BotDbContext dbContext,
+           IConversation conversation)
+          : base(configuration, dbContext, conversation)
         {
         }
 
-        public async Task HandleMessageAsync(Activity activity, string message)
+        public async Task HandleMessageAsync(Activity activity, string messageCmd)
         {
-            if (message.StartsWith("group"))
+            if (messageCmd.StartsWith("group"))
             {
-                await SendAsync(activity, $"Your group id is: {activity.Conversation.Id}", notifyAdmin: false);
+                await Conversation.SendAsync(activity, $"Your group id is: {activity.Conversation.Id}");
             }
-            else if (message.StartsWith("help"))
+            else if (messageCmd.StartsWith("help"))
             {
-                await SendAsync(activity, GetCommandMessages(), notifyAdmin: false);
+                await Conversation.SendAsync(activity, GetCommandMessages());
             }
             else
             {
-                await SendAsync(activity, "Please send **help** to get my commands", notifyAdmin: false);
+                await Conversation.SendAsync(activity, "Please send **help** to get my commands");
             }
         }
     }
