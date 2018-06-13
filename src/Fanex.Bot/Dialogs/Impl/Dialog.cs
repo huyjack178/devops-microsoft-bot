@@ -42,7 +42,7 @@
                     $"**group** ==> Get your group ID";
         }
 
-        public async Task RegisterMessageInfo(Activity activity)
+        public async Task RegisterMessageInfo(IMessageActivity activity)
         {
             var messageInfo = GetMessageInfo(activity);
 
@@ -54,7 +54,7 @@
             }
         }
 
-        protected MessageInfo GetMessageInfo(Activity activity)
+        protected MessageInfo GetMessageInfo(IMessageActivity activity)
         {
             var messageInfo = _dbContext.MessageInfo.FirstOrDefault(e => e.ConversationId == activity.Conversation.Id);
 
@@ -88,11 +88,5 @@
 
         private bool ExistMessageInfo(MessageInfo messageInfo)
             => _dbContext.MessageInfo.Any(e => e.ConversationId == messageInfo.ConversationId);
-
-        protected ConnectorClient CreateConnectorClient(Uri serviceUrl)
-            => new ConnectorClient(
-                            serviceUrl,
-                            _configuration.GetSection("MicrosoftAppId").Value,
-                            _configuration.GetSection("MicrosoftAppPassword").Value);
     }
 }

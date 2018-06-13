@@ -21,10 +21,10 @@
             _dbContext = dbContext;
         }
 
-        public async Task SendAsync(Activity activity, string message)
+        public async Task SendAsync(IMessageActivity activity, string message)
         {
             var connector = CreateConnectorClient(new Uri(activity.ServiceUrl));
-            var reply = activity.CreateReply(message);
+            var reply = (activity as Activity).CreateReply(message);
 
             await connector.Conversations.ReplyToActivityAsync(reply);
         }

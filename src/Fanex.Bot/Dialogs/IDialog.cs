@@ -8,6 +8,6 @@
     {
         IConversation Conversation { get; }
 
-        Task RegisterMessageInfo(Activity activity);
+        Task RegisterMessageInfo(IMessageActivity activity);
     }
 }

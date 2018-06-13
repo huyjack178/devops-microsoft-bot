@@ -31,7 +31,7 @@
             _dbContext = dbContext;
         }
 
-        public async Task HandleMessageAsync(Activity activity, string message)
+        public async Task HandleMessageAsync(IMessageActivity activity, string message)
         {
             if (message.StartsWith("log add"))
             {
@@ -95,7 +95,7 @@
             }
         }
 
-        public async Task StartNotifyingLogAsync(Activity activity)
+        public async Task StartNotifyingLogAsync(IMessageActivity activity)
         {
             var logInfo = GetLogInfo(activity);
             logInfo.IsActive = true;
@@ -121,7 +121,7 @@
             }
         }
 
-        public async Task StopNotifyingLogAsync(Activity activity)
+        public async Task StopNotifyingLogAsync(IMessageActivity activity)
         {
             var logInfo = GetLogInfo(activity);
             logInfo.IsActive = false;
@@ -130,7 +130,7 @@
             await Conversation.SendAsync(activity, "Log will not be sent to you more!");
         }
 
-        public async Task RemoveLogCategoriesAsync(Activity activity, string logCategories)
+        public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string logCategories)
         {
             var logCategoryList = logCategories.Split(";");
             var logInfo = GetLogInfo(activity);
@@ -143,7 +143,7 @@
             await Conversation.SendAsync(activity, $"You will not receive log with categories contain **[{logCategories}]**");
         }
 
-        public async Task AddLogCategoriesAsync(Activity activity, string logCategories)
+        public async Task AddLogCategoriesAsync(IMessageActivity activity, string logCategories)
         {
             var isDisableAddCategories = Convert.ToBoolean(_configuration.GetSection("LogInfo")?.GetSection("DisableAddCategories")?.Value);
 
@@ -160,7 +160,7 @@
             await Conversation.SendAsync(activity, $"You will receive log with categories contain **[{logCategories}]**");
         }
 
-        public async Task GetLogInfoAsync(Activity activity)
+        public async Task GetLogInfoAsync(IMessageActivity activity)
         {
             var logInfo = GetLogInfo(activity);
 
@@ -172,14 +172,14 @@
             await Conversation.SendAsync(activity, message);
         }
 
-        public async Task GetLogDetailAsync(Activity activity, string logId)
+        public async Task GetLogDetailAsync(IMessageActivity activity, string logId)
         {
             var logDetail = await _logService.GetErrorLogDetail(Convert.ToInt64(logId));
 
             await Conversation.SendAsync(activity, logDetail.FullMessage);
         }
 
-        public async Task EnableNotifyingLogAllAsync(Activity activity, bool isEnable)
+        public async Task EnableNotifyingLogAllAsync(IMessageActivity activity, bool isEnable)
         {
             if (!CheckAdmin(activity))
             {
@@ -203,7 +203,7 @@
 
         #region Private Methods
 
-        private LogInfo GetLogInfo(Activity activity)
+        private LogInfo GetLogInfo(IMessageActivity activity)
         {
             var logInfo = _dbContext.LogInfo.FirstOrDefault(log => log.ConversationId == activity.Conversation.Id);
 
@@ -230,7 +230,7 @@
             await _dbContext.SaveChangesAsync();
         }
 
-        private bool CheckAdmin(Activity activity)
+        private bool CheckAdmin(IMessageActivity activity)
         {
             var currentConversationId = activity.Conversation.Id;
             var isAdmin = _dbContext.MessageInfo.Any(
@@ -269,7 +269,7 @@
             }
         }
 
-        private async Task SendMissingLogCategoriesMessage(Activity activity)
+        private async Task SendMissingLogCategoriesMessage(IMessageActivity activity)
             => await Conversation.SendAsync(activity, "You need to add [LogCategory], otherwise, you will not get any log info");
 
         #endregion Private Methods

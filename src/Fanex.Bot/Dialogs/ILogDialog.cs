@@ -5,12 +5,12 @@
 
     public interface ILogDialog : IRootDialog
     {
-        Task StartNotifyingLogAsync(Activity activity);
+        Task StartNotifyingLogAsync(IMessageActivity activity);
 
-        Task StopNotifyingLogAsync(Activity activity);
+        Task StopNotifyingLogAsync(IMessageActivity activity);
 
-        Task AddLogCategoriesAsync(Activity activity, string logCategories);
+        Task AddLogCategoriesAsync(IMessageActivity activity, string logCategories);
 
-        Task RemoveLogCategoriesAsync(Activity activity, string logCategories);
+        Task RemoveLogCategoriesAsync(IMessageActivity activity, string logCategories);
     }
 }

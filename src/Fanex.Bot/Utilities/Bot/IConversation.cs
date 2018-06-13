@@ -7,7 +7,7 @@
 
     public interface IConversation
     {
-        Task SendAsync(Activity activity, string message);
+        Task SendAsync(IMessageActivity activity, string message);
 
         Task SendAsync(MessageInfo messageInfo);
 

@@ -16,7 +16,7 @@
         {
         }
 
-        public async Task HandleMessageAsync(Activity activity, string messageCmd)
+        public async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
         {
             if (messageCmd.StartsWith("group"))
             {

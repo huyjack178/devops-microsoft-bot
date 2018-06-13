@@ -57,7 +57,7 @@
             return Ok();
         }
 
-        private async Task HandleMessageCommands(Activity activity)
+        private async Task HandleMessageCommands(IMessageActivity activity)
         {
             var message = activity.Text.ToLowerInvariant().Trim();
             message = GenerateMessage(message);

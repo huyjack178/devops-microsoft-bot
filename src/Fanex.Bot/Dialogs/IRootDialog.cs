@@ -5,6 +5,6 @@
 
     public interface IRootDialog
     {
-        Task HandleMessageAsync(Activity activity, string messageCmd);
+        Task HandleMessageAsync(IMessageActivity activity, string messageCmd);
     }
 }

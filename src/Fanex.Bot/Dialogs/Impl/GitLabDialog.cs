@@ -29,7 +29,7 @@
             _dbContext = dbContext;
         }
 
-        public async Task HandleMessageAsync(Activity activity, string messageCmd)
+        public async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
         {
             if (messageCmd.StartsWith(AddProjectCmd))
             {
@@ -45,7 +45,7 @@
             }
         }
 
-        private async Task AddProjectAsync(Activity activity, string message)
+        private async Task AddProjectAsync(IMessageActivity activity, string message)
         {
             var projectUrl = ExtractProjectLink(message.Replace(AddProjectCmd, string.Empty).Trim());
 
@@ -63,7 +63,7 @@
             await Conversation.SendAsync(activity, $"You will receive notification of project **{projectUrl}**");
         }
 
-        private async Task DisableProjectAsync(Activity activity, string message)
+        private async Task DisableProjectAsync(IMessageActivity activity, string message)
         {
             var projectUrl = ExtractProjectLink(message.Replace(RemoveProjectCmd, string.Empty).Trim());
 
@@ -99,7 +99,7 @@
 
 #pragma warning disable S3994 // URI Parameters should not be strings
 
-        private async Task<GitLabInfo> GetGitLabInfo(Activity activity, string projectUrl)
+        private async Task<GitLabInfo> GetGitLabInfo(IMessageActivity activity, string projectUrl)
         {
             var gitLabInfo = await GetExistingGitLabInfo(activity, projectUrl);
 
@@ -116,7 +116,7 @@
             return gitLabInfo;
         }
 
-        private async Task<GitLabInfo> GetExistingGitLabInfo(Activity activity, string formatedProjectUrl)
+        private async Task<GitLabInfo> GetExistingGitLabInfo(IMessageActivity activity, string formatedProjectUrl)
             => await _dbContext.GitLabInfo
                 .AsNoTracking()
                 .FirstOrDefaultAsync(info =>
