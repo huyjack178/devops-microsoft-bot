@@ -11,7 +11,6 @@
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
 
     public class GitLabDialog : Dialog, IGitLabDialog
     {
@@ -21,10 +20,9 @@
         private readonly BotDbContext _dbContext;
 
         public GitLabDialog(
-           IConfiguration configuration,
            BotDbContext dbContext,
            IConversation conversation)
-           : base(configuration, dbContext, conversation)
+           : base(dbContext, conversation)
         {
             _dbContext = dbContext;
         }
@@ -88,7 +86,7 @@
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)
         {
-            bool existInfo = _dbContext.GitLabInfo.Any(e =>
+            bool existInfo = _dbContext.GitLabInfo.AsNoTracking().Any(e =>
                    e.ConversationId == gitLabInfo.ConversationId &&
                    e.ProjectUrl == gitLabInfo.ProjectUrl);
 

@@ -4,15 +4,13 @@
     using Fanex.Bot.Models;
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
-    using Microsoft.Extensions.Configuration;
 
     public class RootDialog : Dialog, IRootDialog
     {
         public RootDialog(
-          IConfiguration configuration,
           BotDbContext dbContext,
            IConversation conversation)
-          : base(configuration, dbContext, conversation)
+          : base(dbContext, conversation)
         {
         }
 

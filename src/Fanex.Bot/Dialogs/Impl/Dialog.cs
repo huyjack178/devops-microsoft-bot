@@ -7,19 +7,15 @@
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
 
     public class Dialog : IDialog
     {
-        private readonly IConfiguration _configuration;
         private readonly BotDbContext _dbContext;
 
         public Dialog(
-            IConfiguration configuration,
             BotDbContext dbContext,
             IConversation conversation)
         {
-            _configuration = configuration;
             _dbContext = dbContext;
             Conversation = conversation;
         }

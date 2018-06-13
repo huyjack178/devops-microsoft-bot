@@ -22,7 +22,6 @@
             // Arrange
             var message = "group";
             var rootDialog = new RootDialog(
-                _conversationFixture.Configuration,
                 _conversationFixture.BotDbContext,
                 _conversationFixture.Conversation);
 
@@ -44,7 +43,6 @@
             // Arrange
             var message = "help";
             var rootDialog = new RootDialog(
-                _conversationFixture.Configuration,
                 _conversationFixture.BotDbContext,
                 _conversationFixture.Conversation);
 
@@ -77,7 +75,6 @@
             // Arrange
             var message = "any";
             var rootDialog = new RootDialog(
-                _conversationFixture.Configuration,
                 _conversationFixture.BotDbContext,
                 _conversationFixture.Conversation);
 

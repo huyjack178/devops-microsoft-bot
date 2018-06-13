@@ -10,20 +10,17 @@
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        private readonly IDialog _dialog;
         private readonly IRootDialog _rootDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
         private readonly IConversation _conversation;
 
         public MessagesController(
-            IDialog dialog,
             IRootDialog rootDialog,
             ILogDialog logDialog,
             IGitLabDialog gitLabDialog,
              IConversation conversation)
         {
-            _dialog = dialog;
             _rootDialog = rootDialog;
             _logDialog = logDialog;
             _gitLabDialog = gitLabDialog;

@@ -9,8 +9,8 @@
 
         Task StopNotifyingLogAsync(IMessageActivity activity);
 
-        Task AddLogCategoriesAsync(IMessageActivity activity, string logCategories);
+        Task AddLogCategoriesAsync(IMessageActivity activity, string messageCmd);
 
-        Task RemoveLogCategoriesAsync(IMessageActivity activity, string logCategories);
+        Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd);
     }
 }

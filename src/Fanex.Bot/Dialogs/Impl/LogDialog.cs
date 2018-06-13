@@ -20,74 +20,50 @@
         private readonly BotDbContext _dbContext;
 
         public LogDialog(
-            ILogService logService,
             IConfiguration configuration,
+            ILogService logService,
             BotDbContext dbContext,
             IConversation conversation)
-                : base(configuration, dbContext, conversation)
+                : base(dbContext, conversation)
         {
             _configuration = configuration;
             _logService = logService;
             _dbContext = dbContext;
         }
 
-        public async Task HandleMessageAsync(IMessageActivity activity, string message)
+        public async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
         {
-            if (message.StartsWith("log add"))
+            if (messageCmd.StartsWith("log add"))
             {
-                var logCategories = message.Substring(7).Trim();
-
-                if (string.IsNullOrEmpty(logCategories))
-                {
-                    await SendMissingLogCategoriesMessage(activity);
-                    return;
-                }
-
-                await AddLogCategoriesAsync(activity, logCategories);
+                await AddLogCategoriesAsync(activity, messageCmd);
             }
-            else if (message.StartsWith("log remove"))
+            else if (messageCmd.StartsWith("log remove"))
             {
-                var logCategories = message.Substring(10).Trim();
-
-                if (string.IsNullOrEmpty(logCategories))
-                {
-                    await SendMissingLogCategoriesMessage(activity);
-                    return;
-                }
-
-                await RemoveLogCategoriesAsync(activity, logCategories);
+                await RemoveLogCategoriesAsync(activity, messageCmd);
             }
-            else if (message.StartsWith("log viewstatus"))
+            else if (messageCmd.StartsWith("log viewstatus"))
             {
                 await GetLogInfoAsync(activity);
             }
-            else if (message.StartsWith("log start"))
+            else if (messageCmd.StartsWith("log start"))
             {
                 await StartNotifyingLogAsync(activity);
             }
-            else if (message.StartsWith("log stop"))
+            else if (messageCmd.StartsWith("log stop"))
             {
                 await StopNotifyingLogAsync(activity);
             }
-            else if (message.StartsWith("log adminstopall"))
+            else if (messageCmd.StartsWith("log adminstopall"))
             {
                 await EnableNotifyingLogAllAsync(activity, false);
             }
-            else if (message.StartsWith("log adminstartall"))
+            else if (messageCmd.StartsWith("log adminstartall"))
             {
                 await EnableNotifyingLogAllAsync(activity, true);
             }
-            else if (message.StartsWith("log detail"))
+            else if (messageCmd.StartsWith("log detail"))
             {
-                var logId = message.Substring(10).Trim();
-
-                if (string.IsNullOrEmpty(logId))
-                {
-                    await Conversation.SendAsync(activity, "I need [LogId].");
-                    return;
-                }
-
-                await GetLogDetailAsync(activity, logId);
+                await GetLogDetailAsync(activity, messageCmd);
             }
             else
             {
@@ -130,8 +106,16 @@
             await Conversation.SendAsync(activity, "Log will not be sent to you more!");
         }
 
-        public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string logCategories)
+        public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd)
         {
+            var logCategories = messageCmd.Substring(10).Trim();
+
+            if (string.IsNullOrEmpty(logCategories))
+            {
+                await SendMissingLogCategoriesMessage(activity);
+                return;
+            }
+
             var logCategoryList = logCategories.Split(";");
             var logInfo = GetLogInfo(activity);
 
@@ -140,11 +124,20 @@
                 logInfo.LogCategories = logInfo.LogCategories.Replace(logCategory, "");
             }
 
+            await SaveLogInfoAsync(logInfo);
             await Conversation.SendAsync(activity, $"You will not receive log with categories contain **[{logCategories}]**");
         }
 
-        public async Task AddLogCategoriesAsync(IMessageActivity activity, string logCategories)
+        public async Task AddLogCategoriesAsync(IMessageActivity activity, string messageCmd)
         {
+            var logCategories = messageCmd.Substring(7).Trim();
+
+            if (string.IsNullOrEmpty(logCategories))
+            {
+                await SendMissingLogCategoriesMessage(activity);
+                return;
+            }
+
             var isDisableAddCategories = Convert.ToBoolean(_configuration.GetSection("LogInfo")?.GetSection("DisableAddCategories")?.Value);
 
             if (!CheckAdmin(activity) && isDisableAddCategories)
@@ -172,8 +165,16 @@
             await Conversation.SendAsync(activity, message);
         }
 
-        public async Task GetLogDetailAsync(IMessageActivity activity, string logId)
+        public async Task GetLogDetailAsync(IMessageActivity activity, string messageCmd)
         {
+            var logId = messageCmd.Substring(10).Trim();
+
+            if (string.IsNullOrEmpty(logId))
+            {
+                await Conversation.SendAsync(activity, "I need [LogId].");
+                return;
+            }
+
             var logDetail = await _logService.GetErrorLogDetail(Convert.ToInt64(logId));
 
             await Conversation.SendAsync(activity, logDetail.FullMessage);
