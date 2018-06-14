@@ -116,7 +116,7 @@
                 return;
             }
 
-            var logCategoryList = logCategories.Split(";");
+            var logCategoryList = logCategories.Split(';');
             var logInfo = GetLogInfo(activity);
 
             foreach (var logCategory in logCategoryList)
@@ -251,7 +251,7 @@
         {
             var messageInfo = _dbContext.MessageInfo.FirstOrDefault(m => m.ConversationId == logInfo.ConversationId);
             var filterCategories = logInfo
-                                    .LogCategories?.Split(";")
+                                    .LogCategories?.Split(';')
                                     .Where(category => !string.IsNullOrEmpty(category));
 
             var groupErrorLogs = errorLogs.GroupBy(log => new { log.Category.CategoryName, log.Machine.MachineIP });

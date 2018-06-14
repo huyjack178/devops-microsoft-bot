@@ -80,7 +80,7 @@
                     FormattedMessage.Substring(exceptionInfoIndex);
 
                 exceptionInfo = exceptionInfo.Replace(
-                    "EXCEPTION INFO", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+                    "EXCEPTION INFO", string.Empty);
 
                 returnMessage = message + $"{NewLine}**Exception:** {NewLine}{exceptionInfo}";
             }
@@ -124,7 +124,8 @@
 
                 if (browserIndex > 0 && platformIndex > 0)
                 {
-                    browser = FormattedMessage.Substring(browserIndex, platformIndex - browserIndex).Replace("Browser:", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+                    browser = FormattedMessage.Substring(browserIndex, platformIndex - browserIndex)
+                        .Replace("Browser:", string.Empty);
                 }
 
                 var mobileDeviceModelIndex = FormattedMessage.IndexOf("MobileDeviceModel:", browserInfoIndex, StringComparison.InvariantCultureIgnoreCase);
@@ -155,7 +156,8 @@
 
                 if (urlIndex > 0 && urlReferrerIndex > 0)
                 {
-                    requestUrl = FormattedMessage.Substring(urlIndex, urlReferrerIndex - urlIndex).Replace("Url:", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+                    requestUrl = FormattedMessage.Substring(urlIndex, urlReferrerIndex - urlIndex)
+                        .Replace("Url:", string.Empty);
                 }
 
                 returnMessage = message + FormattedMessage.Remove(requestInfoIndex);
