@@ -9,6 +9,7 @@
     using Fanex.Bot.Services;
     using Fanex.Bot.Utilitites.Bot;
     using Hangfire;
+    using Hangfire.Common;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -18,17 +19,20 @@
         private readonly IConfiguration _configuration;
         private readonly ILogService _logService;
         private readonly BotDbContext _dbContext;
+        private readonly IRecurringJobManager _recurringJobManager;
 
         public LogDialog(
             IConfiguration configuration,
             ILogService logService,
             BotDbContext dbContext,
-            IConversation conversation)
+            IConversation conversation,
+            IRecurringJobManager recurringJobManager)
                 : base(dbContext, conversation)
         {
             _configuration = configuration;
             _logService = logService;
             _dbContext = dbContext;
+            _recurringJobManager = recurringJobManager;
         }
 
         public async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
@@ -71,63 +75,6 @@
             }
         }
 
-        public async Task StartNotifyingLogAsync(IMessageActivity activity)
-        {
-            var logInfo = GetLogInfo(activity);
-            logInfo.IsActive = true;
-            await SaveLogInfoAsync(logInfo);
-            await RegisterMessageInfo(activity);
-
-            RecurringJob.AddOrUpdate("NotifyLogPeriodically", () => GetAndSendLogAsync(), Cron.Minutely);
-
-            await Conversation.SendAsync(activity, "Log will be sent to you soon!");
-        }
-
-        public async Task GetAndSendLogAsync()
-        {
-            var logInfos = _dbContext.LogInfo.ToList();
-            var errorLogs = await _logService.GetErrorLogs();
-
-            foreach (var logInfo in logInfos)
-            {
-                if (logInfo.IsActive)
-                {
-                    await SendLogAsync(errorLogs, logInfo);
-                }
-            }
-        }
-
-        public async Task StopNotifyingLogAsync(IMessageActivity activity)
-        {
-            var logInfo = GetLogInfo(activity);
-            logInfo.IsActive = false;
-            await SaveLogInfoAsync(logInfo);
-
-            await Conversation.SendAsync(activity, "Log will not be sent to you more!");
-        }
-
-        public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd)
-        {
-            var logCategories = messageCmd.Substring(10).Trim();
-
-            if (string.IsNullOrEmpty(logCategories))
-            {
-                await SendMissingLogCategoriesMessage(activity);
-                return;
-            }
-
-            var logCategoryList = logCategories.Split(';');
-            var logInfo = GetLogInfo(activity);
-
-            foreach (var logCategory in logCategoryList)
-            {
-                logInfo.LogCategories = logInfo.LogCategories.Replace(logCategory, "");
-            }
-
-            await SaveLogInfoAsync(logInfo);
-            await Conversation.SendAsync(activity, $"You will not receive log with categories contain **[{logCategories}]**");
-        }
-
         public async Task AddLogCategoriesAsync(IMessageActivity activity, string messageCmd)
         {
             var logCategories = messageCmd.Substring(7).Trim();
@@ -146,16 +93,80 @@
                 return;
             }
 
-            var logInfo = GetLogInfo(activity);
+            var logInfo = await FindOrCreateLogInfoAsync(activity);
             logInfo.LogCategories += $"{logCategories};";
             await SaveLogInfoAsync(logInfo);
 
             await Conversation.SendAsync(activity, $"You will receive log with categories contain **[{logCategories}]**");
         }
 
+        public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd)
+        {
+            var logCategories = messageCmd.Substring(10).Trim();
+
+            if (string.IsNullOrEmpty(logCategories))
+            {
+                await SendMissingLogCategoriesMessage(activity);
+                return;
+            }
+
+            var logCategoryList = logCategories.Split(';');
+            var logInfo = await FindLogInfoAsync(activity);
+
+            if (logInfo == null)
+            {
+                await Conversation.SendAsync(activity, $"You don't have any log categories data");
+                return;
+            }
+
+            foreach (var logCategory in logCategoryList)
+            {
+                logInfo.LogCategories = logInfo.LogCategories.Replace($"{logCategory}", "");
+            }
+
+            await SaveLogInfoAsync(logInfo);
+            await Conversation.SendAsync(activity, $"You will not receive log with categories contain **[{logCategories}]**");
+        }
+
+        public async Task StartNotifyingLogAsync(IMessageActivity activity)
+        {
+            var logInfo = await FindOrCreateLogInfoAsync(activity);
+            logInfo.IsActive = true;
+            await SaveLogInfoAsync(logInfo);
+            await RegisterMessageInfo(activity);
+
+            _recurringJobManager.AddOrUpdate(
+                "NotifyLogPeriodically", Job.FromExpression(() => GetAndSendLogAsync()), Cron.Minutely());
+
+            await Conversation.SendAsync(activity, "Log will be sent to you soon!");
+        }
+
+        public async Task StopNotifyingLogAsync(IMessageActivity activity)
+        {
+            var logInfo = await FindOrCreateLogInfoAsync(activity);
+            logInfo.IsActive = false;
+            await SaveLogInfoAsync(logInfo);
+
+            await Conversation.SendAsync(activity, "Log will not be sent to you more!");
+        }
+
+        public async Task GetAndSendLogAsync()
+        {
+            var logInfos = _dbContext.LogInfo.ToList();
+            var errorLogs = await _logService.GetErrorLogs();
+
+            foreach (var logInfo in logInfos)
+            {
+                if (logInfo.IsActive)
+                {
+                    await SendLogAsync(errorLogs, logInfo);
+                }
+            }
+        }
+
         public async Task GetLogInfoAsync(IMessageActivity activity)
         {
-            var logInfo = GetLogInfo(activity);
+            var logInfo = await FindOrCreateLogInfoAsync(activity);
 
             var message = $"Your log status \n\n" +
                 $"**Log Categories:** [{logInfo.LogCategories}]\n\n";
@@ -204,9 +215,9 @@
 
         #region Private Methods
 
-        private LogInfo GetLogInfo(IMessageActivity activity)
+        private async Task<LogInfo> FindOrCreateLogInfoAsync(IMessageActivity activity)
         {
-            var logInfo = _dbContext.LogInfo.FirstOrDefault(log => log.ConversationId == activity.Conversation.Id);
+            var logInfo = await FindLogInfoAsync(activity);
 
             if (logInfo == null)
             {
@@ -221,6 +232,11 @@
 
             return logInfo;
         }
+
+        private async Task<LogInfo> FindLogInfoAsync(IMessageActivity activity)
+        => await _dbContext
+            .LogInfo
+            .FirstOrDefaultAsync(log => log.ConversationId == activity.Conversation.Id);
 
         private async Task SaveLogInfoAsync(LogInfo logInfo)
         {

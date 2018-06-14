@@ -91,6 +91,7 @@
             services.AddSingleton<IWebClient>(new JsonWebClient(
                 new Uri(Configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value)));
             services.AddSingleton<ILogService, LogService>();
+            services.AddSingleton<IRecurringJobManager, RecurringJobManager>();
         }
 
         private static void RegisterBotDialogs(IServiceCollection services)

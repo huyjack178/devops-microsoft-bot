@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.Tests.Dialogs
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs;
@@ -21,8 +22,8 @@
         {
             _conversationFixture = conversationFixture;
             _gitLabDialog = new GitLabDialog(
-               _conversationFixture.BotDbContext,
-               _conversationFixture.Conversation);
+                _conversationFixture.MockDbContext(),
+                _conversationFixture.Conversation);
         }
 
         [Fact]
@@ -40,6 +41,26 @@
                 .Conversation
                 .Received()
                 .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please input project url"));
+        }
+
+        [Theory]
+        [InlineData("http://gitlab.nexdev.vn")]
+        [InlineData("https://gitlab.nexdev.vn")]
+        [InlineData("<a href='https://gitlab.nexdev.vn'></a>")]
+        public async Task HandleMessageAsync_AddProject_ParseProjectUrl_SendMessage(string projectUrl)
+        {
+            // Arrange
+            var message = $"gitlab addproject {projectUrl}";
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "1332433" });
+
+            // Act
+            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+
+            // Assert
+            await _conversationFixture
+                .Conversation
+                .Received()
+                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will receive notification of project **gitlab.nexdev.vn**"));
         }
 
         [Fact]
@@ -150,6 +171,61 @@
                 .Conversation
                 .Received()
                 .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will not receive notification of project **gitlab.nexdev.vn/Bot**"));
+        }
+
+        [Fact]
+        public async Task HandlePushEventAsync_MasterBranch_HasGitLabInfo_SendPushMessageMessage()
+        {
+            // Arrange
+            var botDbContext = _conversationFixture.MockDbContext();
+            botDbContext.GitLabInfo.Add(
+                new GitLabInfo
+                {
+                    ConversationId = "33",
+                    ProjectUrl = "gitlab.nexdev.vn/bot",
+                    IsActive = true
+                });
+            await botDbContext.SaveChangesAsync();
+            var pushEvent = new PushEvent
+            {
+                Project = new Project { WebUrl = "http://gitlab.nexdev.vn/Bot" },
+                Commits = new List<Commit> {
+                    new Commit {
+                        Author = new Author { Name = "Harrison" },
+                        Id = "12345678910",
+                        Message = "Push Master" }
+                },
+                Ref = "heads/master"
+            };
+
+            // Act
+            await _gitLabDialog.HandlePushEventAsync(pushEvent);
+
+            // Assert
+            var expectedMessage = "**GitLab Master Branch Change** (bell)\n\n" +
+                "**Repository:** http://gitlab.nexdev.vn/Bot\n\n" +
+                "**Commit:** [12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910)\n\n" +
+                "**Message:** Push Master\n\n" +
+                "**Author:** Harrison\n\n" +
+                "--------------\n\n";
+            await _conversationFixture.Conversation.Received().SendAsync("33", Arg.Is(expectedMessage));
+        }
+
+        [Fact]
+        public async Task HandleMessageAsync_AnyMessage__SendCommandMessage()
+        {
+            // Arrange
+            var message = "gitlab";
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "34" });
+
+            // Act
+            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+
+            // Assert
+            await _conversationFixture
+                .Conversation
+                .Received()
+                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
         }
     }
 }

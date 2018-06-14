@@ -50,23 +50,10 @@
             await rootDialog.HandleMessageAsync(_conversationFixture.Activity, message);
 
             // Assert
-            var commandMessage = $"Skynex's available commands:{Constants.NewLine}" +
-                    $"**log add [Contains-LogCategory]** " +
-                        $"==> Register to get log which has category name **contains [Contains-LogCategory]**. " +
-                        $"Example: log add Alpha;NAP {Constants.NewLine}" +
-                    $"**log remove [LogCategory]**{Constants.NewLine}" +
-                    $"**log start** ==> Start receiving logs{Constants.NewLine}" +
-                    $"**log stop** ==> Stop receiving logs{Constants.NewLine}" +
-                    $"**log detail [LogId] (BETA)** ==> Get log detail{Constants.NewLine}" +
-                    $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
-                    $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +
-                    $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{Constants.NewLine}" +
-                    $"**group** ==> Get your group ID";
-
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(commandMessage));
+                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
         }
 
         [Fact]

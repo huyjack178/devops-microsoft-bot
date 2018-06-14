@@ -1,7 +1,10 @@
 ﻿namespace Fanex.Bot.Tests.Fixtures
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Fanex.Bot.Models;
+    using Fanex.Bot.Models.Log;
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
@@ -14,8 +17,8 @@
         {
             Configuration = Substitute.For<IConfiguration>();
             Conversation = Substitute.For<IConversation>();
-            Activity = MockActivity();
             BotDbContext = MockDbContext();
+            Activity = MockActivity();
         }
 
         public IConfiguration Configuration { get; private set; }
@@ -25,6 +28,20 @@
         public IConversation Conversation { get; private set; }
 
         public IMessageActivity Activity { get; private set; }
+
+        public string CommandMessage { get; }
+            = $"Skynex's available commands:{Constants.NewLine}" +
+                $"**log add [Contains-LogCategory]** " +
+                    $"==> Register to get log which has category name **contains [Contains-LogCategory]**. " +
+                    $"Example: log add Alpha;NAP {Constants.NewLine}" +
+                $"**log remove [LogCategory]**{Constants.NewLine}" +
+                $"**log start** ==> Start receiving logs{Constants.NewLine}" +
+                $"**log stop** ==> Stop receiving logs{Constants.NewLine}" +
+                $"**log detail [LogId] (BETA)** ==> Get log detail{Constants.NewLine}" +
+                $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
+                $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +
+                $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{Constants.NewLine}" +
+                $"**group** ==> Get your group ID";
 
         public void Dispose()
         {
@@ -37,7 +54,6 @@
             if (disposing)
             {
                 Configuration = null;
-                BotDbContext.Dispose();
                 Conversation = null;
             }
         }
@@ -58,8 +74,62 @@
         {
             var builder = new DbContextOptionsBuilder<BotDbContext>().UseInMemoryDatabase("memcache");
             var botDbContext = new BotDbContext(builder.Options);
-
             return botDbContext;
+        }
+
+        public void InitDbContextData()
+        {
+            var dbContext = MockDbContext();
+            var mesageInfo = CreateMessageInfo();
+
+            foreach (var info in mesageInfo)
+            {
+                var existMessageInfo = dbContext.MessageInfo.Any(e => e.ConversationId == info.ConversationId);
+                dbContext.Entry(info).State = existMessageInfo ? EntityState.Modified : EntityState.Added;
+                dbContext.SaveChanges();
+            }
+
+            var logInfo = CreateLogInfo();
+
+            foreach (var info in logInfo)
+            {
+                var existLogInfo = dbContext.LogInfo.Any(e => e.ConversationId == info.ConversationId);
+                dbContext.Entry(info).State = existLogInfo ? EntityState.Modified : EntityState.Added;
+                dbContext.SaveChanges();
+            }
+        }
+
+        private static List<MessageInfo> CreateMessageInfo()
+        {
+            return new List<MessageInfo>
+            {
+                new MessageInfo
+                {
+                    ConversationId = "1",
+                    IsAdmin = true,
+                    ToId = "123",
+                    ChannelId = "group"
+                },
+                new MessageInfo
+                {
+                    ConversationId = "2",
+                    IsAdmin = true,
+                    ToId = "2",
+                    ChannelId = "personal"
+                }
+            };
+        }
+
+        private static List<LogInfo> CreateLogInfo()
+        {
+            return new List<LogInfo>
+            {
+                new LogInfo
+                {
+                    ConversationId = "10",
+                    LogCategories = "nap;alpha"
+                }
+            };
         }
     }
 }
