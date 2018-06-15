@@ -212,7 +212,7 @@
         }
 
         [Fact]
-        public async Task HandleMessageAsync_AnyMessage__SendCommandMessage()
+        public async Task HandleMessageAsync_AnyMessage_SendCommandMessage()
         {
             // Arrange
             var message = "gitlab";

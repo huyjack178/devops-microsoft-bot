@@ -17,7 +17,10 @@
             _webClient = webClient;
         }
 
-        public async Task<IEnumerable<Log>> GetErrorLogs(DateTime? fromDate = null, DateTime? toDate = null, bool isProduction = true)
+        public async Task<IEnumerable<Log>> GetErrorLogs(
+            DateTime? fromDate = null,
+            DateTime? toDate = null,
+            bool isProduction = true)
         {
             var errorLogs = await _webClient.PostAsync<GetLogFormData, IEnumerable<Log>>("PublicLog/Logs", new GetLogFormData
             {

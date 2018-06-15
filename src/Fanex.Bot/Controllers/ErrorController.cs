@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.Controllers
 {
+    using System.Threading.Tasks;
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
@@ -19,7 +20,7 @@
             _logger = logger;
         }
 
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var exceptionFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
@@ -27,8 +28,9 @@
             {
                 var exceptionThatOccurred = exceptionFeature.Error;
                 _logger.LogError(exceptionThatOccurred, "Stopped program because of exception");
+                await _conversation.SendAdminAsync(exceptionThatOccurred.ToString());
 
-                _conversation.SendAdminAsync(exceptionThatOccurred.ToString());
+                return Forbid();
             }
 
             return Ok();

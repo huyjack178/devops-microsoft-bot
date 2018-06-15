@@ -55,6 +55,10 @@
             {
                 Configuration = null;
                 Conversation = null;
+                BotDbContext.MessageInfo = null;
+                BotDbContext.GitLabInfo = null;
+                BotDbContext.LogInfo = null;
+                BotDbContext.SaveChanges();
             }
         }
 
@@ -70,9 +74,9 @@
             return activity;
         }
 
-        public BotDbContext MockDbContext()
+        public BotDbContext MockDbContext(string name = "memcache")
         {
-            var builder = new DbContextOptionsBuilder<BotDbContext>().UseInMemoryDatabase("memcache");
+            var builder = new DbContextOptionsBuilder<BotDbContext>().UseInMemoryDatabase(name);
             var botDbContext = new BotDbContext(builder.Options);
             return botDbContext;
         }

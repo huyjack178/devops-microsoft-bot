@@ -40,11 +40,12 @@
                 case ActivityTypes.ConversationUpdate:
                 case ActivityTypes.InstallationUpdate:
                 case ActivityTypes.ContactRelationUpdate:
-                    await _conversation.SendAsync(activity, $"Hello. I am SkyNex.");
+                    await _conversation.SendAsync(activity, "Hello. I am SkyNex.");
                     break;
 
                 case ActivityTypes.EndOfConversation:
                     // TODO: Remove message info
+                    await _conversation.SendAsync(activity, "See you again!");
                     break;
 
                 default:

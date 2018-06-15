@@ -266,6 +266,12 @@
         private async Task SendLogAsync(IEnumerable<Log> errorLogs, LogInfo logInfo)
         {
             var messageInfo = _dbContext.MessageInfo.FirstOrDefault(m => m.ConversationId == logInfo.ConversationId);
+
+            if (messageInfo == null)
+            {
+                return;
+            }
+
             var filterCategories = logInfo
                                     .LogCategories?.Split(';')
                                     .Where(category => !string.IsNullOrEmpty(category));

@@ -30,9 +30,11 @@
             var requestInfoIndex = FormattedMessage.IndexOf("REQUEST INFO", StringComparison.InvariantCultureIgnoreCase);
             var isNotNewLogType = requestInfoIndex < 0;
 
-            if (isNotNewLogType && FormattedMessage.Length > 400)
+            if (isNotNewLogType)
             {
-                return FormatAll(FormattedMessage.Substring(0, 400));
+                return FormattedMessage.Length > 400 ?
+                    FormatAll(FormattedMessage.Substring(0, 400)) :
+                    FormatAll(FormattedMessage);
             }
 
             var message = string.Empty;
