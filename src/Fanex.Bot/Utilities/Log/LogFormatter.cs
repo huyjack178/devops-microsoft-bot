@@ -5,7 +5,7 @@
 
     public static class LogFormatter
     {
-        public static string FormatRequestInfo(string rawMessage)
+        public static string FormatRequestInfo(string rawMessage, LogCategory category)
         {
             var requestInfoIndex = rawMessage.IndexOf("REQUEST INFO", StringComparison.InvariantCultureIgnoreCase);
             var returnMessage = string.Empty;
@@ -23,7 +23,8 @@
                 }
 
                 returnMessage = rawMessage.Remove(requestInfoIndex);
-                returnMessage += $"{Constants.NewLine}**Request:** {requestUrl}";
+                returnMessage += $"{Constants.NewLine}**Request:** " +
+                    $"{CheckAndHideAlphaDomain(requestUrl, category)}";
             }
 
             return returnMessage;
@@ -106,6 +107,20 @@
             }
 
             return returnMessage;
+        }
+
+        public static string CheckAndHideAlphaDomain(string request, LogCategory category)
+        {
+            var hideDomainRequest = request;
+
+            if (category.CategoryName.ToLowerInvariant().Contains("alpha"))
+            {
+                var requestUri = new Uri(request);
+
+                hideDomainRequest = $"http://alpha.site{requestUri.AbsolutePath}";
+            }
+
+            return hideDomainRequest;
         }
     }
 }

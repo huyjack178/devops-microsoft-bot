@@ -45,7 +45,7 @@
         }
 
         [Fact]
-        public void Message_IsNewLogType_GetRequestInfo()
+        public void Message_IsNewLogType_IsNotAlpha_GetRequestInfo()
         {
             // Arrange
             var fixture = new Fixture();
@@ -57,6 +57,23 @@
             // Assert
             var expecteRequestInfo = $"**Request:**" +
                 $"  http://mb.stakecity.com:8072/site-reports/Statement/";
+            Assert.Contains(expecteRequestInfo, log.Message);
+        }
+
+        [Fact]
+        public void Message_IsNewLogType_IsAlpha_GetRequestInfo()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var log = fixture.Create<Log>();
+            log.Category = new LogCategory { CategoryName = "alpha" };
+
+            // Act
+            log.FormattedMessage = GetLogDataTest();
+
+            // Assert
+            var expecteRequestInfo = $"**Request:**" +
+                $" http://alpha.site/site-reports/Statement/";
             Assert.Contains(expecteRequestInfo, log.Message);
         }
 
