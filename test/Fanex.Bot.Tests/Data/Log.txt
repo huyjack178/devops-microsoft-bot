@@ -1,0 +1,108 @@
+﻿Timestamp: 6/18/2018 11:16:37 AM (GMT+7) 
+Message: Timeout expired. The timeout period elapsed prior to completion of the operation or the server is not responding. 
+
+REQUEST INFO 
+Url: http://mb.stakecity.com:8072/site-reports/Statement/ 
+UrlReferrer: https://mb.stakecity.com/site-main/ 
+Form: 
+UserHostAddress: 23.235.227.106 
+InputStream: N/A 
+UserAgent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0 
+Client IP: 23.235.227.106 
+CurrentUICulture: en-US 
+
+BROWSER INFO 
+Browser: Firefox 60.0 (Beta: False) 
+Platform: WinNT 
+Crawler: False 
+EcmaScriptVersion: 3.0 
+MobileDeviceModel: Unknown 
+
+SERVER INFO 
+Server IP: 10.4.27.3 
+MachineName: L66_12 
+OSVersion: Microsoft Windows NT 6.1.7601 Service Pack 1 
+System Time: 6/18/2018 12:16:37 AM 
+User Domain: IIS APPPOOL/Alpha.I1.Reports 
+
+DATABASE INFO 
+Server: 10.40.40.100 
+DbName: DBACC.bodb02.BODBDownlineNet 
+UserID: bodbDownlineNet 
+SpName: Acc_StatementSelTransfer 
+Parameters: @winlostdate=6/17/2018 12:00:00 AM;@custid=26570707 
+Line: 0 
+CommandTimeout: 120 
+
+CUSTOM INFO 
+CustId: 26570707 
+CustName: IX1388 
+SubAccountName: IX1388SUB03 
+AdminName: 
+
+EXCEPTION INFO 
+Source: Fanex.Data.CrossCutting.WrappingException 
+Type: Fanex.Data.CrossCutting.WrappingException.ObjectDbException 
+TargetSite: System.Collections.Generic.IEnumerable`1[TReturn] Query[TReturn](System.Object, System.Data.Common.DbTransaction, Boolean, System.Nullable`1[System.Int32]) 
+Details: Fanex.Data.CrossCutting.WrappingException.ObjectDbException: Timeout expired. The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.Data.SqlClient.SqlException: Timeout expired. The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.ComponentModel.Win32Exception: The wait operation timed out 
+--- End of inner exception stack trace --- 
+at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction) 
+at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose) 
+at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady) 
+at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData() 
+at System.Data.SqlClient.SqlDataReader.get_MetaData() 
+at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString) 
+at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest) 
+at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite) 
+at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method) 
+at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method) 
+at Dapper.SqlMapper.ExecuteReaderWithFlagsFallback(IDbCommand cmd, Boolean wasClosed, CommandBehavior behavior) 
+at Dapper.SqlMapper.d__125`1.MoveNext() 
+at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection) 
+at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source) 
+at Dapper.SqlMapper.Query[T](IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Boolean buffered, Nullable`1 commandTimeout, Nullable`1 commandType) 
+at Fanex.Data.ObjectDb.Query[TReturn](Object parameterSet, DbTransaction transaction, Boolean buffered, Nullable`1 commandTimeout) 
+at Fanex.Data.CrossCutting.WrappingException.WrappingExceptionObjectDb.Query[TReturn](Object parameterSet, DbTransaction transaction, Boolean buffered, Nullable`1 commandTimeout) 
+--- End of inner exception stack trace --- 
+at Fanex.Data.CrossCutting.WrappingException.WrappingExceptionObjectDb.Query[TReturn](Object parameterSet, DbTransaction transaction, Boolean buffered, Nullable`1 commandTimeout) 
+at Fanex.Data.Repository.DynamicRepository.Fetch[T](ICriteria criteria) 
+at Alpha.Reports.Services.StatementServiceImpl.StatementDetails(StatementDetailsParam param) in D:\Builds\UnCompiled\rome\alpha\alpha-reports\src\Alpha.Reports\Services\StatementService.cs:line 58 
+at Alpha.Reports.Site.Handlers.Statement.StatementHandler.Handle(StatementDetailsQuery message) in D:\Builds\UnCompiled\rome\alpha\alpha-reports\src\Alpha.Reports.Site\Handlers\Statement\StatementHandler.cs:line 30 
+at Alpha.Reports.Site.Controllers.ReportBaseController.View[TResponse](IRequest`1 message) in D:\Builds\UnCompiled\rome\alpha\alpha-reports\src\Alpha.Reports.Site\Controllers\ReportBaseController.cs:line 36 
+at lambda_method(Closure , ControllerBase , Object[] ) 
+at System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters) 
+at System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters) 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.b__39(IAsyncResult asyncResult, ActionInvocation innerInvokeState) 
+at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult) 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult) 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.b__3d() 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass46.b__3f() 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass46.b__3f() 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass46.b__3f() 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult) 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass21.<>c__DisplayClass2b.b__1c() 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass21.b__1e(IAsyncResult asyncResult) 
+at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeAction(IAsyncResult asyncResult) 
+at System.Web.Mvc.Controller.b__1d(IAsyncResult asyncResult, ExecuteCoreState innerState) 
+at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) 
+at System.Web.Mvc.Controller.EndExecuteCore(IAsyncResult asyncResult) 
+at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) 
+at System.Web.Mvc.Controller.EndExecute(IAsyncResult asyncResult) 
+at System.Web.Mvc.MvcHandler.b__5(IAsyncResult asyncResult, ProcessRequestState innerState) 
+at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) 
+at System.Web.Mvc.MvcHandler.EndProcessRequest(IAsyncResult asyncResult) 
+at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute() 
+at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously) 
+
+Category: Alpha-MBC-AF 
+Priority: -1 
+EventId: 0 
+Severity: Error 
+Title:Alpha-MBC-AF 
+Machine: L66_12 
+App Domain: /LM/W3SVC/4/ROOT/site-reports-1-131737596891675423 
+ProcessId: 6808 
+Process Name: c:\windows\system32\inetsrv\w3wp.exe 
+Thread Name: 
+Win32 ThreadId:16540 
+Extended Properties:

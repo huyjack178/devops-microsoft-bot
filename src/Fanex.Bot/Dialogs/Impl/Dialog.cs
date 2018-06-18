@@ -40,46 +40,37 @@
 
         public async Task RegisterMessageInfo(IMessageActivity activity)
         {
-            var messageInfo = GetMessageInfo(activity);
-
-            var isExisted = await SaveMessageInfoAsync(messageInfo);
-
-            if (!isExisted)
-            {
-                await Conversation.SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
-            }
-        }
-
-        protected MessageInfo GetMessageInfo(IMessageActivity activity)
-        {
             var messageInfo = _dbContext.MessageInfo.FirstOrDefault(e => e.ConversationId == activity.Conversation.Id);
 
             if (messageInfo == null)
             {
-                messageInfo = new MessageInfo
-                {
-                    ToId = activity.From.Id,
-                    ToName = activity.From.Name,
-                    FromId = activity.Recipient.Id,
-                    FromName = activity.Recipient.Name,
-                    ServiceUrl = activity.ServiceUrl,
-                    ChannelId = activity.ChannelId,
-                    ConversationId = activity.Conversation.Id,
-                    CreatedTime = DateTime.UtcNow.AddHours(7)
-                };
+                messageInfo = InitMessageInfo(activity);
+                await SaveMessageInfoAsync(messageInfo);
+                await Conversation.SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
             }
-
-            return messageInfo;
         }
 
-        protected async Task<bool> SaveMessageInfoAsync(MessageInfo messageInfo)
+        private static MessageInfo InitMessageInfo(IMessageActivity activity)
         {
-            bool existMessageInfo = ExistMessageInfo(messageInfo);
+            return new MessageInfo
+            {
+                ToId = activity.From.Id,
+                ToName = activity.From.Name,
+                FromId = activity.Recipient.Id,
+                FromName = activity.Recipient.Name,
+                ServiceUrl = activity.ServiceUrl,
+                ChannelId = activity.ChannelId,
+                ConversationId = activity.Conversation.Id,
+                CreatedTime = DateTime.UtcNow.AddHours(7)
+            };
+        }
+
+        protected async Task SaveMessageInfoAsync(MessageInfo messageInfo)
+        {
+            var existMessageInfo = ExistMessageInfo(messageInfo);
             _dbContext.Entry(messageInfo).State = existMessageInfo ? EntityState.Modified : EntityState.Added;
 
             await _dbContext.SaveChangesAsync();
-
-            return existMessageInfo;
         }
 
         private bool ExistMessageInfo(MessageInfo messageInfo)

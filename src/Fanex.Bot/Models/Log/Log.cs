@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Models.Log
 {
     using System;
+    using Fanex.Bot.Utilities.Log;
 
     public class Log
     {
@@ -38,10 +39,10 @@
             }
 
             var message = string.Empty;
-            message = FormatRequestInfo(message);
-            message = FormatBrowserInfo(message);
-            message = FormatServerAndDatabaseInfo(message);
-            message = FormatExceptionInfo(message);
+            message += LogFormatter.FormatRequestInfo(FormattedMessage);
+            message += LogFormatter.FormatBrowserInfo(FormattedMessage);
+            message += LogFormatter.FormatServerAndDatabaseInfo(FormattedMessage, Machine);
+            message += LogFormatter.FormatExceptionInfo(FormattedMessage);
 
             return FormatAll(message);
         }
@@ -64,109 +65,6 @@
                     $"**#Log Id**: {LogId} " +
                     $"**Count**: {NumMessage}{NewLine}{NewLine}" +
                     $"===================================={NewLine}";
-        }
-
-        private string FormatExceptionInfo(string message)
-        {
-            var exceptionInfoIndex = FormattedMessage.IndexOf("EXCEPTION INFO", StringComparison.InvariantCultureIgnoreCase);
-            var returnMessage = string.Empty;
-
-            if (exceptionInfoIndex > 0)
-            {
-                var detailsIndex = FormattedMessage.IndexOf(
-                    "Details:", exceptionInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var exceptionInfo = string.Empty;
-
-                exceptionInfo = detailsIndex > 0 ?
-                    FormattedMessage.Substring(exceptionInfoIndex, detailsIndex - exceptionInfoIndex) :
-                    FormattedMessage.Substring(exceptionInfoIndex);
-
-                exceptionInfo = exceptionInfo.Replace(
-                    "EXCEPTION INFO", string.Empty);
-
-                returnMessage = message + $"{NewLine}**Exception:** {NewLine}{exceptionInfo}";
-            }
-
-            return returnMessage;
-        }
-
-        private string FormatServerAndDatabaseInfo(string message)
-        {
-            var returnMessage = message + $"{NewLine}**Server:** {Machine.MachineName} ({Machine.MachineIP})";
-
-            var databaseInfoIndex = FormattedMessage.IndexOf("DATABASE INFO", StringComparison.InvariantCultureIgnoreCase);
-
-            if (databaseInfoIndex > 0)
-            {
-                var serverIndex = FormattedMessage.IndexOf("Server:", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var parameterIndex = FormattedMessage.IndexOf("Parameters:", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var databaseInfo = "No information";
-
-                if (serverIndex > 0 && parameterIndex > 0)
-                {
-                    databaseInfo = FormattedMessage.Substring(serverIndex, parameterIndex - serverIndex);
-                }
-
-                returnMessage += $"{NewLine}**Database:**{NewLine}{databaseInfo}";
-            }
-
-            return returnMessage;
-        }
-
-        private string FormatBrowserInfo(string message)
-        {
-            var browserInfoIndex = FormattedMessage.IndexOf("BROWSER INFO", StringComparison.InvariantCultureIgnoreCase);
-            var returnMessage = string.Empty;
-
-            if (browserInfoIndex > 0)
-            {
-                var browserIndex = FormattedMessage.IndexOf("Browser:", browserInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var platformIndex = FormattedMessage.IndexOf("Platform:", browserInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var browser = "No information";
-
-                if (browserIndex > 0 && platformIndex > 0)
-                {
-                    browser = FormattedMessage.Substring(browserIndex, platformIndex - browserIndex)
-                        .Replace("Browser:", string.Empty);
-                }
-
-                var mobileDeviceModelIndex = FormattedMessage.IndexOf("MobileDeviceModel:", browserInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var serverInfoIndex = FormattedMessage.IndexOf("SERVER INFO", StringComparison.InvariantCultureIgnoreCase);
-                var mobileDeviceModel = "MobileDeviceModel: No infomation";
-
-                if (mobileDeviceModelIndex > 0 && serverInfoIndex > 0)
-                {
-                    mobileDeviceModel = FormattedMessage.Substring(mobileDeviceModelIndex, serverInfoIndex - mobileDeviceModelIndex);
-                }
-
-                returnMessage = message + $"{NewLine}**Browser:** {browser} {mobileDeviceModel}";
-            }
-
-            return returnMessage;
-        }
-
-        private string FormatRequestInfo(string message)
-        {
-            var requestInfoIndex = FormattedMessage.IndexOf("REQUEST INFO", StringComparison.InvariantCultureIgnoreCase);
-            var returnMessage = string.Empty;
-
-            if (requestInfoIndex > 0)
-            {
-                var urlIndex = FormattedMessage.IndexOf("Url:", requestInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var urlReferrerIndex = FormattedMessage.IndexOf("UrlReferrer:", requestInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var requestUrl = "No information";
-
-                if (urlIndex > 0 && urlReferrerIndex > 0)
-                {
-                    requestUrl = FormattedMessage.Substring(urlIndex, urlReferrerIndex - urlIndex)
-                        .Replace("Url:", string.Empty);
-                }
-
-                returnMessage = message + FormattedMessage.Remove(requestInfoIndex);
-                returnMessage += $"{NewLine}**Request:** {requestUrl}";
-            }
-
-            return returnMessage;
         }
     }
 }

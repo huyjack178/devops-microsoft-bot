@@ -86,16 +86,17 @@
         {
             // Arrange
             var botDbContext = _conversationFixture.MockDbContext();
-            botDbContext.MessageInfo.Add(new MessageInfo { ConversationId = "3" });
+            botDbContext.MessageInfo.Add(new MessageInfo { ConversationId = "3333" });
             await botDbContext.SaveChangesAsync();
             var message = "gitlab addproject http://gitlab.nexdev.vn";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "3" });
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "3333" });
 
             // Act
             await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
 
             // Assert
-            Assert.True(_conversationFixture.BotDbContext.MessageInfo.AsNoTracking().Any(info => info.ConversationId == "3"));
+            Assert.True(_conversationFixture.BotDbContext.MessageInfo.AsNoTracking()
+                .Any(info => info.ConversationId == "3333"));
         }
 
         [Fact]

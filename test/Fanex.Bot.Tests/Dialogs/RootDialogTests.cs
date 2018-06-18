@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.Tests.Dialogs
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs.Impl;
     using Fanex.Bot.Tests.Fixtures;
@@ -45,11 +46,13 @@
             var rootDialog = new RootDialog(
                 _conversationFixture.BotDbContext,
                 _conversationFixture.Conversation);
-
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "9999" });
             // Act
             await rootDialog.HandleMessageAsync(_conversationFixture.Activity, message);
 
             // Assert
+            Assert.True(_conversationFixture.BotDbContext.MessageInfo.Any(info => info.ConversationId == "9999"));
+
             await _conversationFixture
                 .Conversation
                 .Received()
