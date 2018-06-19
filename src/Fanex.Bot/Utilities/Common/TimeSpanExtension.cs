@@ -19,7 +19,7 @@
 
             if (string.IsNullOrEmpty(formatted))
             {
-                formatted = "0 seconds";
+                formatted = "0 second";
             }
 
             return formatted;

@@ -140,16 +140,19 @@
             var message = $"**GitLab Master Branch Change** (bell){Constants.NewLine}" +
                             $"**Repository:** {project.WebUrl}{Constants.NewLine}";
             var commitMessageBuilder = new StringBuilder();
+            commitMessageBuilder.Append($"**Commits:**{Constants.NewLine}");
 
             foreach (var commit in commits)
             {
                 var commitUrl = $"{project.WebUrl}/commit/{commit.Id}";
 
-                commitMessageBuilder.Append($"**Commit:** [{commit.Id.Substring(0, 8)}]({commitUrl}){Constants.NewLine}");
-                commitMessageBuilder.Append($"**Message:** {commit.Message}{Constants.NewLine}");
-                commitMessageBuilder.Append($"**Author:** {commit.Author.Name}{Constants.NewLine}");
-                commitMessageBuilder.Append($"--------------{Constants.NewLine}");
+                commitMessageBuilder.Append(
+                    $"**[{commit.Id.Substring(0, 8)}]({commitUrl})**" +
+                    $" {commit.Message} ({commit.Author.Name})" +
+                    $"{Constants.NewLine}");
             }
+
+            commitMessageBuilder.Append($"================={Constants.NewLine}");
 
             message += commitMessageBuilder;
 

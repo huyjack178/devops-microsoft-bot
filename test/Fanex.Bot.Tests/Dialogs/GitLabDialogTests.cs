@@ -205,10 +205,10 @@
             // Assert
             var expectedMessage = "**GitLab Master Branch Change** (bell)\n\n" +
                 "**Repository:** http://gitlab.nexdev.vn/Bot\n\n" +
-                "**Commit:** [12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910)\n\n" +
-                "**Message:** Push Master\n\n" +
-                "**Author:** Harrison\n\n" +
-                "--------------\n\n";
+                "**Commits:**\n\n" +
+                "**[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910)** Push Master (Harrison)\n\n" +
+                "=================\n\n";
+
             await _conversationFixture.Conversation.Received().SendAsync("33", Arg.Is(expectedMessage));
         }
 
