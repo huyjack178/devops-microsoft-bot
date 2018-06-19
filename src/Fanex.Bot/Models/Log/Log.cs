@@ -39,7 +39,7 @@
             }
 
             var message = string.Empty;
-            message += LogFormatter.FormatRequestInfo(FormattedMessage);
+            message += LogFormatter.FormatRequestInfo(FormattedMessage, Category);
             message += LogFormatter.FormatBrowserInfo(FormattedMessage);
             message += LogFormatter.FormatServerAndDatabaseInfo(FormattedMessage, Machine);
             message += LogFormatter.FormatExceptionInfo(FormattedMessage);

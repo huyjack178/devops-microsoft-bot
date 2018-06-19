@@ -30,7 +30,8 @@
                         $"Example: log add Alpha;NAP {Constants.NewLine}" +
                     $"**log remove [LogCategory]**{Constants.NewLine}" +
                     $"**log start** ==> Start receiving logs{Constants.NewLine}" +
-                    $"**log stop** ==> Stop receiving logs{Constants.NewLine}" +
+                    $"**log stop [TimeSpan(Optional)]** ==> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
+                        $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){Constants.NewLine}" +
                     $"**log detail [LogId] (BETA)** ==> Get log detail{Constants.NewLine}" +
                     $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
                     $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +

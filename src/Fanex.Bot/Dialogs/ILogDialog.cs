@@ -6,5 +6,7 @@
     public interface ILogDialog : IRootDialog
     {
         Task GetAndSendLogAsync();
+
+        Task RestartNotifyingLog(string conversationId);
     }
 }

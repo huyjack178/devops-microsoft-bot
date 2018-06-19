@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.Log;
@@ -13,6 +14,8 @@
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Fanex.Bot.Utilities.Common;
+    using Microsoft.Extensions.Caching.Memory;
 
     public class LogDialog : Dialog, ILogDialog
     {
@@ -20,19 +23,25 @@
         private readonly ILogService _logService;
         private readonly BotDbContext _dbContext;
         private readonly IRecurringJobManager _recurringJobManager;
+        private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IMemoryCache _cache;
 
         public LogDialog(
             IConfiguration configuration,
             ILogService logService,
             BotDbContext dbContext,
             IConversation conversation,
-            IRecurringJobManager recurringJobManager)
+            IRecurringJobManager recurringJobManager,
+            IBackgroundJobClient backgroundJobClient,
+            IMemoryCache cache)
                 : base(dbContext, conversation)
         {
             _configuration = configuration;
             _logService = logService;
             _dbContext = dbContext;
             _recurringJobManager = recurringJobManager;
+            _backgroundJobClient = backgroundJobClient;
+            _cache = cache;
         }
 
         public async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
@@ -55,7 +64,7 @@
             }
             else if (messageCmd.StartsWith("log stop"))
             {
-                await StopNotifyingLogAsync(activity);
+                await StopNotifyingLogAsync(activity, messageCmd);
             }
             else if (messageCmd.StartsWith("log adminstopall"))
             {
@@ -135,19 +144,42 @@
             await SaveLogInfoAsync(logInfo);
             await RegisterMessageInfo(activity);
 
+            RemoveRestartLogJob(activity);
+
             _recurringJobManager.AddOrUpdate(
                 "NotifyLogPeriodically", Job.FromExpression(() => GetAndSendLogAsync()), Cron.Minutely());
 
-            await Conversation.SendAsync(activity, "Log will be sent to you soon!");
+            await Conversation.SendAsync(activity, "Log has been started!");
         }
 
-        public async Task StopNotifyingLogAsync(IMessageActivity activity)
+        public async Task StopNotifyingLogAsync(IMessageActivity activity, string messageCmd)
         {
             var logInfo = await FindOrCreateLogInfoAsync(activity);
             logInfo.IsActive = false;
             await SaveLogInfoAsync(logInfo);
 
-            await Conversation.SendAsync(activity, "Log will not be sent to you more!");
+            TimeSpan logStopDelayTime = GenerateLogStopTime(messageCmd);
+
+            ScheduleRestartLogJob(activity, logStopDelayTime);
+
+            await Conversation.SendAsync(activity, $"Log has been stopped for {logStopDelayTime.ToReadableString()}");
+        }
+
+        public async Task RestartNotifyingLog(string conversationId)
+        {
+            var messageInfo = await _dbContext.MessageInfo
+                    .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
+            var logInfo = await _dbContext.LogInfo
+                    .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
+
+            if (messageInfo != null && logInfo != null)
+            {
+                logInfo.IsActive = true;
+                await SaveLogInfoAsync(logInfo);
+
+                messageInfo.Text = "Log has been restarted!";
+                await Conversation.SendAsync(messageInfo);
+            }
         }
 
         public async Task GetAndSendLogAsync()
@@ -294,6 +326,50 @@
 
         private async Task SendMissingLogCategoriesMessage(IMessageActivity activity)
             => await Conversation.SendAsync(activity, "You need to add [LogCategory], otherwise, you will not get any log info");
+
+        private static TimeSpan GenerateLogStopTime(string messageCmd)
+        {
+            var timeSpanText = messageCmd.Replace("log stop", string.Empty).Trim();
+
+            TimeSpan logStopDelayTime;
+
+            if (string.IsNullOrEmpty(timeSpanText))
+            {
+                logStopDelayTime = TimeSpan.FromMinutes(10);
+            }
+            else
+            {
+                var timeSpanNumber = Regex.Match(timeSpanText, @"\d+").Value;
+                var timeSpanFormat = timeSpanText.Replace(timeSpanNumber, string.Empty);
+                TimeSpan.TryParseExact(timeSpanNumber, $"%{timeSpanFormat}", null, out logStopDelayTime);
+            }
+
+            return logStopDelayTime;
+        }
+
+        private void ScheduleRestartLogJob(IMessageActivity activity, TimeSpan logStopDelayTime)
+        {
+            RemoveRestartLogJob(activity);
+
+            var jobId = _backgroundJobClient.Schedule(() => RestartNotifyingLog(activity.Conversation.Id), logStopDelayTime);
+            _cache.Set(
+                activity.Conversation.Id,
+                jobId,
+                new MemoryCacheEntryOptions
+                {
+                    Priority = CacheItemPriority.NeverRemove
+                });
+        }
+
+        private void RemoveRestartLogJob(IMessageActivity activity)
+        {
+            var restartLogJobId = _cache.Get<string>(activity.Conversation.Id);
+
+            if (!string.IsNullOrEmpty(restartLogJobId))
+            {
+                _backgroundJobClient.Delete(restartLogJobId);
+            }
+        }
 
         #endregion Private Methods
     }

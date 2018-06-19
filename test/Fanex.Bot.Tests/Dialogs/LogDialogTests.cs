@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Text;
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs;
@@ -13,7 +14,9 @@
     using Fanex.Bot.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
+    using Hangfire.States;
     using Microsoft.Bot.Connector;
+    using Microsoft.Extensions.Caching.Memory;
     using NSubstitute;
     using Xunit;
 
@@ -23,18 +26,24 @@
         private readonly ILogDialog _logDialog;
         private readonly ILogService _logService;
         private readonly IRecurringJobManager _recurringJobManager;
+        private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IMemoryCache _memoryCache;
 
         public LogDialogTests(BotConversationFixture conversationFixture)
         {
             _conversationFixture = conversationFixture;
             _logService = Substitute.For<ILogService>();
             _recurringJobManager = Substitute.For<IRecurringJobManager>();
+            _backgroundJobClient = Substitute.For<IBackgroundJobClient>();
+            _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _logDialog = new LogDialog(
                 _conversationFixture.Configuration,
                 _logService,
                 _conversationFixture.MockDbContext(),
                 _conversationFixture.Conversation,
-                _recurringJobManager);
+                _recurringJobManager,
+                _backgroundJobClient,
+                _memoryCache);
         }
 
         #region AddCategory
@@ -218,6 +227,7 @@
             // Arrange
             var message = "log start";
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });
+            _memoryCache.Set("5", "1234");
 
             // Act
             await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
@@ -234,6 +244,8 @@
                     .MessageInfo
                     .Any(info => info.ConversationId == "5"));
 
+            _backgroundJobClient.Received().ChangeState("1234", Arg.Any<DeletedState>(), null);
+
             _recurringJobManager.Received()
               .AddOrUpdate(
                   Arg.Is("NotifyLogPeriodically"),
@@ -246,15 +258,16 @@
               .Received()
               .SendAsync(
                   Arg.Is(_conversationFixture.Activity),
-                  Arg.Is($"Log will be sent to you soon!"));
+                  Arg.Is($"Log has been started!"));
         }
 
         [Fact]
-        public async Task HandleMessageAsync_StopLogging_SendSuccessMessage()
+        public async Task HandleMessageAsync_StopLogging_WithDefaultStopTime_SendSuccessMessage()
         {
             // Arrange
             var message = "log stop";
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "6" });
+            _memoryCache.Set("6", "1234");
 
             // Act
             await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
@@ -266,12 +279,68 @@
                     .FirstOrDefault(info => info.ConversationId == "6")
                     .IsActive);
 
+            // Remove old job
+            _backgroundJobClient.Received().ChangeState("1234", Arg.Any<DeletedState>(), null);
+
+            Assert.Equal("", _memoryCache.Get("6"));
+
             await _conversationFixture
               .Conversation
               .Received()
               .SendAsync(
                   Arg.Is(_conversationFixture.Activity),
-                  Arg.Is($"Log will not be sent to you more!"));
+                  Arg.Is($"Log has been stopped for 10 minutes"));
+        }
+
+        [Fact]
+        public async Task HandleMessageAsync_StopLogging_WithStopTime_SendSuccessMessage()
+        {
+            // Arrange
+            var message = "log stop 3h";
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "126" });
+
+            // Act
+            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+
+            // Assert
+            Assert.False(_conversationFixture
+               .BotDbContext
+               .LogInfo
+               .FirstOrDefault(info => info.ConversationId == "126")
+               .IsActive);
+
+            await _conversationFixture
+              .Conversation
+              .Received()
+              .SendAsync(
+                  Arg.Is(_conversationFixture.Activity),
+                  Arg.Is($"Log has been stopped for 3 hours"));
+        }
+
+        [Fact]
+        public async Task HandleMessageAsync_RestartLogging_FoundInfo_SendSuccessMessage()
+        {
+            // Arrange
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.LogInfo.Add(new LogInfo { ConversationId = "666", LogCategories = "alpha;nap", IsActive = false });
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "666" });
+            dbContext.SaveChanges();
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "666" });
+
+            // Act
+            await _logDialog.RestartNotifyingLog(_conversationFixture.Activity.Conversation.Id);
+
+            // Assert
+            Assert.True(_conversationFixture
+              .BotDbContext
+              .LogInfo
+              .FirstOrDefault(info => info.ConversationId == "666")
+              .IsActive);
+
+            await _conversationFixture
+              .Conversation
+              .Received()
+              .SendAsync(Arg.Is<MessageInfo>(info => info.Text == "Log has been restarted!"));
         }
 
         [Fact]

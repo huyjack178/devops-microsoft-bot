@@ -31,6 +31,7 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
             services.AddSingleton(_ => Configuration);
 
             services.AddHangfire(config =>
@@ -92,6 +93,7 @@
                 new Uri(Configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value)));
             services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<IRecurringJobManager, RecurringJobManager>();
+            services.AddSingleton<IBackgroundJobClient, BackgroundJobClient>();
         }
 
         private static void RegisterBotDialogs(IServiceCollection services)
