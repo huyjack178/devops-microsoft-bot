@@ -72,7 +72,8 @@
 
         private void RegisterBotAuthentication(IServiceCollection services)
         {
-            var credentialProvider = new StaticCredentialProvider(Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
+            var credentialProvider = new StaticCredentialProvider(
+                Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value);
 
             services.AddAuthentication(

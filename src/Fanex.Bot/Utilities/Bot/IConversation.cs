@@ -11,7 +11,7 @@
 
         Task SendAsync(MessageInfo messageInfo);
 
-        Task SendAsync(string conversationId, string message);
+        Task<string> SendAsync(string conversationId, string message);
 
         Task SendAdminAsync(string message);
 

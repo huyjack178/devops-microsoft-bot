@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs;
+    using Fanex.Bot.Models;
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -53,6 +54,16 @@
             }
 
             return Ok();
+        }
+
+        [Authorize(Roles = "Bot")]
+        [HttpPost]
+        [Route("Forward")]
+        public async Task<OkObjectResult> Forward(string message, string conversationId)
+        {
+            var result = await _conversation.SendAsync(conversationId, message);
+
+            return Ok(result);
         }
 
         private async Task HandleMessageCommands(IMessageActivity activity)
