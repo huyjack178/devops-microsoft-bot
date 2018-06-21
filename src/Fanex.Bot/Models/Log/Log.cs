@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Models.Log
 {
     using System;
+    using System.Web;
     using Fanex.Bot.Utilities.Log;
 
     public class Log
@@ -61,7 +62,7 @@
                       .Replace("SESSION INFO", "**SESSION INFO**");
 
             return $"**Category**: {Category.CategoryName}{NewLine}" +
-                    $"{returnMessage}{NewLine}" +
+                    $"{HttpUtility.HtmlDecode(returnMessage)}{NewLine}" +
                     $"**#Log Id**: {LogId} " +
                     $"**Count**: {NumMessage}{NewLine}{NewLine}" +
                     $"===================================={NewLine}";

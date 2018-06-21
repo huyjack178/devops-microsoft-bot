@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Utilities.Log
 {
     using System;
+    using System.Web;
     using Fanex.Bot.Models.Log;
 
     public static class LogFormatter
@@ -117,7 +118,10 @@
             {
                 var requestUri = new Uri(request);
 
-                hideDomainRequest = $"http://alpha.site{requestUri.AbsolutePath}";
+                if (!requestUri.Host.ToLowerInvariant().Contains("staging"))
+                {
+                    hideDomainRequest = $"http://alpha.site{requestUri.AbsolutePath}";
+                }
             }
 
             return hideDomainRequest;
