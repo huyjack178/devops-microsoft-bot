@@ -47,7 +47,7 @@
             var result = await controller.Index();
 
             // Assert
-            await _conversation.Received().SendAdminAsync("System.Exception: Exception of type 'System.Exception' was thrown.");
+            await _conversation.Received().SendAdminAsync("Exception of type 'System.Exception' was thrown.");
             Assert.IsType<ForbidResult>(result);
         }
 

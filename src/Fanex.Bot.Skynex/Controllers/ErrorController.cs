@@ -28,9 +28,9 @@
             {
                 var exceptionThatOccurred = exceptionFeature.Error;
                 _logger.LogError(
-                    $"{exceptionThatOccurred}\n{exceptionThatOccurred.StackTrace}",
+                    $"{exceptionThatOccurred.Message}\n{exceptionThatOccurred.StackTrace}\n" +
                     "Stopped program because of exception");
-                await _conversation.SendAdminAsync(exceptionThatOccurred.ToString());
+                await _conversation.SendAdminAsync(exceptionThatOccurred.Message);
 
                 return Forbid();
             }

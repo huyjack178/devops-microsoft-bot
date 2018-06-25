@@ -15,7 +15,5 @@
 
         [JsonProperty("author")]
         public Author Author { get; set; }
-
-        public string tree_id { get; set; }
     }
 }
