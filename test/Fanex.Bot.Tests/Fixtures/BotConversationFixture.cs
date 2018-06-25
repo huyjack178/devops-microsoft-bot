@@ -39,7 +39,7 @@
                 $"**log stop [TimeSpan(Optional)]** ==> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
                     $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){Constants.NewLine}" +
                 $"**log detail [LogId] (BETA)** ==> Get log detail{Constants.NewLine}" +
-                $"**log viewStatus** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
+                $"**log status** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
                 $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +
                 $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{Constants.NewLine}" +
                 $"**group** ==> Get your group ID";

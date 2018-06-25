@@ -131,22 +131,6 @@
         }
 
         [Fact]
-        public async Task Post_ActivityEndOfConversation_SendHelloMessage()
-        {
-            // Arrange
-            var activity = new Activity { Type = ActivityTypes.EndOfConversation };
-
-            // Act
-            await _messagesController.Post(activity);
-
-            // Asserts
-            await _conversationFixture
-                .Conversation
-                .Received()
-                .SendAsync(Arg.Is(activity), "See you again!");
-        }
-
-        [Fact]
         public async Task Post_ActivityOthers_ReturnOk()
         {
             // Arrange

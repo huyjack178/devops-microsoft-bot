@@ -1,63 +1,61 @@
 ﻿namespace Fanex.Bot.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
+    using System.Text;
+    using Fanex.Bot.Client.Configuration;
     using Fanex.Bot.Client.Models;
-    using Fanex.Bot.Utilitites;
+    using RestSharp;
 
-    public class BotConnector
+    public class BotConnector : IBotConnector
     {
-        private readonly BotSettings _botConfig;
-        private readonly IWebClient _webClient;
+        private readonly IRestClient _webClient;
 
-        public BotConnector(
-            BotSettings botConfig = null,
-            IWebClient webClient = null)
+        public BotConnector() : this(null)
         {
-            _botConfig = botConfig ?? BotSettings.Settings;
-            _webClient = webClient ?? new WebClient();
         }
 
-        public async Task<string> SendAsync(string message, string conversationId)
+        protected internal BotConnector(IRestClient webClient)
         {
-            var token = await GetTokenAsync();
-            var result = await ForwardToBot(message, conversationId, token);
+            _webClient = webClient ?? new RestClient { Encoding = Encoding.UTF8 };
+        }
+
+        public string Send(string message, string conversationId)
+        {
+            var token = GetToken();
+            var result = ForwardToBot(message, conversationId, token);
 
             return result;
         }
 
-        private async Task<string> ForwardToBot(string message, string conversationId, Token token)
+        private string ForwardToBot(string message, string conversationId, Token token)
         {
-            var requestData = new List<KeyValuePair<string, string>> {
-                new KeyValuePair<string, string>("message", message),
-                new KeyValuePair<string, string>("conversationId", conversationId),
-            };
+            _webClient.BaseUrl = BotSettings.BotServiceUrl;
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{_botConfig.BotServiceUrl}/messages/forward");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-            request.Content = new FormUrlEncodedContent(requestData);
+            var request = new RestRequest("/messages/forward", Method.POST);
+            request.AddHeader("Authorization", $"Bearer {token.AccessToken}");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddParameter("message", message);
+            request.AddParameter("conversationId", conversationId);
 
-            var result = await _webClient.SendAsync(request);
-            return result;
+            var result = _webClient.Execute(request);
+
+            return result.Content;
         }
 
-        private async Task<Token> GetTokenAsync()
+        private Token GetToken()
         {
-            var requestData = new List<KeyValuePair<string, string>> {
-                new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                new KeyValuePair<string, string>("client_id", _botConfig.ClientId),
-                new KeyValuePair<string, string>("client_secret", _botConfig.ClientPassword),
-                new KeyValuePair<string, string>("scope", $"{_botConfig.ClientId}/.default")
-            };
-            var request = new HttpRequestMessage(HttpMethod.Post, _botConfig.TokenUrl);
-            request.Content = new FormUrlEncodedContent(requestData);
+            _webClient.BaseUrl = BotSettings.TokenUrl;
 
-            var token = await _webClient.SendAsync<Token>(request);
+            var request = new RestRequest(Method.POST);
+            request.AddParameter("grant_type", "client_credentials");
+            request.AddParameter("client_id", BotSettings.ClientId);
+            request.AddParameter("client_secret", BotSettings.ClientPassword);
+            request.AddParameter("scope", $"{BotSettings.ClientId}/.default");
 
-            return token;
+            request.AddHeader("Content-type", "application/x-www-form-urlencoded");
+
+            var response = _webClient.Execute<Token>(request);
+
+            return response.Data;
         }
     }
 }

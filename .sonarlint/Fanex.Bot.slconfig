@@ -1,7 +1,7 @@
 {
   "ServerUri": "http://sonarqube.nexdev.net",
   "Organization": null,
-  "ProjectKey": "Result.Core",
+  "ProjectKey": "Fanex.Bot",
   "Profiles": {
     "CSharp": {
       "ProfileKey": "cs-sonar-way-80515",

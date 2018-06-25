@@ -11,6 +11,7 @@
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.Log;
     using Fanex.Bot.Services;
+    using Fanex.Bot.Skynex.Models.Log;
     using Fanex.Bot.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
@@ -130,7 +131,7 @@
             _conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("DisableAddCategories").Value
                 .Returns("false");
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5555" });
 
             // Act
             await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
@@ -141,7 +142,7 @@
                 _conversationFixture
                     .BotDbContext
                     .LogInfo
-                    .FirstOrDefault(info => info.ConversationId == "5")
+                    .FirstOrDefault(info => info.ConversationId == "5555")
                     .LogCategories);
             await _conversationFixture
                 .Conversation
@@ -348,7 +349,7 @@
         {
             // Arrange
             var dbContext = _conversationFixture.MockDbContext();
-            dbContext.LogInfo.Add(new LogInfo { ConversationId = "96", LogCategories = "alpha;nap", IsActive = true });
+            dbContext.LogInfo.Add(new LogInfo { ConversationId = "9643534", LogCategories = "alpha;nap", IsActive = true });
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
@@ -377,7 +378,7 @@
                  .DidNotReceive()
                  .SendAsync(Arg.Is<MessageInfo>(info =>
                     info.Text == expectedAlphaMessage &&
-                    info.ConversationId == "1"));
+                    info.ConversationId == "96435341"));
         }
 
         [Fact]
@@ -425,13 +426,73 @@
                     info.ConversationId == "1"));
         }
 
+        [Fact]
+        public async Task GetAndSendLogAsync_HasLogInfoData_IsActive_HasLogCategory_HasIgnoreMessage_NotSendLogToClient()
+        {
+            // Arrange
+            _conversationFixture.InitDbContextData();
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "2342342342311cd1" });
+            dbContext.LogInfo.Add(new LogInfo { ConversationId = "2342342342311cd1", LogCategories = "alpha;nap", IsActive = true });
+            dbContext.LogIgnoreMessage.Add(new LogIgnoreMessage { Category = "alpha", IgnoreMessage = "thread was being aborted" });
+            dbContext.SaveChanges();
+            _logService.GetErrorLogs().Returns(new List<Log>(){
+                new Log {
+                    Category = new LogCategory { CategoryName = "alpha" },
+                    Machine = new Machine { MachineIP = "machine" },
+                    FormattedMessage = "thread was being aborted"
+                },
+            });
+
+            // Act
+            await _logDialog.GetAndSendLogAsync();
+
+            // Assert
+            var expectedAlphaMessage = "**Category**: alpha\n\nthread was being aborted\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
+            await _conversationFixture.Conversation
+                 .DidNotReceive()
+                 .SendAsync(Arg.Is<MessageInfo>(info =>
+                    info.Text == expectedAlphaMessage &&
+                    info.ConversationId == "2342342342311cd1"));
+        }
+
+        [Fact]
+        public async Task GetAndSendLogAsync_HasLogInfoData_IsActive_HasLogCategory_HasNoIgnoreMessage_NotSendLogToClient()
+        {
+            // Arrange
+            _conversationFixture.InitDbContextData();
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "234234231" });
+            dbContext.LogInfo.Add(new LogInfo { ConversationId = "234234231", LogCategories = "alpha;nap", IsActive = true });
+            dbContext.LogIgnoreMessage.Add(new LogIgnoreMessage { Category = "nap", IgnoreMessage = "thread was being aborted" });
+            dbContext.SaveChanges();
+            _logService.GetErrorLogs().Returns(new List<Log>(){
+                new Log {
+                    Category = new LogCategory { CategoryName = "nap" },
+                    Machine = new Machine { MachineIP = "machine" },
+                    FormattedMessage = "thread was not being aborted"
+                },
+            });
+
+            // Act
+            await _logDialog.GetAndSendLogAsync();
+
+            // Assert
+            var expectedAlphaMessage = "**Category**: nap\n\nthread was not being aborted\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
+            await _conversationFixture.Conversation
+                 .Received(1)
+                 .SendAsync(Arg.Is<MessageInfo>(info =>
+                    info.Text == expectedAlphaMessage &&
+                    info.ConversationId == "234234231"));
+        }
+
         [Theory]
         [InlineData("9", true, "Running")]
         [InlineData("8", false, "Stopped")]
         public async Task HandleMessageAsync_ViewStatus_SendLogInfoMessage(string conversationId, bool isActive, string expectedActiveResult)
         {
             // Arrange
-            var message = "log viewstatus";
+            var message = "log status";
             var dbContext = _conversationFixture.MockDbContext();
             dbContext.LogInfo.Add(new LogInfo { ConversationId = conversationId, LogCategories = "alpha;nap", IsActive = isActive });
             dbContext.SaveChanges();
@@ -490,100 +551,6 @@
               .SendAsync(
                   Arg.Is(_conversationFixture.Activity),
                   Arg.Is(expectedLogMesasge));
-        }
-
-        [Fact]
-        public async Task HandleMessageAsync_EnableNotifyingLogAllAsync_IsNotAdmin_SendErrorMessage()
-        {
-            // Arrange
-            var message = "log adminstartall";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "333" });
-
-            // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
-
-            // Assert
-            await _conversationFixture
-              .Conversation
-              .Received()
-              .SendAsync(
-                  Arg.Is(_conversationFixture.Activity),
-                  Arg.Is("Sorry! You are not admin."));
-        }
-
-        [Fact]
-        public async Task HandleMessageAsync_EnableNotifyingLogAllAsync_IsAdmin_SendSuccessMessage()
-        {
-            // Arrange
-            var message = "log adminstartall";
-            _conversationFixture.InitDbContextData();
-            var dbContext = _conversationFixture.MockDbContext();
-            dbContext.LogInfo.Add(new LogInfo { ConversationId = "223", LogCategories = "alpha;nap", IsActive = false });
-            dbContext.SaveChanges();
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "1" });
-            // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
-
-            // Assert
-
-            Assert.True(_conversationFixture.BotDbContext.LogInfo.All(info => info.IsActive));
-            await _conversationFixture
-              .Conversation
-              .Received()
-              .SendAsync(
-                  Arg.Is(_conversationFixture.Activity),
-                  Arg.Is("Your request is accepted!"));
-            await _conversationFixture
-              .Conversation
-              .Received()
-              .SendAdminAsync(Arg.Is("All clients is active now!"));
-        }
-
-        [Fact]
-        public async Task HandleMessageAsync_DisableNotifyingLogAllAsync_IsNotAdmin_SendErrorMessage()
-        {
-            // Arrange
-            var message = "log adminstopall";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "444" });
-
-            // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
-
-            // Assert
-            await _conversationFixture
-              .Conversation
-              .Received()
-              .SendAsync(
-                  Arg.Is(_conversationFixture.Activity),
-                  Arg.Is("Sorry! You are not admin."));
-        }
-
-        [Fact]
-        public async Task HandleMessageAsync_DisableNotifyingLogAllAsync_IsAdmin_SendSuccessMessage()
-        {
-            // Arrange
-            var message = "log adminstopall";
-            _conversationFixture.InitDbContextData();
-            var dbContext = _conversationFixture.MockDbContext();
-            dbContext.LogInfo.Add(new LogInfo { ConversationId = "224", LogCategories = "alpha;nap", IsActive = false });
-            dbContext.SaveChanges();
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "1" });
-            // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
-
-            // Assert
-
-            Assert.False(_conversationFixture.BotDbContext.LogInfo.All(info => info.IsActive));
-            await _conversationFixture
-              .Conversation
-              .Received()
-              .SendAsync(
-                  Arg.Is(_conversationFixture.Activity),
-                  Arg.Is("Your request is accepted!"));
-            await _conversationFixture
-              .Conversation
-              .Received()
-              .SendAdminAsync(Arg.Is("All clients is inactive now!"));
         }
 
         [Fact]

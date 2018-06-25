@@ -4,9 +4,10 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Threading.Tasks;
+    using Fanex.Bot.Core.Utilities.Web;
     using Fanex.Bot.Models.Log;
     using Fanex.Bot.Services;
-    using Fanex.Bot.Utilitites;
+    using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using Xunit;
 
@@ -14,11 +15,14 @@
     {
         private readonly IWebClient _webClient;
         private readonly ILogService _logService;
+        private readonly IConfiguration _configuration;
 
         public LogServiceTests()
         {
+            _configuration = Substitute.For<IConfiguration>();
+            _configuration.GetSection("LogInfo").GetSection("mSiteUrl").Value.Returns("http://log.com");
             _webClient = Substitute.For<IWebClient>();
-            _logService = new LogService(_webClient);
+            _logService = new LogService(_webClient, _configuration);
         }
 
         [Fact]
@@ -33,8 +37,8 @@
                 new Log { LogId = 2 }
             };
 
-            _webClient.PostAsync<GetLogFormData, IEnumerable<Log>>(
-                "PublicLog/Logs",
+            _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
+                new Uri("http://log.com/PublicLog/Logs"),
                 Arg.Is<GetLogFormData>(data =>
                     data.From == fromDate.AddHours(7).ToString(CultureInfo.InvariantCulture) &&
                     data.To == toDate.AddHours(7).ToString(CultureInfo.InvariantCulture) &&
@@ -63,8 +67,8 @@
             var isProduction = true;
             var expectedLogList = new List<Log>();
 
-            _webClient.PostAsync<GetLogFormData, IEnumerable<Log>>(
-                "PublicLog/Logs", Arg.Any<GetLogFormData>())
+            _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
+                new Uri("http://log.com/PublicLog/Logs"), Arg.Any<GetLogFormData>())
                 .Returns(expectedLogList);
 
             // Act
@@ -80,7 +84,7 @@
             // Arrange
             var logId = 1;
             var expectedLog = new Log { LogId = 1 };
-            _webClient.GetAsync<Log>($"PublicLog/Log?logId={logId}").Returns(expectedLog);
+            _webClient.GetJsonAsync<Log>(new Uri("http://log.com/PublicLog/Log" + $"?logId={logId}")).Returns(expectedLog);
 
             // Act
             var actualLog = await _logService.GetErrorLogDetail(logId);

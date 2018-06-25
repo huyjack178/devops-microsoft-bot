@@ -1,0 +1,23 @@
+{
+    "name": "Fanex.Bot",
+    "description": "",
+    "secretKey": "",
+    "services": [
+        {
+            "appId": "96ece90f-deab-4f11-b8ef-cdabf58542fb",
+            "id": "047709b0-7525-11e8-9f51-0b3c35a09ab4",
+            "type": "endpoint",
+            "appPassword": "kagqfvVLAJ942#eEYA14=[@",
+            "endpoint": "http://localhost:55814/api/messages",
+            "name": "local"
+        },
+        {
+            "appId": "96ece90f-deab-4f11-b8ef-cdabf58542fb",
+            "id": "333d9430-752a-11e8-9f51-0b3c35a09ab4",
+            "type": "endpoint",
+            "appPassword": "kagqfvVLAJ942#eEYA14=[@",
+            "endpoint": "https://bot.nexdev.net:6969/letstalk/api/messages",
+            "name": "test"
+        }
+    ]
+}

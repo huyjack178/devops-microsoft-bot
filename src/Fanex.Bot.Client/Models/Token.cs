@@ -1,16 +1,16 @@
 ﻿namespace Fanex.Bot.Client.Models
 {
-    using Newtonsoft.Json;
+    using RestSharp.Deserializers;
 
     internal class Token
     {
-        [JsonProperty("token_type")]
+        [DeserializeAs(Name = "token_type")]
         public string TokenType { get; set; }
 
-        [JsonProperty("expires_in")]
+        [DeserializeAs(Name = "expires_in")]
         public int ExpiresIn { get; set; }
 
-        [JsonProperty("access_token")]
+        [DeserializeAs(Name = "access_token")]
         public string AccessToken { get; set; }
     }
 }

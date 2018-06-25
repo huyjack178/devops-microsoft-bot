@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="SonarQube - R&amp;D / Result Core Nexcel CSharp" ToolsVersion="15.0">
+  <Include Path="..\..\.sonarlint\fanex.botcsharp.ruleset" Action="Default" />
+  <Rules AnalyzerId="SonarAnalyzer.CSharp" RuleNamespace="SonarAnalyzer.CSharp">
+    <Rule Id="S3216" Action="Warning" />
+  </Rules>
+</RuleSet>
