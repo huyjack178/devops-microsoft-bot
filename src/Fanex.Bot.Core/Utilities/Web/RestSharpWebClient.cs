@@ -15,6 +15,8 @@
             _restClient = restClient;
         }
 
+#pragma warning disable S3216 // "ConfigureAwait(false)" should be used
+
         public async Task<T> GetJsonAsync<T>(Uri url)
         {
             _restClient.BaseUrl = url;
@@ -49,5 +51,7 @@
             var response = await _restClient.ExecuteTaskAsync(request);
             return response;
         }
+
+#pragma warning restore S3216 // "ConfigureAwait(false)" should be used
     }
 }
