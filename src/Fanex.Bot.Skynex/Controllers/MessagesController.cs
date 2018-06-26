@@ -44,6 +44,9 @@
                     await _conversation.SendAsync(activity, "Hello. I am SkyNex.");
                     break;
 
+                case ActivityTypes.EndOfConversation:
+                    break;
+
                 default:
                     return Ok();
             }

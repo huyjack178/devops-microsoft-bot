@@ -28,9 +28,12 @@
             {
                 var exceptionThatOccurred = exceptionFeature.Error;
                 _logger.LogError(
-                    $"{exceptionThatOccurred.Message}\n{exceptionThatOccurred.StackTrace}\n" +
-                    "Stopped program because of exception");
-                await _conversation.SendAdminAsync(exceptionThatOccurred.Message);
+                    $"{exceptionThatOccurred.Message}\n{exceptionThatOccurred.StackTrace}\n");
+
+                await _conversation.SendAdminAsync(
+                    $"**Exception occured in Skynex** {Constants.NewLine}" +
+                    $"{exceptionThatOccurred.Message} {Constants.NewLine}" +
+                    $"{exceptionThatOccurred.StackTrace}");
 
                 return Forbid();
             }

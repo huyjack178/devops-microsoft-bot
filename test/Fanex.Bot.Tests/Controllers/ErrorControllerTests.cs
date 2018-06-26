@@ -47,7 +47,9 @@
             var result = await controller.Index();
 
             // Assert
-            await _conversation.Received().SendAdminAsync("Exception of type 'System.Exception' was thrown.");
+            await _conversation.Received().SendAdminAsync(
+                $"**Exception occured in Skynex** {Constants.NewLine}" +
+                    $"Exception of type 'System.Exception' was thrown. {Constants.NewLine}");
             Assert.IsType<ForbidResult>(result);
         }
 

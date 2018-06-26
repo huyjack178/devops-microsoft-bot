@@ -7,18 +7,22 @@
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     public class Conversation : IConversation
     {
         private readonly IConfiguration _configuration;
         private readonly BotDbContext _dbContext;
+        private readonly ILogger<Conversation> _logger;
 
         public Conversation(
             IConfiguration configuration,
-            BotDbContext dbContext)
+            BotDbContext dbContext,
+            ILogger<Conversation> logger)
         {
             _configuration = configuration;
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         public async Task SendAsync(IMessageActivity activity, string message)
@@ -47,7 +51,6 @@
         {
             var connector = CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
             var message = CreateMessageActivity(messageInfo);
-
             try
             {
                 if (!string.IsNullOrEmpty(messageInfo.Text))
@@ -58,9 +61,12 @@
             }
             catch (Exception ex)
             {
+                _logger.LogError($"{ex.Message}\n{ex.StackTrace}");
+
                 await SendAdminAsync(
-                    $"Error happen in client {messageInfo?.ConversationId}\n\n" +
-                    $"Exception: {ex.InnerException.Message}");
+                    $"Can not send message to **{messageInfo?.ConversationId}** {Constants.NewLine}" +
+                    $"**Exception:** {ex.Message} {Constants.NewLine}" +
+                    $"==========================");
             }
         }
 

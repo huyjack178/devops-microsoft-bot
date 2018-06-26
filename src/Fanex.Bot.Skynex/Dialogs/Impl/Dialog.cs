@@ -51,6 +51,10 @@
             }
         }
 
+        public async Task CleanMessageInfo(IMessageActivity activity)
+        {
+        }
+
         private static MessageInfo InitMessageInfo(IMessageActivity activity)
         {
             return new MessageInfo
