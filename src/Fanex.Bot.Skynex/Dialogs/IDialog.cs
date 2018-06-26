@@ -9,5 +9,7 @@
         IConversation Conversation { get; }
 
         Task RegisterMessageInfo(IMessageActivity activity);
+
+        Task RemoveConversationData(IMessageActivity activity);
     }
 }

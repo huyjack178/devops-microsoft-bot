@@ -22,7 +22,6 @@
             }
             else if (messageCmd.StartsWith("help"))
             {
-                await RegisterMessageInfo(activity);
                 await Conversation.SendAsync(activity, GetCommandMessages());
             }
             else

@@ -240,11 +240,6 @@
                     .FirstOrDefault(info => info.ConversationId == "5")
                     .IsActive);
 
-            Assert.True(_conversationFixture
-                    .BotDbContext
-                    .MessageInfo
-                    .Any(info => info.ConversationId == "5"));
-
             _backgroundJobClient.Received().ChangeState("1234", Arg.Any<DeletedState>(), null);
 
             _recurringJobManager.Received()

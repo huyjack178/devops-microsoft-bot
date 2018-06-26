@@ -17,12 +17,16 @@
   <ItemGroup>
     <Compile Remove="build\**" />
     <Compile Remove="Migrations\**" />
+    <Compile Remove="publish\**" />
     <Content Remove="build\**" />
     <Content Remove="Migrations\**" />
+    <Content Remove="publish\**" />
     <EmbeddedResource Remove="build\**" />
     <EmbeddedResource Remove="Migrations\**" />
+    <EmbeddedResource Remove="publish\**" />
     <None Remove="build\**" />
     <None Remove="Migrations\**" />
+    <None Remove="publish\**" />
   </ItemGroup>
 
   <ItemGroup>

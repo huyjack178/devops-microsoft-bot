@@ -53,7 +53,6 @@
                 return;
             }
 
-            await RegisterMessageInfo(activity);
             var gitLabInfo = await GetGitLabInfo(activity, projectUrl);
             gitLabInfo.IsActive = true;
 

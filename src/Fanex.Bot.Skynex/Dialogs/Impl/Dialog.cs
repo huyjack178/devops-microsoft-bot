@@ -1,7 +1,6 @@
 ﻿namespace Fanex.Bot.Dialogs.Impl
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Fanex.Bot.Utilitites.Bot;
@@ -41,7 +40,8 @@
 
         public async Task RegisterMessageInfo(IMessageActivity activity)
         {
-            var messageInfo = _dbContext.MessageInfo.FirstOrDefault(e => e.ConversationId == activity.Conversation.Id);
+            var messageInfo = await _dbContext.MessageInfo.FirstOrDefaultAsync(
+                e => e.ConversationId == activity.Conversation.Id);
 
             if (messageInfo == null)
             {
@@ -51,8 +51,34 @@
             }
         }
 
-        public async Task CleanMessageInfo(IMessageActivity activity)
+        public async Task RemoveConversationData(IMessageActivity activity)
         {
+            var messageInfo = await _dbContext.MessageInfo.SingleOrDefaultAsync(
+                info => info.ConversationId == activity.Conversation.Id);
+
+            if (messageInfo != null)
+            {
+                _dbContext.MessageInfo.Remove(messageInfo);
+            }
+
+            var logInfo = await _dbContext.LogInfo.SingleOrDefaultAsync(
+                info => info.ConversationId == activity.Conversation.Id);
+
+            if (logInfo != null)
+            {
+                _dbContext.LogInfo.Remove(logInfo);
+            }
+
+            var gitlabInfo = await _dbContext.GitLabInfo.SingleOrDefaultAsync(
+               info => info.ConversationId == activity.Conversation.Id);
+
+            if (gitlabInfo != null)
+            {
+                _dbContext.GitLabInfo.Remove(gitlabInfo);
+            }
+
+            await _dbContext.SaveChangesAsync();
+            await Conversation.SendAdminAsync($"Client **{activity.Conversation.Id}** has been removed");
         }
 
         private static MessageInfo InitMessageInfo(IMessageActivity activity)
@@ -72,13 +98,13 @@
 
         protected async Task SaveMessageInfoAsync(MessageInfo messageInfo)
         {
-            var existMessageInfo = ExistMessageInfo(messageInfo);
+            var existMessageInfo = await ExistMessageInfo(messageInfo);
             _dbContext.Entry(messageInfo).State = existMessageInfo ? EntityState.Modified : EntityState.Added;
 
             await _dbContext.SaveChangesAsync();
         }
 
-        private bool ExistMessageInfo(MessageInfo messageInfo)
-            => _dbContext.MessageInfo.Any(e => e.ConversationId == messageInfo.ConversationId);
+        private async Task<bool> ExistMessageInfo(MessageInfo messageInfo)
+            => await _dbContext.MessageInfo.AnyAsync(e => e.ConversationId == messageInfo.ConversationId);
     }
 }

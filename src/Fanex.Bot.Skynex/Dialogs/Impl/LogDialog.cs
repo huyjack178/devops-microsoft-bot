@@ -14,7 +14,7 @@
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
-    using Fanex.Bot.Utilities.Common;
+    using Fanex.Bot.Core.Utilities.Common;
     using Microsoft.Extensions.Caching.Memory;
 
     public class LogDialog : Dialog, ILogDialog
@@ -134,7 +134,6 @@
             var logInfo = await FindOrCreateLogInfoAsync(activity);
             logInfo.IsActive = true;
             await SaveLogInfoAsync(logInfo);
-            await RegisterMessageInfo(activity);
 
             RemoveRestartLogJob(activity);
 

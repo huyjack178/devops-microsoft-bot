@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Utilities.Common
+﻿namespace Fanex.Bot.Core.Utilities.Common
 {
     using System;
 

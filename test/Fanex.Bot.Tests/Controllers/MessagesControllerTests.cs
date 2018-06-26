@@ -1,8 +1,12 @@
 ﻿namespace Fanex.Bot.Tests.Controllers
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Controllers;
     using Fanex.Bot.Dialogs;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.Log;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Connector;
@@ -12,6 +16,7 @@
     public class MessagesControllerTests : IClassFixture<BotConversationFixture>
     {
         private readonly BotConversationFixture _conversationFixture;
+        private readonly IDialog _dialog;
         private readonly IRootDialog _rootDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
@@ -20,14 +25,17 @@
         public MessagesControllerTests(BotConversationFixture conversationFixture)
         {
             _conversationFixture = conversationFixture;
+            _dialog = Substitute.For<IDialog>();
             _rootDialog = Substitute.For<IRootDialog>();
             _logDialog = Substitute.For<ILogDialog>();
             _gitLabDialog = Substitute.For<IGitLabDialog>();
             _messagesController = new MessagesController(
+                _dialog,
                 _rootDialog,
                 _logDialog,
                 _gitLabDialog,
-                _conversationFixture.Conversation);
+                _conversationFixture.Conversation,
+                _conversationFixture.Configuration);
         }
 
         [Fact]
@@ -99,35 +107,84 @@
         }
 
         [Fact]
-        public async Task Post_ActivityInstallationUpdate_SendHelloMessage()
+        public async Task Post_ActivityContactRelationUpdate_ActionIsRemove_RemoveConversationData()
         {
             // Arrange
-            var activity = new Activity { Type = ActivityTypes.InstallationUpdate };
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ContactRelationUpdate,
+                Conversation = new ConversationAccount { Id = "43235grerew" },
+                Action = "remove"
+            };
 
             // Act
             await _messagesController.Post(activity);
 
             // Asserts
-            await _conversationFixture
-                .Conversation
-                .Received()
-                .SendAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+            await _dialog.Received().RemoveConversationData(Arg.Is(activity));
         }
 
         [Fact]
-        public async Task Post_ActivityContactRelationUpdate_SendHelloMessage()
+        public async Task Post_ActivityContactRelationUpdate_ActionIsNotRemove_RemoveConversationData()
         {
             // Arrange
-            var activity = new Activity { Type = ActivityTypes.ContactRelationUpdate };
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ContactRelationUpdate,
+                Conversation = new ConversationAccount { Id = "43235grerew" },
+            };
 
             // Act
             await _messagesController.Post(activity);
 
             // Asserts
+            await _dialog.Received().RegisterMessageInfo(Arg.Is(activity));
             await _conversationFixture
-                .Conversation
-                .Received()
-                .SendAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+               .Conversation
+               .Received()
+               .SendAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+        }
+
+        [Fact]
+        public async Task Post_ActivityConverstationUpdate_IsBotRemoved_RemoveConversationData()
+        {
+            // Arrange
+            _conversationFixture.Configuration.GetSection("BotId").Value.Returns("12324342345");
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                Conversation = new ConversationAccount { Id = "43235grerew" },
+                MembersRemoved = new List<ChannelAccount> { new ChannelAccount { Id = "12324342345" } }
+            };
+
+            // Act
+            await _messagesController.Post(activity);
+
+            // Asserts
+            await _dialog.Received().RemoveConversationData(Arg.Is(activity));
+        }
+
+        [Fact]
+        public async Task Post_ActivityConverstationUpdate_IsBotAdded_RemoveConversationData()
+        {
+            // Arrange
+            _conversationFixture.Configuration.GetSection("BotId").Value.Returns("12324342345");
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                Conversation = new ConversationAccount { Id = "43235grerew" },
+                MembersAdded = new List<ChannelAccount> { new ChannelAccount { Id = "12324342345" } }
+            };
+
+            // Act
+            await _messagesController.Post(activity);
+
+            // Asserts
+            await _dialog.Received().RegisterMessageInfo(Arg.Is(activity));
+            await _conversationFixture
+              .Conversation
+              .Received()
+              .SendAsync(Arg.Is(activity), "Hello. I am SkyNex.");
         }
 
         [Fact]

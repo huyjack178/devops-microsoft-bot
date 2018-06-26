@@ -64,24 +64,6 @@
         }
 
         [Fact]
-        public async Task HandleMessageAsync_AddProject_RegisterMessageInfo_NotExistDb_SendAdminMessage()
-        {
-            // Arrange
-            var message = "gitlab addproject http://gitlab.nexdev.vn";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "4" });
-
-            // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
-
-            // Assert
-            await _conversationFixture
-                .Conversation
-                .Received()
-                .SendAdminAsync(Arg.Is("New client **4** has been added"));
-            Assert.True(_conversationFixture.BotDbContext.MessageInfo.AsNoTracking().Any(info => info.ConversationId == "4"));
-        }
-
-        [Fact]
         public async Task HandleMessageAsync_AddProject_RegisterMessageInfo_ExistDb_NotSendAdminMessage()
         {
             // Arrange
