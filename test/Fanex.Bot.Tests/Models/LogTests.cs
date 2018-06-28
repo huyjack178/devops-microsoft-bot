@@ -110,8 +110,31 @@
                 $"Server: 10.40.40.100 \n\n" +
                 $"DbName: DBACC.bodb02.BODBDownlineNet \n\n" +
                 $"UserID: bodbDownlineNet \n\n" +
-                $"SpName: Acc_StatementSelTransfer ";
+                $"SpName: Acc_StatementSelTransfer \n\n" +
+                $"Parameters: @winlostdate=6/17/2018 12:00:00 AM;@custid=26570707 \n\n" +
+                $"Line: 0 \n\n" +
+                $"CommandTimeout: 120";
             Assert.Contains(expecteRequestInfo, log.Message);
+        }
+
+        [Fact]
+        public void Message_IsNewLogType_GetCustomInfo()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var log = fixture.Create<Log>();
+
+            // Act
+            log.FormattedMessage = GetLogDataTest();
+
+            // Assert
+            var expectedCustomInfo =
+                $"**Custom Info:** \n\n " +
+                $"\n\nCustId: 26570707 \n\n" +
+                $"CustName: IX1388 \n\n" +
+                $"SubAccountName: IX1388SUB03 \n\n" +
+                $"AdminName: ";
+            Assert.Contains(expectedCustomInfo, log.Message);
         }
 
         [Fact]

@@ -72,15 +72,35 @@
             if (databaseInfoIndex > 0)
             {
                 var serverIndex = rawMessage.IndexOf("Server:", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var parameterIndex = rawMessage.IndexOf("Parameters:", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
+                var customInfo = rawMessage.IndexOf("CUSTOM INFO", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
                 var databaseInfo = "No information";
 
-                if (serverIndex > 0 && parameterIndex > 0)
+                if (serverIndex > 0 && customInfo > 0)
                 {
-                    databaseInfo = rawMessage.Substring(serverIndex, parameterIndex - serverIndex);
+                    databaseInfo = rawMessage.Substring(serverIndex, customInfo - serverIndex);
                 }
 
                 returnMessage += $"{Constants.NewLine}**Database:**{Constants.NewLine}{databaseInfo}";
+            }
+
+            return returnMessage;
+        }
+
+        public static string FormatCustomInfo(string rawMessage)
+        {
+            var customInfoIndex = rawMessage.IndexOf("CUSTOM INFO", StringComparison.InvariantCultureIgnoreCase);
+            var returnMessage = string.Empty;
+
+            if (customInfoIndex > 0)
+            {
+                var exceptionInfoIndex = rawMessage.IndexOf(
+                    "EXCEPTION INFO", StringComparison.InvariantCultureIgnoreCase);
+                var customInfo = exceptionInfoIndex > 0 ?
+                    rawMessage.Substring(customInfoIndex, exceptionInfoIndex - customInfoIndex) :
+                    "No information";
+
+                customInfo = customInfo.Replace("CUSTOM INFO", string.Empty);
+                returnMessage = $"{Constants.NewLine}**Custom Info:** {Constants.NewLine}{customInfo}";
             }
 
             return returnMessage;

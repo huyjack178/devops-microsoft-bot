@@ -1,7 +1,7 @@
 ﻿namespace Fanex.Bot.Models.Log
 {
     using System;
-    using System.Web;
+    using System.Net;
     using Fanex.Bot.Utilities.Log;
 
     public class Log
@@ -43,6 +43,7 @@
             message += LogFormatter.FormatRequestInfo(FormattedMessage, Category);
             message += LogFormatter.FormatBrowserInfo(FormattedMessage);
             message += LogFormatter.FormatServerAndDatabaseInfo(FormattedMessage, Machine);
+            message += LogFormatter.FormatCustomInfo(FormattedMessage);
             message += LogFormatter.FormatExceptionInfo(FormattedMessage);
 
             return FormatAll(message);
@@ -62,7 +63,7 @@
                       .Replace("SESSION INFO", "**SESSION INFO**");
 
             return $"**Category**: {Category.CategoryName}{NewLine}" +
-                    $"{Uri.UnescapeDataString(returnMessage)}{NewLine}" +
+                    $"{WebUtility.HtmlDecode(returnMessage)}{NewLine}" +
                     $"**#Log Id**: {LogId} " +
                     $"**Count**: {NumMessage}{NewLine}{NewLine}" +
                     $"===================================={NewLine}";
