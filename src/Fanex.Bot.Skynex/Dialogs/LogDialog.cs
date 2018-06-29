@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Dialogs.Impl
+﻿namespace Fanex.Bot.Dialogs
 {
     using System;
     using System.Collections.Generic;
@@ -16,6 +16,13 @@
     using Microsoft.Extensions.Configuration;
     using Fanex.Bot.Core.Utilities.Common;
     using Microsoft.Extensions.Caching.Memory;
+
+    public interface ILogDialog : IRootDialog
+    {
+        Task GetAndSendLogAsync();
+
+        Task RestartNotifyingLog(string conversationId);
+    }
 
     public class LogDialog : Dialog, ILogDialog
     {

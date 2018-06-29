@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Dialogs.Impl
+﻿namespace Fanex.Bot.Dialogs
 {
     using System;
     using System.Collections.Generic;
@@ -11,6 +11,11 @@
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
+
+    public interface IGitLabDialog : IRootDialog
+    {
+        Task HandlePushEventAsync(PushEvent pushEvent);
+    }
 
     public class GitLabDialog : Dialog, IGitLabDialog
     {

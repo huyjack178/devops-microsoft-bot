@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Dialogs.Impl
+﻿namespace Fanex.Bot.Dialogs
 {
     using System;
     using System.Threading.Tasks;
@@ -6,6 +6,15 @@
     using Fanex.Bot.Utilitites.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
+
+    public interface IDialog
+    {
+        IConversation Conversation { get; }
+
+        Task RegisterMessageInfo(IMessageActivity activity);
+
+        Task RemoveConversationData(IMessageActivity activity);
+    }
 
     public class Dialog : IDialog
     {

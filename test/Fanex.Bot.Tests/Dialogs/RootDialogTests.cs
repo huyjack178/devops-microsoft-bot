@@ -1,7 +1,7 @@
 ﻿namespace Fanex.Bot.Tests.Dialogs
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Dialogs.Impl;
+    using Fanex.Bot.Dialogs;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using NSubstitute;

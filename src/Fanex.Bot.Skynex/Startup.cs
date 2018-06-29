@@ -3,7 +3,6 @@
     using System.Linq;
     using Fanex.Bot.Core.Utilities.Web;
     using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Dialogs.Impl;
     using Fanex.Bot.Filters;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;

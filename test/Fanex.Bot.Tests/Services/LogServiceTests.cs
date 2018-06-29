@@ -38,7 +38,7 @@
             };
 
             _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
-                new Uri("http://log.com/PublicLog/Logs"),
+                new Uri("http://log.com/Bot/Logs"),
                 Arg.Is<GetLogFormData>(data =>
                     data.From == fromDate.AddHours(7).ToString(CultureInfo.InvariantCulture) &&
                     data.To == toDate.AddHours(7).ToString(CultureInfo.InvariantCulture) &&
@@ -68,7 +68,7 @@
             var expectedLogList = new List<Log>();
 
             _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
-                new Uri("http://log.com/PublicLog/Logs"), Arg.Any<GetLogFormData>())
+                new Uri("http://log.com/Bot/Logs"), Arg.Any<GetLogFormData>())
                 .Returns(expectedLogList);
 
             // Act
@@ -84,7 +84,7 @@
             // Arrange
             var logId = 1;
             var expectedLog = new Log { LogId = 1 };
-            _webClient.GetJsonAsync<Log>(new Uri("http://log.com/PublicLog/Log" + $"?logId={logId}")).Returns(expectedLog);
+            _webClient.GetJsonAsync<Log>(new Uri("http://log.com/Bot/Log" + $"?logId={logId}")).Returns(expectedLog);
 
             // Act
             var actualLog = await _logService.GetErrorLogDetail(logId);

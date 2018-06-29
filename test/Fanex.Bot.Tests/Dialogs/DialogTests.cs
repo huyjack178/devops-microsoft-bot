@@ -3,7 +3,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Dialogs.Impl;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.GitLab;
     using Fanex.Bot.Models.Log;

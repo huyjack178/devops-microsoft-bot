@@ -1,13 +1,9 @@
 ﻿namespace Fanex.Bot.Tests.Dialogs
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
-    using System.Text;
     using System.Threading.Tasks;
     using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Dialogs.Impl;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.Log;
     using Fanex.Bot.Services;

@@ -9,6 +9,13 @@
     using Fanex.Bot.Models.Log;
     using Microsoft.Extensions.Configuration;
 
+    public interface ILogService
+    {
+        Task<IEnumerable<Log>> GetErrorLogs(DateTime? fromDate = null, DateTime? toDate = null, bool isProduction = true);
+
+        Task<Log> GetErrorLogDetail(long logId);
+    }
+
     public class LogService : ILogService
     {
         private readonly IWebClient _webClient;
@@ -26,7 +33,7 @@
             bool isProduction = true)
         {
             var errorLogs = await _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
-                new Uri($"{_mSiteUrl}/PublicLog/Logs"),
+                new Uri($"{_mSiteUrl}/Bot/Logs"),
                 new GetLogFormData
                 {
                     From = (fromDate ?? DateTime.UtcNow.AddSeconds(-70)).AddHours(7).ToString(CultureInfo.InvariantCulture),
@@ -46,7 +53,7 @@
         public async Task<Log> GetErrorLogDetail(long logId)
         {
             var logMessageDetail = await _webClient.GetJsonAsync<Log>(
-                new Uri($"{_mSiteUrl}/PublicLog/Log?logId={logId}"));
+                new Uri($"{_mSiteUrl}/Bot/Log?logId={logId}"));
 
             return logMessageDetail;
         }
