@@ -1,7 +1,7 @@
-﻿namespace Fanex.Bot.Controllers
+﻿namespace Fanex.Bot.Skynex.Controllers
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Utilitites.Bot;
+    using Fanex.Bot.Skynex.Utilities.Bot;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

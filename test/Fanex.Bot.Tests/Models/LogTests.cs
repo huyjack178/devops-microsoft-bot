@@ -1,13 +1,9 @@
 ﻿namespace Fanex.Bot.Tests.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using AutoFixture;
-    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Skynex.Models.Log;
     using Xunit;
 
     public class LogTests

@@ -5,8 +5,8 @@
     using System.Globalization;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Services;
+    using Fanex.Bot.Skynex.Models.Log;
+    using Fanex.Bot.Skynex.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using Xunit;

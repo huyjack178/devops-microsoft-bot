@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Models
+﻿namespace Fanex.Bot.Skynex.Models
 {
     using System;
     using System.ComponentModel.DataAnnotations;

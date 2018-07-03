@@ -1,8 +1,8 @@
-﻿namespace Fanex.Bot.Utilities.Log
+﻿namespace Fanex.Bot.Skynex.Utilities.Log
 {
     using System;
     using System.Web;
-    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Skynex.Models.Log;
 
     public static class LogFormatter
     {
@@ -73,11 +73,19 @@
             {
                 var serverIndex = rawMessage.IndexOf("Server:", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
                 var customInfo = rawMessage.IndexOf("CUSTOM INFO", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
+                var exceptionInfo = rawMessage.IndexOf("EXCEPTION INFO", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
                 var databaseInfo = "No information";
 
                 if (serverIndex > 0 && customInfo > 0)
                 {
                     databaseInfo = rawMessage.Substring(serverIndex, customInfo - serverIndex);
+                }
+                else
+                {
+                    if (serverIndex > 0 && exceptionInfo > 0)
+                    {
+                        databaseInfo = rawMessage.Substring(serverIndex, exceptionInfo - serverIndex);
+                    }
                 }
 
                 returnMessage += $"{Constants.NewLine}**Database:**{Constants.NewLine}{databaseInfo}";

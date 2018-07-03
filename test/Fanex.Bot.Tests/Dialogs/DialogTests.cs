@@ -2,13 +2,12 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.GitLab;
-    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Skynex.Dialogs;
+    using Fanex.Bot.Skynex.Models;
+    using Fanex.Bot.Skynex.Models.GitLab;
+    using Fanex.Bot.Skynex.Models.Log;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.Bot.Connector;
-    using Microsoft.EntityFrameworkCore;
     using NSubstitute;
     using Xunit;
 
@@ -21,6 +20,55 @@
         {
             _conversationFixture = conversationFixture;
             _dialog = new Dialog(_conversationFixture.BotDbContext, conversationFixture.Conversation);
+        }
+
+        [Fact]
+        public async Task HandleMessageAsync_MessageGroup_SendGroupId()
+        {
+            // Arrange
+            var message = "group";
+            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324" });
+
+            // Act
+            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+
+            // Assert
+            await _conversationFixture
+                .Conversation
+                .Received()
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Your group id is: 13324"));
+        }
+
+        [Fact]
+        public async Task HandleMessageAsync_MessageHelp_SendCommand()
+        {
+            // Arrange
+            var message = "help";
+
+            // Act
+            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+
+            // Assert
+            await _conversationFixture
+                .Conversation
+                .Received()
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
+        }
+
+        [Fact]
+        public async Task HandleMessageAsync_AnyMessage_SendDefaultMessage()
+        {
+            // Arrange
+            var message = "any";
+
+            // Act
+            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+
+            // Assert
+            await _conversationFixture
+                .Conversation
+                .Received()
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please send **help** to get my commands"));
         }
 
         [Fact]

@@ -3,8 +3,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
-    using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Utilitites.Bot;
+    using Fanex.Bot.Skynex.Dialogs;
+    using Fanex.Bot.Skynex.Utilities.Bot;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Connector;
@@ -14,24 +14,24 @@
     public class MessagesController : Controller
     {
         private readonly IDialog _dialog;
-        private readonly IRootDialog _rootDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
+        private readonly ILineDialog _lineDialog;
         private readonly IConversation _conversation;
         private readonly IConfiguration _configuration;
 
         public MessagesController(
             IDialog dialog,
-            IRootDialog rootDialog,
             ILogDialog logDialog,
             IGitLabDialog gitLabDialog,
+            ILineDialog lineDialog,
             IConversation conversation,
             IConfiguration configuration)
         {
             _dialog = dialog;
-            _rootDialog = rootDialog;
             _logDialog = logDialog;
             _gitLabDialog = gitLabDialog;
+            _lineDialog = lineDialog;
             _conversation = conversation;
             _configuration = configuration;
         }
@@ -43,12 +43,11 @@
             switch (activity.Type)
             {
                 case ActivityTypes.Message:
-                    await HandleMessage(activity);
+                    await HandleMessage(await HandleForChannels(activity));
                     break;
 
                 case ActivityTypes.ConversationUpdate:
-                    await HandleConverstationUpdate(activity);
-
+                    await HandleConversationUpdate(activity);
                     break;
 
                 case ActivityTypes.ContactRelationUpdate:
@@ -87,11 +86,11 @@
             }
             else
             {
-                await _rootDialog.HandleMessageAsync(activity, message);
+                await _dialog.HandleMessageAsync(activity, message);
             }
         }
 
-        private async Task HandleConverstationUpdate(Activity activity)
+        private async Task HandleConversationUpdate(Activity activity)
         {
             var conversationUpdate = activity.AsConversationUpdateActivity();
             var botId = _configuration.GetSection("BotId")?.Value;
@@ -109,7 +108,7 @@
                 await _dialog.RegisterMessageInfo(activity);
             }
 
-            await _conversation.SendAsync(activity, "Hello. I am SkyNex.");
+            await _conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
         }
 
         private async Task HandleContactRelationUpdate(Activity activity)
@@ -121,8 +120,20 @@
             else
             {
                 await _dialog.RegisterMessageInfo(activity);
-                await _conversation.SendAsync(activity, "Hello. I am SkyNex.");
+                await _conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
             }
+        }
+
+        private async Task<Activity> HandleForChannels(Activity activity)
+        {
+            if (activity.From?.Name?.ToLowerInvariant() == "line")
+            {
+                activity.Conversation.Id = activity.From.Id;
+                activity.ChannelId = "line";
+                await _lineDialog.RegisterMessageInfo(activity);
+            }
+
+            return activity;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Services
+﻿namespace Fanex.Bot.Skynex.Services
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Skynex.Models.Log;
     using Microsoft.Extensions.Configuration;
 
     public interface ILogService
@@ -21,7 +21,9 @@
         private readonly IWebClient _webClient;
         private readonly string _mSiteUrl;
 
-        public LogService(IWebClient webClient, IConfiguration configuration)
+        public LogService(
+            IWebClient webClient,
+            IConfiguration configuration)
         {
             _webClient = webClient;
             _mSiteUrl = configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value;

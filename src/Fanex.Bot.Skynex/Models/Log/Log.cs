@@ -1,8 +1,8 @@
-﻿namespace Fanex.Bot.Models.Log
+﻿namespace Fanex.Bot.Skynex.Models.Log
 {
     using System;
     using System.Net;
-    using Fanex.Bot.Utilities.Log;
+    using Fanex.Bot.Skynex.Utilities.Log;
 
     public class Log
     {

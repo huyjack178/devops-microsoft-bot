@@ -49,7 +49,17 @@
             request.AddParameter("application/json", jsonData, ParameterType.RequestBody);
 
             var response = await _restClient.ExecuteTaskAsync(request);
+            TimeoutCheck(request, response);
+
             return response;
+        }
+
+        private static void TimeoutCheck(IRestRequest request, IRestResponse response)
+        {
+            if (response.StatusCode == 0)
+            {
+                throw new TimeoutException($"The request timed out! {request.Parameters[0].Value}");
+            }
         }
 
 #pragma warning restore S3216 // "ConfigureAwait(false)" should be used

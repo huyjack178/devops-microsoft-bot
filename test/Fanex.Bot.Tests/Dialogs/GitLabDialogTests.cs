@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.GitLab;
+    using Fanex.Bot.Skynex.Dialogs;
+    using Fanex.Bot.Skynex.Models;
+    using Fanex.Bot.Skynex.Models.GitLab;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
@@ -39,7 +39,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please input project url"));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please input project url"));
         }
 
         [Theory]
@@ -59,7 +59,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will receive notification of project **gitlab.nexdev.vn**"));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will receive notification of project **gitlab.nexdev.vn**"));
         }
 
         [Fact]
@@ -94,7 +94,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will receive notification of project **gitlab.nexdev.vn**"));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will receive notification of project **gitlab.nexdev.vn**"));
 
             Assert.True(_conversationFixture.BotDbContext.GitLabInfo.AsNoTracking()
                 .Any(info => info.ConversationId == "5" && info.ProjectUrl == "gitlab.nexdev.vn"));
@@ -114,7 +114,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please input project url"));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please input project url"));
         }
 
         [Fact]
@@ -131,7 +131,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Project not found"));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Project not found"));
         }
 
         [Fact]
@@ -152,7 +152,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will not receive notification of project **gitlab.nexdev.vn/Bot**"));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will not receive notification of project **gitlab.nexdev.vn/Bot**"));
         }
 
         [Fact]
@@ -207,7 +207,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
         }
     }
 }

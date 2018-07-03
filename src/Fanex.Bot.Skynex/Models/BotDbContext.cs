@@ -1,7 +1,6 @@
-﻿namespace Fanex.Bot.Models
+﻿namespace Fanex.Bot.Skynex.Models
 {
-    using Fanex.Bot.Models.GitLab;
-    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Skynex.Models.GitLab;
     using Fanex.Bot.Skynex.Models.Log;
     using Microsoft.EntityFrameworkCore;
 

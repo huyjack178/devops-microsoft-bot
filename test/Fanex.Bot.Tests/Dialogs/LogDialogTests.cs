@@ -3,11 +3,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Services;
+    using Fanex.Bot.Skynex.Dialogs;
+    using Fanex.Bot.Skynex.Models;
     using Fanex.Bot.Skynex.Models.Log;
+    using Fanex.Bot.Skynex.Services;
     using Fanex.Bot.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
@@ -58,7 +57,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(
+                .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
                     Arg.Is("You need to add [LogCategory], otherwise, you will not get any log info"));
         }
@@ -82,7 +81,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(
+                .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
                     Arg.Is("Add log categories is disabled, please contact NexOps."));
         }
@@ -113,7 +112,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(
+                .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
                     Arg.Is($"You will receive log with categories contain **[alpha]**"));
         }
@@ -143,7 +142,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(
+                .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
                     Arg.Is($"You will receive log with categories contain **[alpha]**"));
         }
@@ -165,7 +164,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(
+                .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
                     Arg.Is("You need to add [LogCategory], otherwise, you will not get any log info"));
         }
@@ -184,7 +183,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(
+                .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
                     Arg.Is("You don't have any log categories data"));
         }
@@ -211,7 +210,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(
+                .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
                     Arg.Is($"You will not receive log with categories contain **[nap]**"));
         }
@@ -248,7 +247,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(
+              .ReplyAsync(
                   Arg.Is(_conversationFixture.Activity),
                   Arg.Is($"Log has been started!"));
         }
@@ -279,7 +278,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(
+              .ReplyAsync(
                   Arg.Is(_conversationFixture.Activity),
                   Arg.Is($"Log has been stopped for 10 minutes"));
         }
@@ -304,7 +303,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(
+              .ReplyAsync(
                   Arg.Is(_conversationFixture.Activity),
                   Arg.Is($"Log has been stopped for 3 hours"));
         }
@@ -496,7 +495,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(
+              .ReplyAsync(
                   Arg.Is(_conversationFixture.Activity),
                   Arg.Is($"Your log status \n\n**Log Categories:** [alpha;nap]\n\n**{expectedActiveResult}**\n\n"));
         }
@@ -514,7 +513,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(
+              .ReplyAsync(
                   Arg.Is(_conversationFixture.Activity),
                   Arg.Is("I need [LogId]."));
         }
@@ -539,7 +538,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(
+              .ReplyAsync(
                   Arg.Is(_conversationFixture.Activity),
                   Arg.Is(expectedLogMesasge));
         }
@@ -558,7 +557,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
+                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
         }
     }
 }

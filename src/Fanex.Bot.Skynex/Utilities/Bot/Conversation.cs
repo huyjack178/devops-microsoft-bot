@@ -1,36 +1,61 @@
-﻿namespace Fanex.Bot.Utilitites.Bot
+﻿namespace Fanex.Bot.Skynex.Utilities.Bot
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
+    using Fanex.Bot.Skynex.Models;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
+    public interface IConversation
+    {
+        Task ReplyAsync(IMessageActivity activity, string message);
+
+        Task SendAsync(MessageInfo messageInfo);
+
+        Task<string> SendAsync(string conversationId, string message);
+
+        Task SendAdminAsync(string message);
+    }
+
+#pragma warning disable S1450 // Private fields only used as local variables in methods should become local variables
+
     public class Conversation : IConversation
     {
-        private readonly IConfiguration _configuration;
         private readonly BotDbContext _dbContext;
         private readonly ILogger<Conversation> _logger;
+        private readonly ISkypeConversation _skypeConversation;
+        private readonly ILineConversation _lineConversation;
 
         public Conversation(
             IConfiguration configuration,
             BotDbContext dbContext,
-            ILogger<Conversation> logger)
+            ILogger<Conversation> logger,
+            ISkypeConversation skypeConversation,
+            ILineConversation lineConversation)
         {
-            _configuration = configuration;
             _dbContext = dbContext;
             _logger = logger;
+            _skypeConversation = skypeConversation;
+            _lineConversation = lineConversation;
         }
 
-        public async Task SendAsync(IMessageActivity activity, string message)
-        {
-            var connector = CreateConnectorClient(new Uri(activity.ServiceUrl));
-            var reply = (activity as Activity).CreateReply(message);
+#pragma warning disable S1301 // "switch" statements should have at least 3 "case" clauses
 
-            await connector.Conversations.ReplyToActivityAsync(reply);
+        public async Task ReplyAsync(IMessageActivity activity, string message)
+        {
+            switch (activity.ChannelId)
+            {
+                case Channel.Line:
+                    await _lineConversation.ReplyAsync(activity, message);
+                    break;
+
+                default:
+                    await _skypeConversation.ReplyAsync(activity, message);
+                    break;
+            }
         }
 
         public async Task SendAdminAsync(string message)
@@ -39,24 +64,19 @@
 
             foreach (var adminMessageInfo in adminMessageInfos)
             {
-                var connector = CreateConnectorClient(new Uri(adminMessageInfo.ServiceUrl));
-                var adminMessage = CreateMessageActivity(adminMessageInfo);
-                adminMessage.Text = message;
+                adminMessageInfo.Text = message;
 
-                await connector.Conversations.SendToConversationAsync((Activity)adminMessage);
+                await ForwardMessage(adminMessageInfo);
             }
         }
 
         public async Task SendAsync(MessageInfo messageInfo)
         {
-            var connector = CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
-            var message = CreateMessageActivity(messageInfo);
             try
             {
                 if (!string.IsNullOrEmpty(messageInfo.Text))
                 {
-                    message.Text = messageInfo.Text;
-                    await connector.Conversations.SendToConversationAsync((Activity)message);
+                    await ForwardMessage(messageInfo);
                 }
             }
             catch (Exception ex)
@@ -92,23 +112,22 @@
             }
         }
 
-        public ConnectorClient CreateConnectorClient(Uri serviceUrl)
-           => new ConnectorClient(
-                serviceUrl,
-                _configuration.GetSection("MicrosoftAppId").Value,
-                _configuration.GetSection("MicrosoftAppPassword").Value);
-
-        private static IMessageActivity CreateMessageActivity(MessageInfo messageInfo)
+        private async Task ForwardMessage(MessageInfo message)
         {
-            var userAccount = new ChannelAccount(messageInfo.ToId, messageInfo.ToName);
-            var botAccount = new ChannelAccount(messageInfo.FromId, messageInfo.FromName);
-            var message = Activity.CreateMessageActivity();
-            message.ChannelId = messageInfo.ChannelId;
-            message.From = botAccount;
-            message.Recipient = userAccount;
-            message.Conversation = new ConversationAccount(id: messageInfo.ConversationId);
+            switch (message.ChannelId)
+            {
+                case Channel.Line:
+                    await _lineConversation.SendAsync(message);
+                    break;
 
-            return message;
+                default:
+                    await _skypeConversation.SendAsync(message);
+                    break;
+            }
         }
+
+#pragma warning restore S1301 // "switch" statements should have at least 3 "case" clauses
     }
+
+#pragma warning restore S1450 // Private fields only used as local variables in methods should become local variables
 }

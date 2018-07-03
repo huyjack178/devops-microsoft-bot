@@ -2,11 +2,11 @@
 {
     using System.Linq;
     using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Dialogs;
     using Fanex.Bot.Filters;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Services;
-    using Fanex.Bot.Utilitites.Bot;
+    using Fanex.Bot.Skynex.Dialogs;
+    using Fanex.Bot.Skynex.Models;
+    using Fanex.Bot.Skynex.Services;
+    using Fanex.Bot.Skynex.Utilities.Bot;
     using Hangfire;
     using Hangfire.Dashboard;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,22 +29,13 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMemoryCache();
-            services.AddSingleton(_ => Configuration);
-            services.AddSingleton<IRestClient, RestClient>();
-            services.AddSingleton<IWebClient, WebClient>();
-
-            RegisterHangfire(services);
-
-            services.AddDbContext<BotDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddScoped<GitLabAttribute>();
-
-            RegisterBotServices(services);
-            RegisterBotDialogs(services);
-            RegisterBotAuthentication(services);
+            ConfigureCommonMiddlewares(services);
+            ConfigureHangfire(services);
+            ConfigureDbContext(services);
+            ConfigureAttributes(services);
+            ConfigureBotServices(services);
+            ConfigureBotDialogs(services);
+            ConfigureBotAuthentication(services);
 
             services.AddMvc(options =>
             {
@@ -66,7 +57,27 @@
             app.UseMvc();
         }
 
-        private void RegisterHangfire(IServiceCollection services)
+        private static void ConfigureAttributes(IServiceCollection services)
+        {
+            services.AddScoped<GitLabAttribute>();
+        }
+
+        private void ConfigureDbContext(IServiceCollection services)
+        {
+            services.AddDbContext<BotDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
+        }
+
+        private void ConfigureCommonMiddlewares(IServiceCollection services)
+        {
+            services.AddMemoryCache();
+            services.AddSingleton(_ => Configuration);
+            services.AddSingleton<IRestClient, RestClient>();
+            services.AddSingleton<IWebClient, WebClient>();
+        }
+
+        private void ConfigureHangfire(IServiceCollection services)
         {
             services.AddHangfire(config =>
                 config.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
@@ -74,7 +85,23 @@
             services.AddSingleton<IBackgroundJobClient, BackgroundJobClient>();
         }
 
-        private void RegisterBotAuthentication(IServiceCollection services)
+        private static void ConfigureBotServices(IServiceCollection services)
+        {
+            services.AddSingleton<ILogService, LogService>();
+        }
+
+        private static void ConfigureBotDialogs(IServiceCollection services)
+        {
+            services.AddScoped<ILineConversation, LineConversation>();
+            services.AddScoped<ISkypeConversation, SkypeConversation>();
+            services.AddScoped<IConversation, Conversation>();
+            services.AddScoped<IDialog, Dialog>();
+            services.AddScoped<ILogDialog, LogDialog>();
+            services.AddScoped<IGitLabDialog, GitLabDialog>();
+            services.AddScoped<ILineDialog, LineDialog>();
+        }
+
+        private void ConfigureBotAuthentication(IServiceCollection services)
         {
             var credentialProvider = new StaticCredentialProvider(
                 Configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
@@ -90,20 +117,6 @@
                 .AddBotAuthentication(credentialProvider);
 
             services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
-        }
-
-        private static void RegisterBotServices(IServiceCollection services)
-        {
-            services.AddSingleton<ILogService, LogService>();
-        }
-
-        private static void RegisterBotDialogs(IServiceCollection services)
-        {
-            services.AddScoped<IConversation, Conversation>();
-            services.AddScoped<IDialog, Dialog>();
-            services.AddScoped<IRootDialog, RootDialog>();
-            services.AddScoped<ILogDialog, LogDialog>();
-            services.AddScoped<IGitLabDialog, GitLabDialog>();
         }
     }
 }

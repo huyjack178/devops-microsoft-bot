@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Models.Log
+﻿namespace Fanex.Bot.Skynex.Models.Log
 {
     public class GetLogFormData
     {

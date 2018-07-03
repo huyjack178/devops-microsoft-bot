@@ -1,12 +1,9 @@
 ﻿namespace Fanex.Bot.Tests.Controllers
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Controllers;
-    using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Connector;
@@ -17,23 +14,24 @@
     {
         private readonly BotConversationFixture _conversationFixture;
         private readonly IDialog _dialog;
-        private readonly IRootDialog _rootDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
+        private readonly ILineDialog _lineDialog;
         private readonly MessagesController _messagesController;
 
         public MessagesControllerTests(BotConversationFixture conversationFixture)
         {
             _conversationFixture = conversationFixture;
             _dialog = Substitute.For<IDialog>();
-            _rootDialog = Substitute.For<IRootDialog>();
             _logDialog = Substitute.For<ILogDialog>();
             _gitLabDialog = Substitute.For<IGitLabDialog>();
+            _lineDialog = Substitute.For<ILineDialog>();
+
             _messagesController = new MessagesController(
                 _dialog,
-                _rootDialog,
                 _logDialog,
                 _gitLabDialog,
+                _lineDialog,
                 _conversationFixture.Conversation,
                 _conversationFixture.Configuration);
         }
@@ -65,7 +63,7 @@
         }
 
         [Fact]
-        public async Task Post_ActivityMessage_HandMessageCommand_OtherCommand_CallRootDialog()
+        public async Task Post_ActivityMessage_HandMessageCommand_OtherCommand_CallDialog()
         {
             // Arrange
             var activity = new Activity { Type = ActivityTypes.Message, Text = "group" };
@@ -74,7 +72,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _rootDialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
+            await _dialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
         }
 
         [Fact]
@@ -87,7 +85,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _rootDialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
+            await _dialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
         }
 
         [Fact]
@@ -103,7 +101,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+                .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
         }
 
         [Fact]
@@ -142,7 +140,7 @@
             await _conversationFixture
                .Conversation
                .Received()
-               .SendAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+               .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
         }
 
         [Fact]
@@ -184,7 +182,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+              .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
         }
 
         [Fact]

@@ -1,23 +1,23 @@
-﻿namespace Fanex.Bot.Dialogs
+﻿namespace Fanex.Bot.Skynex.Dialogs
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Services;
-    using Fanex.Bot.Utilitites.Bot;
+    using Fanex.Bot.Core.Utilities.Common;
+    using Fanex.Bot.Skynex.Models;
+    using Fanex.Bot.Skynex.Models.Log;
+    using Fanex.Bot.Skynex.Services;
+    using Fanex.Bot.Skynex.Utilities.Bot;
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Fanex.Bot.Core.Utilities.Common;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Configuration;
 
-    public interface ILogDialog : IRootDialog
+    public interface ILogDialog : IDialog
     {
         Task GetAndSendLogAsync();
 
@@ -51,7 +51,7 @@
             _cache = cache;
         }
 
-        public async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
+        public override async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
         {
             if (messageCmd.StartsWith("log add"))
             {
@@ -79,7 +79,7 @@
             }
             else
             {
-                await Conversation.SendAsync(activity, GetCommandMessages());
+                await Conversation.ReplyAsync(activity, GetCommandMessages());
             }
         }
 
@@ -93,11 +93,12 @@
                 return;
             }
 
-            var isDisableAddCategories = Convert.ToBoolean(_configuration.GetSection("LogInfo")?.GetSection("DisableAddCategories")?.Value);
+            var isDisableAddCategories = Convert.ToBoolean(
+                _configuration.GetSection("LogInfo")?.GetSection("DisableAddCategories")?.Value);
 
             if (!CheckAdmin(activity) && isDisableAddCategories)
             {
-                await Conversation.SendAsync(activity, $"Add log categories is disabled, please contact NexOps.");
+                await Conversation.ReplyAsync(activity, $"Add log categories is disabled, please contact NexOps.");
                 return;
             }
 
@@ -105,7 +106,7 @@
             logInfo.LogCategories += $"{logCategories};";
             await SaveLogInfoAsync(logInfo);
 
-            await Conversation.SendAsync(activity, $"You will receive log with categories contain **[{logCategories}]**");
+            await Conversation.ReplyAsync(activity, $"You will receive log with categories contain **[{logCategories}]**");
         }
 
         public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd)
@@ -123,7 +124,7 @@
 
             if (logInfo == null)
             {
-                await Conversation.SendAsync(activity, $"You don't have any log categories data");
+                await Conversation.ReplyAsync(activity, $"You don't have any log categories data");
                 return;
             }
 
@@ -133,7 +134,7 @@
             }
 
             await SaveLogInfoAsync(logInfo);
-            await Conversation.SendAsync(activity, $"You will not receive log with categories contain **[{logCategories}]**");
+            await Conversation.ReplyAsync(activity, $"You will not receive log with categories contain **[{logCategories}]**");
         }
 
         public async Task StartNotifyingLogAsync(IMessageActivity activity)
@@ -147,7 +148,7 @@
             _recurringJobManager.AddOrUpdate(
                 "NotifyLogPeriodically", Job.FromExpression(() => GetAndSendLogAsync()), Cron.Minutely());
 
-            await Conversation.SendAsync(activity, "Log has been started!");
+            await Conversation.ReplyAsync(activity, "Log has been started!");
         }
 
         public async Task StopNotifyingLogAsync(IMessageActivity activity, string messageCmd)
@@ -160,7 +161,7 @@
 
             ScheduleRestartLogJob(activity, logStopDelayTime);
 
-            await Conversation.SendAsync(activity, $"Log has been stopped for {logStopDelayTime.ToReadableString()}");
+            await Conversation.ReplyAsync(activity, $"Log has been stopped for {logStopDelayTime.ToReadableString()}");
         }
 
         public async Task RestartNotifyingLog(string conversationId)
@@ -203,7 +204,7 @@
 
             message += logInfo.IsActive ? $"**Running**\n\n" : $"**Stopped**\n\n";
 
-            await Conversation.SendAsync(activity, message);
+            await Conversation.ReplyAsync(activity, message);
         }
 
         public async Task GetLogDetailAsync(IMessageActivity activity, string messageCmd)
@@ -212,13 +213,13 @@
 
             if (string.IsNullOrEmpty(logId))
             {
-                await Conversation.SendAsync(activity, "I need [LogId].");
+                await Conversation.ReplyAsync(activity, "I need [LogId].");
                 return;
             }
 
             var logDetail = await _logService.GetErrorLogDetail(Convert.ToInt64(logId));
 
-            await Conversation.SendAsync(activity, logDetail.FullMessage);
+            await Conversation.ReplyAsync(activity, logDetail.FullMessage);
         }
 
         #region Private Methods
@@ -263,10 +264,10 @@
                 messageInfo.ConversationId == currentConversationId);
 
             var currentFromId = activity.From.Id;
-            var isFromAdmin = _dbContext.MessageInfo.Any(
-                messageInfo => (messageInfo.IsAdmin &&
-                messageInfo.ConversationId == currentFromId &&
-                messageInfo.ToId == currentFromId));
+            var isFromAdmin = _dbContext.MessageInfo.Any(messageInfo =>
+                    (messageInfo.IsAdmin &&
+                    messageInfo.ConversationId == currentFromId &&
+                    messageInfo.ToId == currentFromId));
 
             return isAdmin || isFromAdmin;
         }
@@ -286,7 +287,6 @@
                                     .Where(category => !string.IsNullOrEmpty(category));
 
             var groupErrorLogs = errorLogs.GroupBy(log => new { log.Category.CategoryName, log.Machine.MachineIP });
-
             foreach (var groupErrorLog in groupErrorLogs)
             {
                 var errorLog = groupErrorLog.First();
@@ -305,7 +305,7 @@
         }
 
         private async Task SendMissingLogCategoriesMessage(IMessageActivity activity)
-            => await Conversation.SendAsync(activity, "You need to add [LogCategory], otherwise, you will not get any log info");
+            => await Conversation.ReplyAsync(activity, "You need to add [LogCategory], otherwise, you will not get any log info");
 
         private static TimeSpan GenerateLogStopTime(string messageCmd)
         {

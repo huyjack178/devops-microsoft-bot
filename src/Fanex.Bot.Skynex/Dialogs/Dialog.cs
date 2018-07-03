@@ -1,15 +1,17 @@
-﻿namespace Fanex.Bot.Dialogs
+﻿namespace Fanex.Bot.Skynex.Dialogs
 {
     using System;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Utilitites.Bot;
+    using Fanex.Bot.Skynex.Models;
+    using Fanex.Bot.Skynex.Utilities.Bot;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
 
     public interface IDialog
     {
         IConversation Conversation { get; }
+
+        Task HandleMessageAsync(IMessageActivity activity, string messageCmd);
 
         Task RegisterMessageInfo(IMessageActivity activity);
 
@@ -47,7 +49,23 @@
                     $"**group** ==> Get your group ID";
         }
 
-        public async Task RegisterMessageInfo(IMessageActivity activity)
+        public virtual async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
+        {
+            if (messageCmd.StartsWith("group"))
+            {
+                await Conversation.ReplyAsync(activity, $"Your group id is: {activity.Conversation.Id}");
+            }
+            else if (messageCmd.StartsWith("help"))
+            {
+                await Conversation.ReplyAsync(activity, GetCommandMessages());
+            }
+            else
+            {
+                await Conversation.ReplyAsync(activity, "Please send **help** to get my commands");
+            }
+        }
+
+        public virtual async Task RegisterMessageInfo(IMessageActivity activity)
         {
             var messageInfo = await _dbContext.MessageInfo.FirstOrDefaultAsync(
                 e => e.ConversationId == activity.Conversation.Id);
@@ -60,7 +78,7 @@
             }
         }
 
-        public async Task RemoveConversationData(IMessageActivity activity)
+        public virtual async Task RemoveConversationData(IMessageActivity activity)
         {
             var messageInfo = await _dbContext.MessageInfo.SingleOrDefaultAsync(
                 info => info.ConversationId == activity.Conversation.Id);

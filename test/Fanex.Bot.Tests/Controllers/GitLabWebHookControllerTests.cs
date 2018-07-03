@@ -1,9 +1,9 @@
 ﻿namespace Fanex.Bot.Tests.Controllers
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Controllers;
-    using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Models.GitLab;
+    using Fanex.Bot.Skynex.Controllers;
+    using Fanex.Bot.Skynex.Dialogs;
+    using Fanex.Bot.Skynex.Models.GitLab;
     using NSubstitute;
     using Xunit;
 

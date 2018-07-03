@@ -2,10 +2,8 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Fanex.Bot.Controllers;
-    using Fanex.Bot.Dialogs;
-    using Fanex.Bot.Models.GitLab;
-    using Fanex.Bot.Utilitites.Bot;
+    using Fanex.Bot.Skynex.Controllers;
+    using Fanex.Bot.Skynex.Utilities.Bot;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

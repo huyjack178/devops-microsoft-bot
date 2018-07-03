@@ -1,9 +1,9 @@
-﻿namespace Fanex.Bot.Controllers
+﻿namespace Fanex.Bot.Skynex.Controllers
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Dialogs;
     using Fanex.Bot.Filters;
-    using Fanex.Bot.Models.GitLab;
+    using Fanex.Bot.Skynex.Dialogs;
+    using Fanex.Bot.Skynex.Models.GitLab;
     using Microsoft.AspNetCore.Mvc;
 
     [ServiceFilter(typeof(GitLabAttribute))]
