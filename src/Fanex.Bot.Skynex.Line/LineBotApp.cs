@@ -1,4 +1,6 @@
-﻿namespace Fanex.Bot.Skynex.Line
+﻿#pragma warning disable S3216 // "ConfigureAwait(false)" should be used
+
+namespace Fanex.Bot.Skynex.Line
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -92,3 +94,5 @@
         }
     }
 }
+
+#pragma warning restore S3216 // "ConfigureAwait(false)" should be used

@@ -17,6 +17,8 @@
             _lineBotApp = lineBotApp;
         }
 
+#pragma warning disable S3216 // "ConfigureAwait(false)" should be used
+
         [HttpPost]
         public async Task<HttpResponseMessage> Post(HttpRequestMessage request)
         {
@@ -26,5 +28,7 @@
 
             return Request.CreateResponse(HttpStatusCode.OK);
         }
+
+#pragma warning restore S3216 // "ConfigureAwait(false)" should be used
     }
 }

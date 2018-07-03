@@ -31,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>Fanex.Bot.Skynex.Line.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +41,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>Fanex.Bot.Skynex.Line.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -89,16 +91,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Fanex.Bot.Skynex.Line.ruleset" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\LOCAL-103.pubxml" />
     <None Include="Properties\PublishProfiles\LOCAL-104.pubxml" />
-    <Content Include="Web.local.config" />
-    <Content Include="Web.local.Debug.config">
-      <DependentUpon>Web.local.config</DependentUpon>
-    </Content>
-    <Content Include="Web.local.Release.config">
-      <DependentUpon>Web.local.config</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Line.Messaging">

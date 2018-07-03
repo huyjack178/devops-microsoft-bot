@@ -287,14 +287,16 @@
                                     .Where(category => !string.IsNullOrEmpty(category));
 
             var groupErrorLogs = errorLogs.GroupBy(log => new { log.Category.CategoryName, log.Machine.MachineIP });
+
             foreach (var groupErrorLog in groupErrorLogs)
             {
                 var errorLog = groupErrorLog.First();
                 var logCategory = errorLog.Category.CategoryName.ToLowerInvariant();
-                var hasLogCategory = filterCategories.Any(filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant()));
+                var hasLogCategory = filterCategories.Any(
+                        filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant()));
                 var hasIgnoreMessage = await _dbContext.LogIgnoreMessage.AnyAsync(
                         message => logCategory.Contains(message.Category.ToLowerInvariant()) &&
-                        errorLog.Message.ToLowerInvariant().Contains(message.IgnoreMessage));
+                        errorLog.Message.ToLowerInvariant().Contains(message.IgnoreMessage.ToLowerInvariant()));
 
                 if (hasLogCategory && !hasIgnoreMessage)
                 {

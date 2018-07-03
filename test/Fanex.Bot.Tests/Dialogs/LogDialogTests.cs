@@ -424,7 +424,7 @@
             var dbContext = _conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "2342342342311cd1" });
             dbContext.LogInfo.Add(new LogInfo { ConversationId = "2342342342311cd1", LogCategories = "alpha;nap", IsActive = true });
-            dbContext.LogIgnoreMessage.Add(new LogIgnoreMessage { Category = "alpha", IgnoreMessage = "thread was being aborted" });
+            dbContext.LogIgnoreMessage.Add(new LogIgnoreMessage { Category = "alpha", IgnoreMessage = "Thread was being aborted" });
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
