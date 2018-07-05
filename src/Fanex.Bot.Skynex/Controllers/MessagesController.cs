@@ -1,6 +1,9 @@
 ﻿namespace Fanex.Bot.Controllers
 {
+    using System;
+    using System.Collections;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
     using Fanex.Bot.Skynex.Dialogs;
@@ -17,6 +20,7 @@
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
         private readonly ILineDialog _lineDialog;
+        private readonly IUMDialog _umDialog;
         private readonly IConversation _conversation;
         private readonly IConfiguration _configuration;
 
@@ -25,6 +29,7 @@
             ILogDialog logDialog,
             IGitLabDialog gitLabDialog,
             ILineDialog lineDialog,
+            IUMDialog umDialog,
             IConversation conversation,
             IConfiguration configuration)
         {
@@ -32,6 +37,7 @@
             _logDialog = logDialog;
             _gitLabDialog = gitLabDialog;
             _lineDialog = lineDialog;
+            _umDialog = umDialog;
             _conversation = conversation;
             _configuration = configuration;
         }
@@ -73,8 +79,7 @@
 
         private async Task HandleMessage(IMessageActivity activity)
         {
-            var message = activity.Text.ToLowerInvariant().Trim();
-            message = BotHelper.GenerateMessage(message);
+            var message = BotHelper.GenerateMessage(activity.Text);
 
             if (message.StartsWith("log"))
             {
@@ -83,6 +88,10 @@
             else if (message.StartsWith("gitlab"))
             {
                 await _gitLabDialog.HandleMessageAsync(activity, message);
+            }
+            else if (message.StartsWith(MessageCommand.UM))
+            {
+                await _umDialog.HandleMessageAsync(activity, message);
             }
             else
             {
@@ -126,10 +135,10 @@
 
         private async Task<Activity> HandleForChannels(Activity activity)
         {
-            if (activity.From?.Name?.ToLowerInvariant() == "line")
+            if (activity.From?.Name?.ToLowerInvariant() == Channel.Line)
             {
                 activity.Conversation.Id = activity.From.Id;
-                activity.ChannelId = "line";
+                activity.ChannelId = Channel.Line;
                 await _lineDialog.RegisterMessageInfo(activity);
             }
 

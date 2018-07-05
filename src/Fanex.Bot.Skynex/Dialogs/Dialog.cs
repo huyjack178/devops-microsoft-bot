@@ -11,7 +11,7 @@
     {
         IConversation Conversation { get; }
 
-        Task HandleMessageAsync(IMessageActivity activity, string messageCmd);
+        Task HandleMessageAsync(IMessageActivity activity, string message);
 
         Task RegisterMessageInfo(IMessageActivity activity);
 
@@ -20,21 +20,25 @@
 
     public class Dialog : IDialog
     {
-        private readonly BotDbContext _dbContext;
-
         public Dialog(
             BotDbContext dbContext,
             IConversation conversation)
         {
-            _dbContext = dbContext;
+            DbContext = dbContext;
             Conversation = conversation;
         }
 
         public IConversation Conversation { get; }
 
+        public BotDbContext DbContext { get; }
+
+        public static string CommandMessages { get; protected set; }
+            = $"Skynex's available commands:{Constants.NewLine}";
+
         public static string GetCommandMessages()
         {
             return $"Skynex's available commands:{Constants.NewLine}" +
+                    $"**group** ==> Get your group ID" +
                     $"**log add [Contains-LogCategory]** " +
                         $"==> Register to get log which has category name **contains [Contains-LogCategory]**. " +
                         $"Example: log add Alpha;NAP {Constants.NewLine}" +
@@ -46,28 +50,30 @@
                     $"**log status** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
                     $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +
                     $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{Constants.NewLine}" +
-                    $"**group** ==> Get your group ID";
+                    $"**um start** ==> Start get notification when UM starts {Constants.NewLine}" +
+                    $"**um addPage [PageUrl]** ==> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
         }
 
-        public virtual async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
+        public virtual async Task HandleMessageAsync(IMessageActivity activity, string message)
         {
-            if (messageCmd.StartsWith("group"))
+            if (message.StartsWith("group"))
             {
                 await Conversation.ReplyAsync(activity, $"Your group id is: {activity.Conversation.Id}");
+                return;
             }
-            else if (messageCmd.StartsWith("help"))
+
+            if (message.StartsWith("help"))
             {
                 await Conversation.ReplyAsync(activity, GetCommandMessages());
+                return;
             }
-            else
-            {
-                await Conversation.ReplyAsync(activity, "Please send **help** to get my commands");
-            }
+
+            await Conversation.ReplyAsync(activity, "Please send **help** to get my commands");
         }
 
         public virtual async Task RegisterMessageInfo(IMessageActivity activity)
         {
-            var messageInfo = await _dbContext.MessageInfo.FirstOrDefaultAsync(
+            var messageInfo = await DbContext.MessageInfo.FirstOrDefaultAsync(
                 e => e.ConversationId == activity.Conversation.Id);
 
             if (messageInfo == null)
@@ -80,31 +86,31 @@
 
         public virtual async Task RemoveConversationData(IMessageActivity activity)
         {
-            var messageInfo = await _dbContext.MessageInfo.SingleOrDefaultAsync(
+            var messageInfo = await DbContext.MessageInfo.SingleOrDefaultAsync(
                 info => info.ConversationId == activity.Conversation.Id);
 
             if (messageInfo != null)
             {
-                _dbContext.MessageInfo.Remove(messageInfo);
+                DbContext.MessageInfo.Remove(messageInfo);
             }
 
-            var logInfo = await _dbContext.LogInfo.SingleOrDefaultAsync(
+            var logInfo = await DbContext.LogInfo.SingleOrDefaultAsync(
                 info => info.ConversationId == activity.Conversation.Id);
 
             if (logInfo != null)
             {
-                _dbContext.LogInfo.Remove(logInfo);
+                DbContext.LogInfo.Remove(logInfo);
             }
 
-            var gitlabInfo = await _dbContext.GitLabInfo.SingleOrDefaultAsync(
+            var gitlabInfo = await DbContext.GitLabInfo.SingleOrDefaultAsync(
                info => info.ConversationId == activity.Conversation.Id);
 
             if (gitlabInfo != null)
             {
-                _dbContext.GitLabInfo.Remove(gitlabInfo);
+                DbContext.GitLabInfo.Remove(gitlabInfo);
             }
 
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
             await Conversation.SendAdminAsync($"Client **{activity.Conversation.Id}** has been removed");
         }
 
@@ -126,12 +132,12 @@
         protected async Task SaveMessageInfoAsync(MessageInfo messageInfo)
         {
             var existMessageInfo = await ExistMessageInfo(messageInfo);
-            _dbContext.Entry(messageInfo).State = existMessageInfo ? EntityState.Modified : EntityState.Added;
+            DbContext.Entry(messageInfo).State = existMessageInfo ? EntityState.Modified : EntityState.Added;
 
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
         }
 
         private async Task<bool> ExistMessageInfo(MessageInfo messageInfo)
-            => await _dbContext.MessageInfo.AnyAsync(e => e.ConversationId == messageInfo.ConversationId);
+            => await DbContext.MessageInfo.AnyAsync(e => e.ConversationId == messageInfo.ConversationId);
     }
 }

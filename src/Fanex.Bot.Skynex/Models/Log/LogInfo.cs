@@ -1,19 +1,9 @@
 ﻿namespace Fanex.Bot.Skynex.Models.Log
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
 
-    public class LogInfo
+    public class LogInfo : BaseInfo
     {
-        [Key]
-        public string ConversationId { get; set; }
-
         public string LogCategories { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedTime { get; set; }
-
-        public DateTime ModifiedTime { get; set; }
     }
 }

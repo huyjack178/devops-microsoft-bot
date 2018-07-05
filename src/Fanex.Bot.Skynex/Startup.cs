@@ -88,6 +88,7 @@
         private static void ConfigureBotServices(IServiceCollection services)
         {
             services.AddSingleton<ILogService, LogService>();
+            services.AddSingleton<IUMService, UMService>();
         }
 
         private static void ConfigureBotDialogs(IServiceCollection services)
@@ -99,6 +100,7 @@
             services.AddScoped<ILogDialog, LogDialog>();
             services.AddScoped<IGitLabDialog, GitLabDialog>();
             services.AddScoped<ILineDialog, LineDialog>();
+            services.AddScoped<IUMDialog, UMDialog>();
         }
 
         private void ConfigureBotAuthentication(IServiceCollection services)

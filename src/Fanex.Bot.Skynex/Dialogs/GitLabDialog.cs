@@ -6,6 +6,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml.Linq;
+    using Fanex.Bot.Core.Utilities.Bot;
     using Fanex.Bot.Skynex.Models;
     using Fanex.Bot.Skynex.Models.GitLab;
     using Fanex.Bot.Skynex.Utilities.Bot;
@@ -22,25 +23,23 @@
         private const string MasterBranchName = "heads/master";
         private const string RemoveProjectCmd = "gitlab removeproject";
         private const string AddProjectCmd = "gitlab addproject";
-        private readonly BotDbContext _dbContext;
 
         public GitLabDialog(
            BotDbContext dbContext,
            IConversation conversation)
            : base(dbContext, conversation)
         {
-            _dbContext = dbContext;
         }
 
-        public override async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
+        public override async Task HandleMessageAsync(IMessageActivity activity, string message)
         {
-            if (messageCmd.StartsWith(AddProjectCmd))
+            if (message.StartsWith(AddProjectCmd))
             {
-                await AddProjectAsync(activity, messageCmd);
+                await AddProjectAsync(activity, message);
             }
-            else if (messageCmd.StartsWith(RemoveProjectCmd))
+            else if (message.StartsWith(RemoveProjectCmd))
             {
-                await DisableProjectAsync(activity, messageCmd);
+                await DisableProjectAsync(activity, message);
             }
             else
             {
@@ -90,13 +89,13 @@
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)
         {
-            bool existInfo = _dbContext.GitLabInfo.AsNoTracking().Any(e =>
+            bool existInfo = DbContext.GitLabInfo.AsNoTracking().Any(e =>
                    e.ConversationId == gitLabInfo.ConversationId &&
                    e.ProjectUrl == gitLabInfo.ProjectUrl);
 
-            _dbContext.Entry(gitLabInfo).State = existInfo ? EntityState.Modified : EntityState.Added;
+            DbContext.Entry(gitLabInfo).State = existInfo ? EntityState.Modified : EntityState.Added;
 
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
         }
 
 #pragma warning disable S3994 // URI Parameters should not be strings
@@ -119,7 +118,7 @@
         }
 
         private async Task<GitLabInfo> GetExistingGitLabInfo(IMessageActivity activity, string formatedProjectUrl)
-            => await _dbContext.GitLabInfo
+            => await DbContext.GitLabInfo
                 .AsNoTracking()
                 .FirstOrDefaultAsync(info =>
                     info.ConversationId == activity.Conversation.Id &&
@@ -169,7 +168,7 @@
                 .Replace("http://", string.Empty)
                 .Replace("https://", string.Empty);
 
-            var gitlabInfos = _dbContext.GitLabInfo.Where(
+            var gitlabInfos = DbContext.GitLabInfo.Where(
                     info => projectUrl.Contains(info.ProjectUrl) &&
                     info.IsActive);
 
@@ -181,21 +180,7 @@
 
         private static string ExtractProjectLink(string projectUrl)
         {
-            string formatedProjectUrl;
-
-            try
-            {
-                formatedProjectUrl = XElement.Parse(projectUrl).Attribute("href").Value;
-            }
-            catch
-            {
-                formatedProjectUrl = string.Empty;
-            }
-
-            if (string.IsNullOrEmpty(formatedProjectUrl))
-            {
-                formatedProjectUrl = projectUrl;
-            }
+            string formatedProjectUrl = BotHelper.ExtractProjectLink(projectUrl);
 
             return formatedProjectUrl
                     .Replace("http://", string.Empty)

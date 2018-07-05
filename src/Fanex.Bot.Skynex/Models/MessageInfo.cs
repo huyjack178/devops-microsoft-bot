@@ -1,14 +1,9 @@
 ﻿namespace Fanex.Bot.Skynex.Models
 {
-    using System;
-    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public class MessageInfo
+    public class MessageInfo : BaseInfo
     {
-        [Key]
-        public string ConversationId { get; set; }
-
         public string FromId { get; set; }
 
         public string FromName { get; set; }
@@ -24,10 +19,6 @@
         public string ChannelId { get; set; }
 
         public bool IsAdmin { get; set; }
-
-        public DateTime CreatedTime { get; set; }
-
-        public DateTime ModifiedTime { get; set; }
 
         [NotMapped]
         public string Text { get; set; }

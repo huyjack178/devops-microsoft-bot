@@ -13,18 +13,15 @@
 
     public class LineDialog : Dialog, ILineDialog
     {
-        private readonly BotDbContext _dbContext;
-
         public LineDialog(
          BotDbContext dbContext,
          IConversation conversation) : base(dbContext, conversation)
         {
-            _dbContext = dbContext;
         }
 
         public override async Task RegisterMessageInfo(IMessageActivity activity)
         {
-            var messageInfo = await _dbContext.MessageInfo.FirstOrDefaultAsync(
+            var messageInfo = await DbContext.MessageInfo.FirstOrDefaultAsync(
                  e => e.ConversationId == activity.From.Id);
 
             if (messageInfo == null)

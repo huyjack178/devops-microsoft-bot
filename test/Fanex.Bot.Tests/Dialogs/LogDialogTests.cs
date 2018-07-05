@@ -331,7 +331,7 @@
             await _conversationFixture
               .Conversation
               .Received()
-              .SendAsync(Arg.Is<MessageInfo>(info => info.Text == "Log has been restarted!"));
+              .SendAsync(Arg.Is("666"), Arg.Is("Log has been restarted!"));
         }
 
         [Fact]
@@ -366,9 +366,7 @@
             var expectedAlphaMessage = "**Category**: alpha\n\nlog\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
             await _conversationFixture.Conversation
                  .DidNotReceive()
-                 .SendAsync(Arg.Is<MessageInfo>(info =>
-                    info.Text == expectedAlphaMessage &&
-                    info.ConversationId == "96435341"));
+                 .SendAsync(Arg.Is("96435341"), Arg.Is(expectedAlphaMessage));
         }
 
         [Fact]
@@ -404,16 +402,12 @@
             var expectedAlphaMessage = "**Category**: alpha\n\nlog\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
             await _conversationFixture.Conversation
                  .Received(1)
-                 .SendAsync(Arg.Is<MessageInfo>(info =>
-                    info.Text == expectedAlphaMessage &&
-                    info.ConversationId == "1"));
+                 .SendAsync(Arg.Is("1"), Arg.Is(expectedAlphaMessage));
 
             var expectedLrfMessage = "**Category**: lrf\n\nlog_lrf\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
             await _conversationFixture.Conversation
                  .DidNotReceive()
-                 .SendAsync(Arg.Is<MessageInfo>(info =>
-                    info.Text == expectedLrfMessage &&
-                    info.ConversationId == "1"));
+                 .SendAsync(Arg.Is("1"), Arg.Is(expectedLrfMessage));
         }
 
         [Fact]
@@ -471,9 +465,7 @@
             var expectedAlphaMessage = "**Category**: nap\n\nthread was not being aborted\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
             await _conversationFixture.Conversation
                  .Received(1)
-                 .SendAsync(Arg.Is<MessageInfo>(info =>
-                    info.Text == expectedAlphaMessage &&
-                    info.ConversationId == "234234231"));
+                 .SendAsync(Arg.Is("234234231"), Arg.Is(expectedAlphaMessage));
         }
 
         [Theory]

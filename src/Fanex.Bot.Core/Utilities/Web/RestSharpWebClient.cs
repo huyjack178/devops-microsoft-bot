@@ -19,29 +19,44 @@
 
         public async Task<T> GetJsonAsync<T>(Uri url)
         {
-            _restClient.BaseUrl = url;
-            var request = new RestRequest(Method.GET);
-
-            var response = await _restClient.ExecuteTaskAsync(request);
+            var response = await ExecuteGetAsync(url);
 
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
 
+        public async Task<string> GetContentAsync(Uri url)
+        {
+            var response = await ExecuteGetAsync(url);
+
+            return response.Content;
+        }
+
         public async Task<TOut> PostJsonAsync<TIn, TOut>(Uri url, TIn data)
         {
-            var response = await ExecuteAsync(url, data);
+            var response = await ExecutePostAsync(url, data);
 
             return JsonConvert.DeserializeObject<TOut>(response.Content);
         }
 
         public async Task<HttpStatusCode> PostJsonAsync<T>(Uri url, T data)
         {
-            var response = await ExecuteAsync(url, data);
+            var response = await ExecutePostAsync(url, data);
 
             return response.StatusCode;
         }
 
-        private async Task<IRestResponse> ExecuteAsync<T>(Uri url, T data)
+        private async Task<IRestResponse> ExecuteGetAsync(Uri url)
+        {
+            _restClient.BaseUrl = url;
+            var request = new RestRequest(Method.GET);
+
+            var response = await _restClient.ExecuteTaskAsync(request);
+            TimeoutCheck(request, response);
+
+            return response;
+        }
+
+        private async Task<IRestResponse> ExecutePostAsync<T>(Uri url, T data)
         {
             _restClient.BaseUrl = url;
             var jsonData = JsonConvert.SerializeObject(data);

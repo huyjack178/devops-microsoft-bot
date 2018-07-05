@@ -2,6 +2,7 @@
 {
     using Fanex.Bot.Skynex.Models.GitLab;
     using Fanex.Bot.Skynex.Models.Log;
+    using Fanex.Bot.Skynex.Models.UM;
     using Microsoft.EntityFrameworkCore;
 
     public class BotDbContext : DbContext
@@ -33,5 +34,9 @@
         public virtual DbSet<LogIgnoreMessage> LogIgnoreMessage { get; set; }
 
         public virtual DbSet<GitLabInfo> GitLabInfo { get; set; }
+
+        public virtual DbSet<UMInfo> UMInfo { get; set; }
+
+        public virtual DbSet<UMPage> UMPage { get; set; }
     }
 }

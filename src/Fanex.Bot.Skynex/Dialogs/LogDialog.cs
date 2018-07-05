@@ -28,7 +28,6 @@
     {
         private readonly IConfiguration _configuration;
         private readonly ILogService _logService;
-        private readonly BotDbContext _dbContext;
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IMemoryCache _cache;
@@ -45,37 +44,36 @@
         {
             _configuration = configuration;
             _logService = logService;
-            _dbContext = dbContext;
             _recurringJobManager = recurringJobManager;
             _backgroundJobClient = backgroundJobClient;
             _cache = cache;
         }
 
-        public override async Task HandleMessageAsync(IMessageActivity activity, string messageCmd)
+        public override async Task HandleMessageAsync(IMessageActivity activity, string message)
         {
-            if (messageCmd.StartsWith("log add"))
+            if (message.StartsWith("log add"))
             {
-                await AddLogCategoriesAsync(activity, messageCmd);
+                await AddLogCategoriesAsync(activity, message);
             }
-            else if (messageCmd.StartsWith("log remove"))
+            else if (message.StartsWith("log remove"))
             {
-                await RemoveLogCategoriesAsync(activity, messageCmd);
+                await RemoveLogCategoriesAsync(activity, message);
             }
-            else if (messageCmd.StartsWith("log status"))
+            else if (message.StartsWith("log status"))
             {
                 await GetLogInfoAsync(activity);
             }
-            else if (messageCmd.StartsWith("log start"))
+            else if (message.StartsWith("log start"))
             {
                 await StartNotifyingLogAsync(activity);
             }
-            else if (messageCmd.StartsWith("log stop"))
+            else if (message.StartsWith("log stop"))
             {
-                await StopNotifyingLogAsync(activity, messageCmd);
+                await StopNotifyingLogAsync(activity, message);
             }
-            else if (messageCmd.StartsWith("log detail"))
+            else if (message.StartsWith("log detail"))
             {
-                await GetLogDetailAsync(activity, messageCmd);
+                await GetLogDetailAsync(activity, message);
             }
             else
             {
@@ -102,7 +100,7 @@
                 return;
             }
 
-            var logInfo = await FindOrCreateLogInfoAsync(activity);
+            var logInfo = await GetOrCreateLogInfoAsync(activity);
             logInfo.LogCategories += $"{logCategories};";
             await SaveLogInfoAsync(logInfo);
 
@@ -139,7 +137,7 @@
 
         public async Task StartNotifyingLogAsync(IMessageActivity activity)
         {
-            var logInfo = await FindOrCreateLogInfoAsync(activity);
+            var logInfo = await GetOrCreateLogInfoAsync(activity);
             logInfo.IsActive = true;
             await SaveLogInfoAsync(logInfo);
 
@@ -153,7 +151,7 @@
 
         public async Task StopNotifyingLogAsync(IMessageActivity activity, string messageCmd)
         {
-            var logInfo = await FindOrCreateLogInfoAsync(activity);
+            var logInfo = await GetOrCreateLogInfoAsync(activity);
             logInfo.IsActive = false;
             await SaveLogInfoAsync(logInfo);
 
@@ -166,9 +164,9 @@
 
         public async Task RestartNotifyingLog(string conversationId)
         {
-            var messageInfo = await _dbContext.MessageInfo
+            var messageInfo = await DbContext.MessageInfo
                     .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
-            var logInfo = await _dbContext.LogInfo
+            var logInfo = await DbContext.LogInfo
                     .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
 
             if (messageInfo != null && logInfo != null)
@@ -176,14 +174,13 @@
                 logInfo.IsActive = true;
                 await SaveLogInfoAsync(logInfo);
 
-                messageInfo.Text = "Log has been restarted!";
-                await Conversation.SendAsync(messageInfo);
+                await Conversation.SendAsync(conversationId, "Log has been restarted!");
             }
         }
 
         public async Task GetAndSendLogAsync()
         {
-            var logInfos = _dbContext.LogInfo.ToList();
+            var logInfos = DbContext.LogInfo.ToList();
             var errorLogs = await _logService.GetErrorLogs();
 
             foreach (var logInfo in logInfos)
@@ -197,7 +194,7 @@
 
         public async Task GetLogInfoAsync(IMessageActivity activity)
         {
-            var logInfo = await FindOrCreateLogInfoAsync(activity);
+            var logInfo = await GetOrCreateLogInfoAsync(activity);
 
             var message = $"Your log status \n\n" +
                 $"**Log Categories:** [{logInfo.LogCategories}]\n\n";
@@ -224,7 +221,7 @@
 
         #region Private Methods
 
-        private async Task<LogInfo> FindOrCreateLogInfoAsync(IMessageActivity activity)
+        private async Task<LogInfo> GetOrCreateLogInfoAsync(IMessageActivity activity)
         {
             var logInfo = await FindLogInfoAsync(activity);
 
@@ -243,28 +240,28 @@
         }
 
         private async Task<LogInfo> FindLogInfoAsync(IMessageActivity activity)
-        => await _dbContext
+        => await DbContext
             .LogInfo
             .FirstOrDefaultAsync(log => log.ConversationId == activity.Conversation.Id);
 
         private async Task SaveLogInfoAsync(LogInfo logInfo)
         {
-            _dbContext.Entry(logInfo).State =
-                _dbContext.LogInfo.Any(e => e.ConversationId == logInfo.ConversationId) ?
+            DbContext.Entry(logInfo).State =
+                DbContext.LogInfo.Any(e => e.ConversationId == logInfo.ConversationId) ?
                     EntityState.Modified : EntityState.Added;
 
-            await _dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
         }
 
         private bool CheckAdmin(IMessageActivity activity)
         {
             var currentConversationId = activity.Conversation.Id;
-            var isAdmin = _dbContext.MessageInfo.Any(
+            var isAdmin = DbContext.MessageInfo.Any(
                 messageInfo => messageInfo.IsAdmin &&
                 messageInfo.ConversationId == currentConversationId);
 
             var currentFromId = activity.From.Id;
-            var isFromAdmin = _dbContext.MessageInfo.Any(messageInfo =>
+            var isFromAdmin = DbContext.MessageInfo.Any(messageInfo =>
                     (messageInfo.IsAdmin &&
                     messageInfo.ConversationId == currentFromId &&
                     messageInfo.ToId == currentFromId));
@@ -274,14 +271,6 @@
 
         private async Task SendLogAsync(IEnumerable<Log> errorLogs, LogInfo logInfo)
         {
-            var messageInfo = await _dbContext.MessageInfo.FirstOrDefaultAsync(
-                m => m.ConversationId == logInfo.ConversationId);
-
-            if (messageInfo == null)
-            {
-                return;
-            }
-
             var filterCategories = logInfo
                                     .LogCategories?.Split(';')
                                     .Where(category => !string.IsNullOrEmpty(category));
@@ -294,14 +283,13 @@
                 var logCategory = errorLog.Category.CategoryName.ToLowerInvariant();
                 var hasLogCategory = filterCategories.Any(
                         filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant()));
-                var hasIgnoreMessage = await _dbContext.LogIgnoreMessage.AnyAsync(
+                var hasIgnoreMessage = await DbContext.LogIgnoreMessage.AnyAsync(
                         message => logCategory.Contains(message.Category.ToLowerInvariant()) &&
                         errorLog.Message.ToLowerInvariant().Contains(message.IgnoreMessage.ToLowerInvariant()));
 
                 if (hasLogCategory && !hasIgnoreMessage)
                 {
-                    messageInfo.Text = errorLog.Message;
-                    await Conversation.SendAsync(messageInfo);
+                    await Conversation.SendAsync(logInfo.ConversationId, errorLog.Message);
                 }
             }
         }

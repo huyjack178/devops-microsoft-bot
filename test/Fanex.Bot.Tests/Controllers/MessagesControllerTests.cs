@@ -17,6 +17,7 @@
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
         private readonly ILineDialog _lineDialog;
+        private readonly IUMDialog _umDialog;
         private readonly MessagesController _messagesController;
 
         public MessagesControllerTests(BotConversationFixture conversationFixture)
@@ -26,12 +27,14 @@
             _logDialog = Substitute.For<ILogDialog>();
             _gitLabDialog = Substitute.For<IGitLabDialog>();
             _lineDialog = Substitute.For<ILineDialog>();
+            _umDialog = Substitute.For<IUMDialog>();
 
             _messagesController = new MessagesController(
                 _dialog,
                 _logDialog,
                 _gitLabDialog,
                 _lineDialog,
+                _umDialog,
                 _conversationFixture.Conversation,
                 _conversationFixture.Configuration);
         }
