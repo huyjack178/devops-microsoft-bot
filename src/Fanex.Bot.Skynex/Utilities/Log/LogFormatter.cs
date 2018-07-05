@@ -1,7 +1,6 @@
 ﻿namespace Fanex.Bot.Skynex.Utilities.Log
 {
     using System;
-    using System.Web;
     using Fanex.Bot.Skynex.Models.Log;
 
     public static class LogFormatter
@@ -153,6 +152,37 @@
             }
 
             return hideDomainRequest;
+        }
+
+        public static string FormatSessionInfo(string rawMessage)
+        {
+            var sessionInfoIndex = rawMessage.IndexOf(
+                    "SESSION INFO",
+                    StringComparison.InvariantCultureIgnoreCase);
+            var returnMessage = string.Empty;
+
+            if (sessionInfoIndex < 0)
+            {
+                return returnMessage;
+            }
+
+            var custRoleIdIndex = rawMessage.IndexOf(
+                    "CustRoleId", sessionInfoIndex,
+                    StringComparison.InvariantCultureIgnoreCase);
+            var settingSiteNameIndex = rawMessage.IndexOf(
+                   "SettingSiteName", sessionInfoIndex,
+                   StringComparison.InvariantCultureIgnoreCase);
+
+            if (custRoleIdIndex > 0 && settingSiteNameIndex > 0 && settingSiteNameIndex > custRoleIdIndex)
+            {
+                var sessionInfo = rawMessage.Substring(custRoleIdIndex, settingSiteNameIndex - custRoleIdIndex);
+
+                returnMessage =
+                    $"{Constants.NewLine}**Session Info:**" +
+                    $" {Constants.NewLine}{sessionInfo}";
+            }
+
+            return returnMessage;
         }
     }
 }

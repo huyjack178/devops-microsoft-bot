@@ -106,3 +106,38 @@ Process Name: c:\windows\system32\inetsrv\w3wp.exe
 Thread Name: 
 Win32 ThreadId:16540 
 Extended Properties:
+
+SESSION INFO 
+SignIn: 7/3/2018 2:18:14 AM 
+CSS: 7/3/2018 2:18:15 AM 
+CurrentSystemName: ACCOUNTING 
+Username: starix69 
+AccUserName: starix69 
+AccId: 26871005 
+CurrentSystem: Accounting 
+OnAccId: 2442764 
+roleId: 6 
+AccPwd: 62076D2C86DB08BF518A7CA7B66588 
+GroupID: 1 
+PageAccess: System.Collections.Generic.Dictionary`2[System.String,System.Int32] 
+RoleAccess: System.Collections.Generic.Dictionary`2[System.String,System.Int32] 
+ViewIPVN: False 
+UserMenu: System.Collections.Generic.List`1[Sunplus.Accounting.Entities.MenuBO] 
+Contants.AppSession.AdminId: 26871005 
+Contants.AppSession.AdminUsername: starix69 
+CustRoleId: 4 
+custid: 27671895 
+CustUname: supertestPRO2 
+MemberID: 0 
+MemberUserName: 
+AgentID: 0 
+AgentUserName: 
+MasterID: 0 
+MasterUserName: 
+SuperID: 27671895 
+SusperUserName: supertestPRO2 
+IsSyncCSCurrentCust: False 
+IsInternal: False 
+TemplateFolderDefault: App_Templates\Default 
+sitename: BEST-ODDS 
+SettingSiteName: BEST-ODDS

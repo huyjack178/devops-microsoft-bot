@@ -92,9 +92,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Fanex.Bot.Skynex.Line.ruleset" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\LOCAL-103.pubxml" />
     <None Include="Properties\PublishProfiles\LOCAL-104.pubxml" />
+    <None Include="Properties\PublishProfiles\LOCAL-122.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Line.Messaging">

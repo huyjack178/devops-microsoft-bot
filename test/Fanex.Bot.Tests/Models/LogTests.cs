@@ -100,7 +100,7 @@
             log.FormattedMessage = GetLogDataTest();
 
             // Assert
-            var expecteRequestInfo = $"**Server:**" +
+            var expecteDbInfo = $"**Server:**" +
                 $" {log.Machine.MachineName} ({log.Machine.MachineIP})" +
                 $"\n\n**Database:**\n\n" +
                 $"Server: 10.40.40.100 \n\n" +
@@ -110,7 +110,7 @@
                 $"Parameters: @winlostdate=6/17/2018 12:00:00 AM;@custid=26570707 \n\n" +
                 $"Line: 0 \n\n" +
                 $"CommandTimeout: 120";
-            Assert.Contains(expecteRequestInfo, log.Message);
+            Assert.Contains(expecteDbInfo, log.Message);
         }
 
         [Fact]
@@ -144,11 +144,42 @@
             log.FormattedMessage = GetLogDataTest();
 
             // Assert
-            var expecteRequestInfo = $"**Exception:** \n\n \n\n" +
+            var expecteExceptionInfo = $"**Exception:** \n\n \n\n" +
                 $"Source: Fanex.Data.CrossCutting.WrappingException \n\n" +
                 $"Type: Fanex.Data.CrossCutting.WrappingException.ObjectDbException \n\n" +
                 $"TargetSite: System.Collections.Generic.IEnumerable`1[TReturn] Query[TReturn](System.Object, System.Data.Common.DbTransaction, Boolean, System.Nullable`1[System.Int32]) ";
-            Assert.Contains(expecteRequestInfo, log.Message);
+            Assert.Contains(expecteExceptionInfo, log.Message);
+        }
+
+        [Fact]
+        public void Message_IsNewLogType_GetSessionInfo()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var log = fixture.Create<Log>();
+
+            // Act
+            log.FormattedMessage = GetLogDataTest();
+
+            // Assert
+            var expectedSessionInfo =
+                    $"**Session Info:** \n\n" +
+                    $"CustRoleId: 4 \n\n" +
+                    $"custid: 27671895 \n\n" +
+                    $"CustUname: supertestPRO2 \n\n" +
+                    $"MemberID: 0 \n\n" +
+                    $"MemberUserName: \n\n" +
+                    $"AgentID: 0 \n\n" +
+                    $"AgentUserName: \n\n" +
+                    $"MasterID: 0 \n\n" +
+                    $"MasterUserName: \n\n" +
+                    $"SuperID: 27671895 \n\n" +
+                    $"SusperUserName: supertestPRO2 \n\n" +
+                    $"IsSyncCSCurrentCust: False \n\n" +
+                    $"IsInternal: False \n\n" +
+                    $"TemplateFolderDefault: App_Templates\\Default \n\n" +
+                    $"sitename: BEST-ODDS \n\n\n\n";
+            Assert.Contains(expectedSessionInfo, log.Message);
         }
 
         private string FormatLog(Log log, string message)

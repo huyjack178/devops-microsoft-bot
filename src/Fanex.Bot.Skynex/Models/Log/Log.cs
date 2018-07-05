@@ -44,6 +44,7 @@
             message += LogFormatter.FormatBrowserInfo(FormattedMessage);
             message += LogFormatter.FormatServerAndDatabaseInfo(FormattedMessage, Machine);
             message += LogFormatter.FormatCustomInfo(FormattedMessage);
+            message += LogFormatter.FormatSessionInfo(FormattedMessage);
             message += LogFormatter.FormatExceptionInfo(FormattedMessage);
 
             return FormatAll(message);
