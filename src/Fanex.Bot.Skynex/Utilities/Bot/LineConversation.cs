@@ -46,6 +46,9 @@
             return message
                 .Replace("**", string.Empty)
                 .Replace("*", string.Empty)
+                .Replace("\n\n \n\n", "\n")
+                .Replace("\n\n\n\n", "\n")
+                .Replace("\n\n\n", "\n")
                 .Replace("\n\n", "\n");
         }
     }
