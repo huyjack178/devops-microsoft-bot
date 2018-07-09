@@ -11,6 +11,8 @@
 
 #pragma warning restore S3996 // URI properties should not be strings
 
+        public string Name { get; set; }
+
         public bool IsActive { get; set; } = true;
     }
 }

@@ -36,22 +36,28 @@
 
         public async Task<bool> CheckPageShowUM(Uri pageUrl)
         {
-            var content =
-                (await _webClient.GetContentAsync(pageUrl))
-                .ToLowerInvariant();
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(content);
+            try
+            {
+                var content = (await _webClient.GetContentAsync(pageUrl))
+                    .ToLowerInvariant();
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(content);
 
-            var titleNode = htmlDoc.DocumentNode
-                    .Descendants()
-                    .FirstOrDefault(node => node.Name == "title");
-            var bodyNode = htmlDoc.DocumentNode
-                    .Descendants()
-                    .FirstOrDefault(node => node.Name == "body");
+                var titleNode = htmlDoc.DocumentNode
+                        .Descendants()
+                        .FirstOrDefault(node => node.Name == "title");
+                var bodyNode = htmlDoc.DocumentNode
+                        .Descendants()
+                        .FirstOrDefault(node => node.Name == "body");
 
-            return _umKeywords.Any(word =>
-                        titleNode.InnerText.ToLowerInvariant().Contains(word) ||
-                        bodyNode.InnerText.ToLowerInvariant().Contains(word));
+                return _umKeywords.Any(word =>
+                            titleNode.InnerText.ToLowerInvariant().Contains(word) ||
+                            bodyNode.InnerText.ToLowerInvariant().Contains(word));
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

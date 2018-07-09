@@ -22,6 +22,7 @@
 
     public class UMDialog : Dialog, IUMDialog
     {
+        private const string InformedUMCacheKey = "InformedUM";
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUMService _umService;
         private readonly IMemoryCache _memoryCache;
@@ -112,89 +113,65 @@
         public async Task CheckUMAsync()
         {
             var isUM = await _umService.CheckUM();
-            const string informedUMCacheKey = "InformedUM";
-            bool informedUM = Convert.ToBoolean(_memoryCache.Get(informedUMCacheKey) ?? false);
-            var umMessageInfos = DbContext.UMInfo.Where(info => info.IsActive);
+            bool informedUM = Convert.ToBoolean(_memoryCache.Get(InformedUMCacheKey) ?? false);
 
             if (isUM && !informedUM)
             {
-                await InformStartUM(umMessageInfos);
-                _memoryCache.Set(
-                      informedUMCacheKey,
-                      true,
-                      new MemoryCacheEntryOptions
-                      {
-                          SlidingExpiration = TimeSpan.FromHours(1)
-                      });
+                await SendMessageUM("UM is started now!");
+                _memoryCache.Set(InformedUMCacheKey, true,
+                  new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromHours(1) });
 
-                await ScanAllPageShowUM(umMessageInfos);
+                await ScanPageUM();
+
                 return;
             }
 
             if (!isUM && informedUM)
             {
-                await InformStopUM(umMessageInfos);
-                _memoryCache.Remove(informedUMCacheKey);
+                await SendMessageUM("UM is finished!");
+                _memoryCache.Remove(InformedUMCacheKey);
             }
         }
 
-        public async Task ScanAllPageShowUM(IQueryable<UMInfo> umMessageInfos)
+        public async Task ScanPageUM()
         {
-            var pagesNotShowUM = await CheckAndGetPagesNotShowUM();
+            var umPageGroup = DbContext.UMPage
+                .Where(page => page.IsActive)
+                .GroupBy(page => page.Name);
 
-            foreach (var umMessageInfo in umMessageInfos)
+            foreach (var group in umPageGroup)
             {
-                if (pagesNotShowUM.Any())
-                {
-                    var pageListMessage = new StringBuilder();
+                await SendMessageUM($"UM Scanning **{group.Key}** ...");
+                var isShowUM = true;
 
-                    foreach (var page in pagesNotShowUM)
+                foreach (var page in group)
+                {
+                    isShowUM = await _umService.CheckPageShowUM(new Uri(page.SiteUrl));
+
+                    if (!isShowUM)
                     {
-                        pageListMessage.Append($"**{page}** {Constants.NewLine}");
+                        await SendMessageUM($"**{page.SiteUrl} is not in UM**");
                     }
-
-                    await Conversation.SendAsync(
-                        umMessageInfo.ConversationId,
-                        $"Pages have not shown UM yet!" +
-                        $"{Constants.NewLine}{pageListMessage.ToString()} ");
                 }
-                else
+
+                if (isShowUM)
                 {
-                    await Conversation.SendAsync(umMessageInfo.ConversationId, "All pages show UM now!");
+                    await SendMessageUM($"**{group.Key}** PASSED!");
                 }
-            }
-        }
 
-        private async Task<List<string>> CheckAndGetPagesNotShowUM()
-        {
-            var pagesNotShowUM = new List<string>();
-
-            foreach (var page in DbContext.UMPage)
-            {
-                var isShowUM = await _umService.CheckPageShowUM(new Uri(page.SiteUrl));
-
-                if (!isShowUM)
-                {
-                    pagesNotShowUM.Add(page.SiteUrl);
-                }
+                await SendMessageUM("----------------------------");
             }
 
-            return pagesNotShowUM;
+            await SendMessageUM($"UM Scanning completed!");
         }
 
-        private async Task InformStartUM(IQueryable<UMInfo> umMessageInfos)
+        private async Task SendMessageUM(string message)
         {
+            var umMessageInfos = DbContext.UMInfo.Where(info => info.IsActive);
+
             foreach (var umMessageInfo in umMessageInfos)
             {
-                await Conversation.SendAsync(umMessageInfo.ConversationId, "UM is started now!");
-            }
-        }
-
-        private async Task InformStopUM(IQueryable<UMInfo> umMessageInfos)
-        {
-            foreach (var umMessageInfo in umMessageInfos)
-            {
-                await Conversation.SendAsync(umMessageInfo.ConversationId, "UM is stopped now!");
+                await Conversation.SendAsync(umMessageInfo.ConversationId, message);
             }
         }
 

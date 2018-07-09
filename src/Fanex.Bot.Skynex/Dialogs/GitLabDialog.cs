@@ -128,7 +128,7 @@
         {
             var project = pushEvent.Project;
             var commits = pushEvent.Commits;
-            var branchName = pushEvent.Ref.ToLowerInvariant();
+            var branchName = pushEvent.Ref?.ToLowerInvariant() ?? string.Empty;
 
             if (branchName.Contains(MasterBranchName))
             {
