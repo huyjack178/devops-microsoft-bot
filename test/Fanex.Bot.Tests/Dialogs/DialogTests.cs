@@ -99,7 +99,7 @@
             // Arrange
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324d234234fwer234" });
             var dbContext = _conversationFixture.MockDbContext();
-            await dbContext.LogInfo.AddAsync(new LogInfo { ConversationId = "13324d234234fwer234" });
+            await dbContext.LogInfo.AddAsync(new LogInfo { ConversationId = "13324d234234fwer234", LogCategories = "alpha" });
             await dbContext.GitLabInfo.AddAsync(new GitLabInfo { ConversationId = "13324d234234fwer234", ProjectUrl = "3424" });
             await dbContext.MessageInfo.AddAsync(new MessageInfo { ConversationId = "13324d234234fwer234" });
             await dbContext.SaveChangesAsync();

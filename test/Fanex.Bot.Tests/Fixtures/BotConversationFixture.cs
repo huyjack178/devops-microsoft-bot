@@ -30,8 +30,10 @@
         public IMessageActivity Activity { get; private set; }
 
         public string CommandMessage { get; }
-            = $"Skynex's available commands:{Constants.NewLine}" +
-                $"**group** ==> Get your group ID" +
+            = $"Skynex's available commands:{Constants.NewLine} " +
+                $"------------- {Constants.NewLine}" +
+                $"**group** ==> Get your group ID {Constants.NewLine}" +
+                $"------------- {Constants.NewLine}" +
                 $"**log add [Contains-LogCategory]** " +
                     $"==> Register to get log which has category name **contains [Contains-LogCategory]**. " +
                     $"Example: log add Alpha;NAP {Constants.NewLine}" +
@@ -41,8 +43,10 @@
                     $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){Constants.NewLine}" +
                 $"**log detail [LogId] (BETA)** ==> Get log detail{Constants.NewLine}" +
                 $"**log status** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
+                $"------------- {Constants.NewLine}" +
                 $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +
                 $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{Constants.NewLine}" +
+                $"------------- {Constants.NewLine}" +
                 $"**um start** ==> Start get notification when UM starts {Constants.NewLine}" +
                 $"**um addPage [PageUrl]** ==> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
 
@@ -61,6 +65,9 @@
                 BotDbContext.MessageInfo = null;
                 BotDbContext.GitLabInfo = null;
                 BotDbContext.LogInfo = null;
+                BotDbContext.LogIgnoreMessage = null;
+                BotDbContext.UMInfo = null;
+                BotDbContext.UMPage = null;
                 BotDbContext.SaveChanges();
             }
         }

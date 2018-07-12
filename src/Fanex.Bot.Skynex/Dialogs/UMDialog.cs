@@ -17,6 +17,7 @@
 
     public interface IUMDialog : IDialog
     {
+        Task CheckUMAsync();
     }
 
     public class UMDialog : Dialog, IUMDialog
@@ -63,7 +64,7 @@
             await SaveUMInfoAsync(umInfo);
 
             _recurringJobManager.AddOrUpdate(
-                "CheckUMAsync",
+                "CheckUMPeriodically",
                 Job.FromExpression(() => CheckUMAsync()),
                 Cron.Minutely());
 
@@ -76,7 +77,7 @@
                 .Replace(MessageCommand.UM_AddPage, string.Empty)
                 .Trim().Split(';');
 
-            if (umPageUrls == null || umPageUrls.Length == 0)
+            if (umPageUrls == null || umPageUrls.Length == 0 || umPageUrls[0] == string.Empty)
             {
                 await Conversation.ReplyAsync(
                     activity,
@@ -117,9 +118,7 @@
             if (isUM && !informedUM)
             {
                 await SendMessageUM("UM is started now!");
-                _memoryCache.Set(InformedUMCacheKey, true,
-                  new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromHours(1) });
-
+                _memoryCache.Set(InformedUMCacheKey, true, TimeSpan.FromHours(2));
                 await ScanPageUM();
 
                 return;
@@ -147,7 +146,8 @@
 
                 foreach (var page in group)
                 {
-                    isShowUM = await _umService.CheckPageShowUM(new Uri(page.SiteUrl));
+                    Uri.TryCreate(page.SiteUrl, UriKind.Absolute, out Uri pageUri);
+                    isShowUM = await _umService.CheckPageShowUM(pageUri);
 
                     if (!isShowUM)
                     {

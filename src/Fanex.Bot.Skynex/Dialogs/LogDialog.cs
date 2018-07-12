@@ -287,9 +287,10 @@
 
         private async Task SendLogAsync(IEnumerable<Log> errorLogs, LogInfo logInfo)
         {
-            var filterCategories = logInfo
-                                    .LogCategories?.Split(';')
-                                    .Where(category => !string.IsNullOrEmpty(category));
+            var filterCategories =
+                    logInfo.LogCategories?
+                        .Split(';')
+                        .Where(category => !string.IsNullOrEmpty(category));
 
             var groupErrorLogs = errorLogs.GroupBy(log => new { log.Category.CategoryName, log.Machine.MachineIP });
 
@@ -297,8 +298,8 @@
             {
                 var errorLog = groupErrorLog.First();
                 var logCategory = errorLog.Category.CategoryName.ToLowerInvariant();
-                var hasLogCategory = filterCategories.Any(
-                        filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant()));
+                var hasLogCategory = filterCategories?.Any(
+                        filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant())) ?? false;
                 var hasIgnoreMessage = await DbContext.LogIgnoreMessage.AnyAsync(
                         message => logCategory.Contains(message.Category.ToLowerInvariant()) &&
                         errorLog.Message.ToLowerInvariant().Contains(message.IgnoreMessage.ToLowerInvariant()));

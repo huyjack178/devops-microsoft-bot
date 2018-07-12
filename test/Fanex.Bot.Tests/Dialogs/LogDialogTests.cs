@@ -21,6 +21,7 @@
         private readonly BotConversationFixture _conversationFixture;
         private readonly ILogDialog _logDialog;
         private readonly ILogService _logService;
+        private readonly IUMService _umService;
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IMemoryCache _memoryCache;
@@ -29,17 +30,26 @@
         {
             _conversationFixture = conversationFixture;
             _logService = Substitute.For<ILogService>();
+            _umService = Substitute.For<IUMService>();
             _recurringJobManager = Substitute.For<IRecurringJobManager>();
             _backgroundJobClient = Substitute.For<IBackgroundJobClient>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _logDialog = new LogDialog(
                 _conversationFixture.Configuration,
                 _logService,
+                _umService,
                 _conversationFixture.MockDbContext(),
                 _conversationFixture.Conversation,
                 _recurringJobManager,
                 _backgroundJobClient,
                 _memoryCache);
+
+            _conversationFixture.Configuration
+               .GetSection("LogInfo").GetSection("DisableAddCategories").Value
+               .Returns("true");
+            _conversationFixture.Configuration
+               .GetSection("LogInfo").GetSection("SendLogInUM").Value
+               .Returns("false");
         }
 
         #region AddCategory
@@ -367,6 +377,72 @@
             await _conversationFixture.Conversation
                  .DidNotReceive()
                  .SendAsync(Arg.Is("96435341"), Arg.Is(expectedAlphaMessage));
+        }
+
+        [Fact]
+        public async Task GetAndSendLogAsync_InUM_NotAllowSendLogInUM_DontSendMesage()
+        {
+            // Arrange
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "cd341234cdfa" });
+            dbContext.LogInfo.Add(new LogInfo { ConversationId = "cd341234cdfa", LogCategories = "alpha;nap", IsActive = true });
+            dbContext.SaveChanges();
+            _logService.GetErrorLogs().Returns(new List<Log>(){
+                new Log {
+                    Category = new LogCategory { CategoryName = "alpha" },
+                    Machine = new Machine { MachineIP = "machine" },
+                    FormattedMessage = "log"
+                }
+            });
+            _umService.CheckUM().Returns(true);
+            _conversationFixture.Configuration
+                .GetSection("LogInfo").GetSection("SendLogInUM").Value
+                .Returns("false");
+
+            // Act
+            await _logDialog.GetAndSendLogAsync();
+
+            // Assert
+            var expectedAlphaMessage = "**Category**: alpha\n\nlog\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
+            await _conversationFixture.Conversation
+                 .DidNotReceive()
+                 .SendAsync(Arg.Is("cd341234cdfa"), Arg.Is(expectedAlphaMessage));
+        }
+
+        [Fact]
+        public async Task GetAndSendLogAsync_InUM_AllowSendLogInUM_SendMesage()
+        {
+            // Arrange
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "cd3412234234353454334cdfa" });
+            dbContext.LogInfo.Add(new LogInfo
+            {
+                ConversationId = "cd3412234234353454334cdfa",
+                LogCategories = "alpha;nap;",
+            });
+
+            dbContext.SaveChanges();
+
+            _logService.GetErrorLogs().Returns(new List<Log>(){
+                new Log {
+                    Category = new LogCategory { CategoryName = "alpha" },
+                    Machine = new Machine { MachineIP = "machine" },
+                    FormattedMessage = "log"
+                }
+            });
+            _umService.CheckUM().Returns(true);
+            _conversationFixture.Configuration
+                .GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value
+                .Returns("true");
+
+            // Act
+            await _logDialog.GetAndSendLogAsync();
+
+            // Assert
+            var expectedAlphaMessage = "**Category**: alpha\n\nlog\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
+            await _conversationFixture.Conversation
+                 .Received()
+                 .SendAsync(Arg.Is("cd3412234234353454334cdfa"), Arg.Is(expectedAlphaMessage));
         }
 
         [Fact]
