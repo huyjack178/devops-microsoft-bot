@@ -28,22 +28,28 @@
     {
         private readonly IConfiguration _configuration;
         private readonly ILogService _logService;
+        private readonly IUMService _umService;
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IMemoryCache _cache;
 
+#pragma warning disable S107 // Methods should not have too many parameters
+
         public LogDialog(
             IConfiguration configuration,
             ILogService logService,
+            IUMService umService,
             BotDbContext dbContext,
             IConversation conversation,
             IRecurringJobManager recurringJobManager,
             IBackgroundJobClient backgroundJobClient,
             IMemoryCache cache)
+#pragma warning restore S107 // Methods should not have too many parameters
                 : base(dbContext, conversation)
         {
             _configuration = configuration;
             _logService = logService;
+            _umService = umService;
             _recurringJobManager = recurringJobManager;
             _backgroundJobClient = backgroundJobClient;
             _cache = cache;
@@ -180,6 +186,16 @@
 
         public async Task GetAndSendLogAsync()
         {
+            var allowSendLogInUM = Convert.ToBoolean(
+                    _configuration.GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value);
+
+            var isUM = await _umService.CheckUM();
+
+            if (!allowSendLogInUM && isUM)
+            {
+                return;
+            }
+
             var logInfos = DbContext.LogInfo.ToList();
             var errorLogs = await _logService.GetErrorLogs();
 

@@ -1,7 +1,6 @@
 ﻿namespace Fanex.Bot.Skynex.Dialogs
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -139,9 +138,11 @@
                 .Where(page => page.IsActive)
                 .GroupBy(page => page.Name);
 
+            await SendMessageUM($"UM Scanning start");
+
             foreach (var group in umPageGroup)
             {
-                await SendMessageUM($"UM Scanning **{group.Key}** ...");
+                await SendMessageUM($"**{group.Key}** ...");
                 var isShowUM = true;
 
                 foreach (var page in group)
