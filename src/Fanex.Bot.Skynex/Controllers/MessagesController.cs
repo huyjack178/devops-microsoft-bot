@@ -16,7 +16,7 @@
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        private readonly IDialog _dialog;
+        private readonly ICommonDialog _commonDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
         private readonly ILineDialog _lineDialog;
@@ -25,7 +25,7 @@
         private readonly IConfiguration _configuration;
 
         public MessagesController(
-            IDialog dialog,
+            ICommonDialog commonDialog,
             ILogDialog logDialog,
             IGitLabDialog gitLabDialog,
             ILineDialog lineDialog,
@@ -33,7 +33,7 @@
             IConversation conversation,
             IConfiguration configuration)
         {
-            _dialog = dialog;
+            _commonDialog = commonDialog;
             _logDialog = logDialog;
             _gitLabDialog = gitLabDialog;
             _lineDialog = lineDialog;
@@ -95,7 +95,7 @@
             }
             else
             {
-                await _dialog.HandleMessageAsync(activity, message);
+                await _commonDialog.HandleMessageAsync(activity, message);
             }
         }
 
@@ -107,14 +107,14 @@
             if (conversationUpdate.MembersRemoved != null &&
                 conversationUpdate.MembersRemoved.Any(mem => mem.Id == botId))
             {
-                await _dialog.RemoveConversationData(activity);
+                await _commonDialog.RemoveConversationData(activity);
                 return;
             }
 
             if (conversationUpdate.MembersAdded != null &&
                 conversationUpdate.MembersAdded.Any(mem => mem.Id == botId))
             {
-                await _dialog.RegisterMessageInfo(activity);
+                await _commonDialog.RegisterMessageInfo(activity);
             }
 
             await _conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
@@ -124,11 +124,11 @@
         {
             if (activity.Action?.ToLowerInvariant() == "remove")
             {
-                await _dialog.RemoveConversationData(activity);
+                await _commonDialog.RemoveConversationData(activity);
             }
             else
             {
-                await _dialog.RegisterMessageInfo(activity);
+                await _commonDialog.RegisterMessageInfo(activity);
                 await _conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
             }
         }

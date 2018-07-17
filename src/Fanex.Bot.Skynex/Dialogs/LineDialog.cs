@@ -7,7 +7,7 @@
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
 
-    public interface ILineDialog : IDialog
+    public interface ILineDialog : ICommonDialog
     {
     }
 
@@ -19,7 +19,7 @@
         {
         }
 
-        public override async Task RegisterMessageInfo(IMessageActivity activity)
+        public async Task RegisterMessageInfo(IMessageActivity activity)
         {
             var messageInfo = await DbContext.MessageInfo.FirstOrDefaultAsync(
                  e => e.ConversationId == activity.From.Id);
@@ -45,6 +45,11 @@
                 ConversationId = activity.From.Id,
                 CreatedTime = DateTime.UtcNow.AddHours(7)
             };
+        }
+
+        public Task RemoveConversationData(IMessageActivity activity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

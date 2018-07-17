@@ -24,7 +24,7 @@
 
         public async Task ReplyAsync(IMessageActivity activity, string message)
         {
-            var connector = CreateConnectorClient(new Uri(activity.ServiceUrl));
+            var connector = await CreateConnectorClient(new Uri(activity.ServiceUrl));
             var reply = (activity as Activity).CreateReply(message);
 
             await connector.Conversations.ReplyToActivityAsync(reply);
@@ -32,7 +32,7 @@
 
         public async Task SendAsync(MessageInfo messageInfo)
         {
-            var connector = CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
+            var connector = await CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
             var message = CreateMessageActivity(messageInfo);
 
             if (!string.IsNullOrEmpty(messageInfo.Text))
@@ -42,11 +42,19 @@
             }
         }
 
-        private ConnectorClient CreateConnectorClient(Uri serviceUrl)
-          => new ConnectorClient(
-               serviceUrl,
-               _configuration.GetSection("MicrosoftAppId").Value,
-               _configuration.GetSection("MicrosoftAppPassword").Value);
+        private async Task<ConnectorClient> CreateConnectorClient(Uri serviceUrl)
+        {
+            var account = new MicrosoftAppCredentials(
+                _configuration.GetSection("MicrosoftAppId").Value,
+                _configuration.GetSection("MicrosoftAppPassword").Value);
+
+            var jwtToken = await account.GetTokenAsync();
+
+            return new ConnectorClient(
+                 serviceUrl,
+                 account,
+                 handlers: new BotDelegatingHandler(jwtToken));
+        }
 
         private static IMessageActivity CreateMessageActivity(MessageInfo messageInfo)
         {

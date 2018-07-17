@@ -13,6 +13,7 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Connector.DirectLine;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -95,8 +96,8 @@
         {
             services.AddScoped<ILineConversation, LineConversation>();
             services.AddScoped<ISkypeConversation, SkypeConversation>();
-            services.AddScoped<IConversation, Conversation>();
-            services.AddScoped<IDialog, Dialog>();
+            services.AddScoped<IConversation, Skynex.Utilities.Bot.Conversation>();
+            services.AddScoped<ICommonDialog, CommonDialog>();
             services.AddScoped<ILogDialog, LogDialog>();
             services.AddScoped<IGitLabDialog, GitLabDialog>();
             services.AddScoped<ILineDialog, LineDialog>();
@@ -119,6 +120,8 @@
                 .AddBotAuthentication(credentialProvider);
 
             services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
+
+            services.AddSingleton<IDirectLineClient>(new DirectLineClient(Configuration.GetSection("DirectLineSecret")?.Value));
         }
     }
 }
