@@ -1,18 +1,13 @@
+New-Item -Path \\10.18.200.122\d$\WWW\Fanex.Bot\Skynex\app_offline.htm -type file -Force 
 
-PsExec.exe \\10.18.200.122  -s -i C:\windows\system32\inetsrv\appcmd.exe recycle apppool Fanex.Bot
-PsExec.exe \\10.18.200.122  -s -i C:\windows\system32\inetsrv\appcmd.exe stop site Fanex.Bot
-Start-Sleep 2
 dotnet publish -o \\10.18.200.122\d$\WWW\Fanex.Bot\Skynex -f netcoreapp2.0 ..\Fanex.Bot.Skynex.csproj
 
-PsExec.exe \\10.18.200.122  -s -i C:\windows\system32\inetsrv\appcmd.exe start site Fanex.Bot
+Remove-Item -Path \\10.18.200.122\d$\WWW\Fanex.Bot\Skynex\app_offline.htm -Force 
 
-Start-Sleep 3
 
-PsExec.exe \\10.18.200.123  -s -i C:\windows\system32\inetsrv\appcmd.exe recycle apppool Fanex.Bot
-PsExec.exe \\10.18.200.123  -s -i C:\windows\system32\inetsrv\appcmd.exe stop site Fanex.Bot
-Start-Sleep 2
+
+New-Item -Path \\10.18.200.123\d$\WWW\Fanex.Bot\Skynex\app_offline.htm -type file -Force 
+
 dotnet publish -o \\10.18.200.123\d$\WWW\Fanex.Bot\Skynex -f netcoreapp2.0 ..\Fanex.Bot.Skynex.csproj
 
-PsExec.exe \\10.18.200.123  -s -i C:\windows\system32\inetsrv\appcmd.exe start site Fanex.Bot
-
-Start-Sleep 5
+Remove-Item -Path \\10.18.200.123\d$\WWW\Fanex.Bot\Skynex\app_offline.htm -Force 
