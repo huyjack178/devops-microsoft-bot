@@ -112,7 +112,7 @@
 
         public async Task CheckUMAsync()
         {
-            var isUM = await _umService.CheckUM();
+            var isUM = await _umService.GetUMInformation();
             bool informedUM = Convert.ToBoolean(_memoryCache.Get(InformedUMCacheKey) ?? false);
 
             if (isUM && !informedUM)

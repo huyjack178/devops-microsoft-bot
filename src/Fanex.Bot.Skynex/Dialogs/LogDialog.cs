@@ -189,7 +189,7 @@
             var allowSendLogInUM = Convert.ToBoolean(
                     _configuration.GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value);
 
-            var isUM = await _umService.CheckUM();
+            var isUM = await _umService.GetUMInformation();
 
             if (!allowSendLogInUM && isUM)
             {

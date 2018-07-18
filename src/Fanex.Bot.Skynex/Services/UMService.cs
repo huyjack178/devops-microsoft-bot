@@ -9,7 +9,7 @@
 
     public interface IUMService
     {
-        Task<bool> CheckUM();
+        Task<bool> GetUMInformation();
 
         Task<bool> CheckPageShowUM(Uri pageUrl);
     }
@@ -27,9 +27,9 @@
             _umKeywords = configuration.GetSection("UMInfo")?.GetSection("UMKeyWord").Get<string[]>();
         }
 
-        public async Task<bool> CheckUM()
+        public async Task<bool> GetUMInformation()
         {
-            var isUM = await _webClient.GetJsonAsync<bool>(new Uri($"{_mSiteUrl}/Bot/CheckUM"));
+            var isUM = await _webClient.GetJsonAsync<bool>(new Uri($"{_mSiteUrl}/Bot/UMInformation"));
 
             return isUM;
         }
