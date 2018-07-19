@@ -11,15 +11,15 @@
     using NSubstitute;
     using Xunit;
 
-    public class DialogTests : IClassFixture<BotConversationFixture>
+    public class CommonDialogTests : IClassFixture<BotConversationFixture>
     {
         private readonly BotConversationFixture _conversationFixture;
-        private readonly IDialog _dialog;
+        private readonly ICommonDialog _dialog;
 
-        public DialogTests(BotConversationFixture conversationFixture)
+        public CommonDialogTests(BotConversationFixture conversationFixture)
         {
             _conversationFixture = conversationFixture;
-            _dialog = new Dialog(_conversationFixture.BotDbContext, conversationFixture.Conversation);
+            _dialog = new CommonDialog(_conversationFixture.BotDbContext, conversationFixture.Conversation);
         }
 
         [Fact]

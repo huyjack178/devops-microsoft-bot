@@ -22,7 +22,7 @@
                 }
             }
 
-            return returnMessage;
+            return returnMessage.ToLowerInvariant();
         }
 
 #pragma warning disable S3994 // URI Parameters should not be strings

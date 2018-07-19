@@ -19,13 +19,11 @@
       var result = botConnector.SendAsync(message: "hello", "conversationId");
     </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.3.4</AssemblyVersion>
-    <FileVersion>1.0.3.4</FileVersion>
-    <Version>1.0.3.4</Version>
-    <PackageReleaseNotes>
-      - Apply Restsharp
-      - Add transform web config
-    </PackageReleaseNotes>
+    <AssemblyVersion>1.0.3.6</AssemblyVersion>
+    <FileVersion>1.0.3.6</FileVersion>
+    <Version>1.0.3.6</Version>
+    <PackageReleaseNotes>- Update the way to get token
+- BotConnector.Send() method returns status code (200, 401, ...)</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet>Fanex.Bot.Client.ruleset</CodeAnalysisRuleSet>

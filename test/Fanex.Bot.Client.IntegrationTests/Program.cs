@@ -8,7 +8,7 @@
         {
             var botConnector = new BotConnector();
             var result = botConnector.Send(
-                "test message from Bot Client Test", "29:1kQdEH4rUnnOBL-xPwgiKBim3BdwtSo1OPgDRK_7WiUU");
+                "test message from Bot Client Test", "29:1VztMrVULRUlh1J7uBBFEWXZqHz41ZRQ6F-avnd5-874");
 
             System.Console.WriteLine(result);
             System.Console.ReadLine();

@@ -14,6 +14,8 @@
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Configuration;
+    using Fanex.Bot.Core.Utilities.Common;
 
     public interface IUMDialog : IDialog
     {
@@ -26,18 +28,21 @@
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUMService _umService;
         private readonly IMemoryCache _memoryCache;
+        private readonly IConfiguration _configuration;
 
         public UMDialog(
             BotDbContext dbContext,
             IConversation conversation,
             IRecurringJobManager recurringJobManager,
             IUMService umService,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IConfiguration configuration)
             : base(dbContext, conversation)
         {
             _recurringJobManager = recurringJobManager;
             _umService = umService;
             _memoryCache = memoryCache;
+            _configuration = configuration;
         }
 
         public async override Task HandleMessageAsync(IMessageActivity activity, string message)
@@ -53,6 +58,12 @@
             if (command.StartsWith(MessageCommand.UM_AddPage))
             {
                 await AddUMPage(activity, command);
+                return;
+            }
+
+            if (command.StartsWith(MessageCommand.UM_Notify))
+            {
+                await NotifyUMAsync();
             }
         }
 
@@ -112,22 +123,60 @@
 
         public async Task CheckUMAsync()
         {
-            var isUM = await _umService.GetUMInformation();
+            var umInfo = await _umService.GetUMInformation();
             bool informedUM = Convert.ToBoolean(_memoryCache.Get(InformedUMCacheKey) ?? false);
 
-            if (isUM && !informedUM)
+            await SendUMInformation(umInfo);
+            await SendUMStartMessage(umInfo, informedUM);
+            await SendUMFinisedMessage(umInfo, informedUM);
+        }
+
+        public async Task NotifyUMAsync()
+        {
+            var umInfo = await _umService.GetUMInformation();
+
+            await SendUMInformation(umInfo, forceNotifyUM: true);
+        }
+
+        #region Private Methods
+
+        private async Task SendUMFinisedMessage(UM umInfo, bool informedUM)
+        {
+            if (!umInfo.IsUM && informedUM)
+            {
+                await SendMessageUM("UM is finished!");
+                _memoryCache.Remove(InformedUMCacheKey);
+            }
+        }
+
+        private async Task SendUMStartMessage(UM umInfo, bool informedUM)
+        {
+            if (umInfo.IsUM && !informedUM)
             {
                 await SendMessageUM("UM is started now!");
                 _memoryCache.Set(InformedUMCacheKey, true, TimeSpan.FromHours(2));
                 await ScanPageUM();
-
-                return;
             }
+        }
 
-            if (!isUM && informedUM)
+        private async Task SendUMInformation(UM umInfo, bool forceNotifyUM = false)
+        {
+            var umGMT = Convert.ToInt32(_configuration.GetSection("UMInfo").GetSection("UMGMT")?.Value ?? "8");
+            var userGMT = Convert.ToInt32(_configuration.GetSection("UMInfo").GetSection("UserGMT")?.Value ?? "7");
+            var umStartTime = umInfo.StartTime.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
+
+            var now = DateTimeExtention.GetUTCNow().AddHours(userGMT);
+
+            var isInUMDate = umInfo.StartTime.Date == now.Date;
+            var isIn10AM = now.Hour == 10 && now.Minute == 0;
+            var isBefore30Mins = Convert.ToInt32((umStartTime - now).TotalMinutes) == 30;
+
+            if (forceNotifyUM || (isInUMDate && (isIn10AM || isBefore30Mins)))
             {
-                await SendMessageUM("UM is finished!");
-                _memoryCache.Remove(InformedUMCacheKey);
+                await SendMessageUM(
+                    $"System will be **under maintenance** " +
+                    $"from **{umInfo.StartTime}** to **{umInfo.EndTime}** " +
+                    $"**(GMT{DateTimeExtention.GenerateGMTText(umGMT)})**");
             }
         }
 
@@ -141,29 +190,35 @@
 
             foreach (var group in umPageGroup)
             {
-                await SendMessageUM($"**{group.Key}** ...");
-                var isShowUM = true;
-
-                foreach (var page in group)
-                {
-                    Uri.TryCreate(page.SiteUrl, UriKind.Absolute, out Uri pageUri);
-                    isShowUM = await _umService.CheckPageShowUM(pageUri);
-
-                    if (!isShowUM)
-                    {
-                        await SendMessageUM($"**{page.SiteUrl} is not in UM**");
-                    }
-                }
-
-                if (isShowUM)
-                {
-                    await SendMessageUM($"**{group.Key}** PASSED!");
-                }
-
-                await SendMessageUM("----------------------------");
+                await ScanUMPageInGroup(group);
             }
 
             await SendMessageUM($"UM Scanning completed!");
+        }
+
+        private async Task ScanUMPageInGroup(IGrouping<string, UMPage> group)
+        {
+            await SendMessageUM($"**{group.Key}** ...");
+            var allPagesShowUM = true;
+
+            foreach (var page in group)
+            {
+                Uri.TryCreate(page.SiteUrl, UriKind.Absolute, out Uri pageUri);
+                var isShowUM = await _umService.CheckPageShowUM(pageUri);
+
+                if (!isShowUM)
+                {
+                    await SendMessageUM($"**{page.SiteUrl} is not in UM**");
+                    allPagesShowUM = false;
+                }
+            }
+
+            if (allPagesShowUM)
+            {
+                await SendMessageUM($"**{group.Key}** PASSED!");
+            }
+
+            await SendMessageUM("----------------------------");
         }
 
         private async Task SendMessageUM(string message)
@@ -203,5 +258,7 @@
          => await DbContext.UMInfo
              .AsNoTracking()
              .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
+
+        #endregion Private Methods
     }
 }

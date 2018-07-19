@@ -13,7 +13,7 @@
     public class MessagesControllerTests : IClassFixture<BotConversationFixture>
     {
         private readonly BotConversationFixture _conversationFixture;
-        private readonly IDialog _dialog;
+        private readonly ICommonDialog _commonDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
         private readonly ILineDialog _lineDialog;
@@ -23,14 +23,14 @@
         public MessagesControllerTests(BotConversationFixture conversationFixture)
         {
             _conversationFixture = conversationFixture;
-            _dialog = Substitute.For<IDialog>();
+            _commonDialog = Substitute.For<ICommonDialog>();
             _logDialog = Substitute.For<ILogDialog>();
             _gitLabDialog = Substitute.For<IGitLabDialog>();
             _lineDialog = Substitute.For<ILineDialog>();
             _umDialog = Substitute.For<IUMDialog>();
 
             _messagesController = new MessagesController(
-                _dialog,
+                _commonDialog,
                 _logDialog,
                 _gitLabDialog,
                 _lineDialog,
@@ -66,6 +66,19 @@
         }
 
         [Fact]
+        public async Task Post_ActivityMessage_HandMessageCommand_UMCommand_CallUMDialog()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.Message, Text = "um" };
+
+            // Act
+            await _messagesController.Post(activity);
+
+            // Asserts
+            await _umDialog.Received().HandleMessageAsync(Arg.Is(activity), "um");
+        }
+
+        [Fact]
         public async Task Post_ActivityMessage_HandMessageCommand_OtherCommand_CallDialog()
         {
             // Arrange
@@ -75,7 +88,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _dialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
+            await _commonDialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
         }
 
         [Fact]
@@ -88,7 +101,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _dialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
+            await _commonDialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
         }
 
         [Fact]
@@ -122,7 +135,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _dialog.Received().RemoveConversationData(Arg.Is(activity));
+            await _commonDialog.Received().RemoveConversationData(Arg.Is(activity));
         }
 
         [Fact]
@@ -139,7 +152,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _dialog.Received().RegisterMessageInfo(Arg.Is(activity));
+            await _commonDialog.Received().RegisterMessageInfo(Arg.Is(activity));
             await _conversationFixture
                .Conversation
                .Received()
@@ -162,7 +175,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _dialog.Received().RemoveConversationData(Arg.Is(activity));
+            await _commonDialog.Received().RemoveConversationData(Arg.Is(activity));
         }
 
         [Fact]
@@ -181,7 +194,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _dialog.Received().RegisterMessageInfo(Arg.Is(activity));
+            await _commonDialog.Received().RegisterMessageInfo(Arg.Is(activity));
             await _conversationFixture
               .Conversation
               .Received()
@@ -199,6 +212,43 @@
 
             // Asserts
             Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        public async Task Post_MessageActivity_HandleForLINE()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                From = new ChannelAccount { Id = "234234", Name = "line" },
+                Conversation = new ConversationAccount(),
+                Text = "hello"
+            };
+
+            // Act
+            await _messagesController.Post(activity);
+
+            // Assert
+            await _lineDialog.Received().RegisterMessageInfo(
+                 Arg.Is<Activity>(a => a.Conversation.Id == "234234" && a.ChannelId == "line"));
+        }
+
+        [Fact]
+        public async Task Forward_Always_SendToConversation_ReturnOk()
+        {
+            // Arrange
+            var conversationId = "@#423424";
+            var message = "hello";
+            _conversationFixture.Conversation.SendAsync(conversationId, message).Returns("success");
+
+            // Act
+            var result = await _messagesController.Forward(message, conversationId);
+
+            // Assert
+            await _conversationFixture.Conversation.Received(1).SendAsync(conversationId, message);
+            Assert.Equal(200, result.StatusCode);
+            Assert.Equal("success", result.Value);
         }
     }
 }

@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Fanex.Bot.Core.Utilities.Common;
     using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Skynex.Models;
     using Fanex.Bot.Skynex.Models.UM;
@@ -30,7 +31,15 @@
             _recurringJobManager = Substitute.For<IRecurringJobManager>();
             _umService = Substitute.For<IUMService>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _dialog = new UMDialog(_conversationFixture.BotDbContext, conversationFixture.Conversation, _recurringJobManager, _umService, _memoryCache);
+            _conversationFixture.Configuration.GetSection("UMInfo").GetSection("UMGMT")?.Value.Returns("8");
+            _conversationFixture.Configuration.GetSection("UMInfo").GetSection("UserGMT")?.Value.Returns("7");
+            _dialog = new UMDialog(
+                _conversationFixture.BotDbContext,
+                conversationFixture.Conversation,
+                _recurringJobManager,
+                _umService,
+                _memoryCache,
+                _conversationFixture.Configuration);
         }
 
         [Fact]
@@ -106,7 +115,52 @@
         }
 
         [Fact]
-        public async Task CheckUMAsync_IsUM_IsNotInformUM_InformUM()
+        public async Task HandleMessageAsync_NotifyUM_SaveUMPage_NotifyToAllUMUser()
+        {
+            // Arrange
+            var message = "um notify";
+            var umInfo = new UM { StartTime = DateTime.Now, EndTime = DateTime.Now };
+            _umService.GetUMInformation().Returns(umInfo);
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i324223423342323749823748923" });
+            dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i324223423342323749823748923" });
+            dbContext.SaveChanges();
+
+            // Act
+            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+
+            // Assert
+            await _conversationFixture.Conversation.Received(1)
+             .SendAsync("374i324223423342323749823748923", $"System will be **under maintenance** from **{umInfo.StartTime}** to **{umInfo.EndTime}** **(GMT+8)**");
+        }
+
+        [Fact]
+        public async Task CheckUMAsync_IsBeforeUM30Mins_InformUMInfo()
+        {
+            // Arrange
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i3242342323749823748923" });
+            dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i3242342323749823748923" });
+            dbContext.SaveChanges();
+            _umService.CheckPageShowUM(Arg.Any<Uri>()).Returns(true);
+            var umInfo = new UM
+            {
+                IsUM = false,
+                StartTime = DateTime.UtcNow.AddHours(8).AddMinutes(30),
+                EndTime = new DateTime(2018, 01, 01, 13, 00, 00)
+            };
+            _umService.GetUMInformation().Returns(umInfo);
+
+            // Act
+            await _dialog.CheckUMAsync();
+
+            // Assert
+            await _conversationFixture.Conversation.Received(1)
+              .SendAsync("374i3242342323749823748923", $"System will be **under maintenance** from **{umInfo.StartTime}** to **{umInfo.EndTime}** **(GMT+8)**");
+        }
+
+        [Fact]
+        public async Task CheckUMAsync_IsUM_IsNotInformedUM_InformUM()
         {
             // Arrange
             var dbContext = _conversationFixture.MockDbContext();
@@ -114,7 +168,7 @@
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i23749823748923" });
             dbContext.SaveChanges();
             _umService.CheckPageShowUM(Arg.Any<Uri>()).Returns(true);
-            _umService.CheckUM().Returns(true);
+            _umService.GetUMInformation().Returns(new UM { IsUM = true, StartTime = DateTime.Now, EndTime = DateTime.Now });
 
             // Act
             await _dialog.CheckUMAsync();
@@ -127,7 +181,7 @@
         }
 
         [Fact]
-        public async Task CheckUMAsync_IsUM_IsNotInformUM_ScanPageUM_PageNotShowUM_SendMessage()
+        public async Task CheckUMAsync_IsUM_IsNotInformedUM_ScanPageUM_PageNotShowUM_SendMessage()
         {
             // Arrange
             var dbContext = _conversationFixture.MockDbContext();
@@ -135,11 +189,13 @@
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i2374982dfas343748923" });
             dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong88.com", Name = "google" });
             dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong888888.com", Name = "alpha" });
+            dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong8888342388.com", Name = "alpha" });
             await dbContext.SaveChangesAsync();
 
-            _umService.CheckUM().Returns(true);
-            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong88.com"))).Returns(false);
-            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong888888.com"))).Returns(true);
+            _umService.GetUMInformation().Returns(new UM { IsUM = true, StartTime = DateTime.Now, EndTime = DateTime.Now });
+            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong88.com"))).Returns(true);
+            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong888888.com"))).Returns(false);
+            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong8888342388.com"))).Returns(true);
 
             // Act
             await _dialog.CheckUMAsync();
@@ -150,10 +206,12 @@
             await _conversationFixture.Conversation.Received()
                 .SendAsync("374i2374982dfas343748923", "**google** ...");
             await _conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", "**http://www.agbong88.com is not in UM**");
+                .SendAsync("374i2374982dfas343748923", "**google** PASSED!");
             await _conversationFixture.Conversation.Received()
                .SendAsync("374i2374982dfas343748923", "**alpha** ...");
             await _conversationFixture.Conversation.Received()
+               .SendAsync("374i2374982dfas343748923", "**http://www.agbong888888.com is not in UM**");
+            await _conversationFixture.Conversation.DidNotReceive()
               .SendAsync("374i2374982dfas343748923", "**alpha** PASSED!");
             await _conversationFixture.Conversation.Received()
                .SendAsync("374i2374982dfas343748923", "----------------------------");
@@ -169,7 +227,7 @@
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i2372342344982dfas343748923" });
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i2372342344982dfas343748923" });
             await dbContext.SaveChangesAsync();
-            _umService.CheckUM().Returns(false);
+            _umService.GetUMInformation().Returns(new UM { IsUM = false, StartTime = DateTime.Now, EndTime = DateTime.Now });
             _memoryCache.Set("InformedUM", true);
 
             // Act

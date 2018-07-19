@@ -6,6 +6,7 @@
     using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Skynex.Models;
     using Fanex.Bot.Skynex.Models.Log;
+    using Fanex.Bot.Skynex.Models.UM;
     using Fanex.Bot.Skynex.Services;
     using Fanex.Bot.Tests.Fixtures;
     using Hangfire;
@@ -50,6 +51,7 @@
             _conversationFixture.Configuration
                .GetSection("LogInfo").GetSection("SendLogInUM").Value
                .Returns("false");
+            _umService.GetUMInformation().Returns(new UM { IsUM = false });
         }
 
         #region AddCategory
@@ -394,7 +396,7 @@
                     FormattedMessage = "log"
                 }
             });
-            _umService.CheckUM().Returns(true);
+            _umService.GetUMInformation().Returns(new UM { IsUM = true });
             _conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("SendLogInUM").Value
                 .Returns("false");
@@ -430,7 +432,7 @@
                     FormattedMessage = "log"
                 }
             });
-            _umService.CheckUM().Returns(true);
+            _umService.GetUMInformation().Returns(new UM { IsUM = true });
             _conversationFixture.Configuration
                 .GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value
                 .Returns("true");
@@ -484,6 +486,34 @@
             await _conversationFixture.Conversation
                  .DidNotReceive()
                  .SendAsync(Arg.Is("1"), Arg.Is(expectedLrfMessage));
+        }
+
+        [Fact]
+        public async Task GetAndSendLogAsync_IsUM_DontAllowSendLogInUM_NotSendLog()
+        {
+            // Arrange
+            _umService.GetUMInformation().Returns(new UM { IsUM = true });
+            _conversationFixture.Configuration.GetSection("LogInfo").GetSection("SendLogInUM").Value.Returns("false");
+
+            var dbContext = _conversationFixture.MockDbContext();
+            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "234234223423342311cd1" });
+            dbContext.LogInfo.Add(new LogInfo { ConversationId = "234234223423342311cd1", LogCategories = "alpha;nap", IsActive = true });
+            dbContext.SaveChanges();
+            _logService.GetErrorLogs().Returns(new List<Log>(){
+                new Log {
+                    Category = new LogCategory { CategoryName = "alpha" },
+                    Machine = new Machine { MachineIP = "machine" },
+                    FormattedMessage = "log"
+                },
+            });
+
+            // Act
+            await _logDialog.GetAndSendLogAsync();
+
+            // Assert
+            await _conversationFixture.Conversation
+               .DidNotReceive()
+               .SendAsync(Arg.Any<MessageInfo>());
         }
 
         [Fact]

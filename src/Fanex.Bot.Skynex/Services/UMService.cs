@@ -4,12 +4,13 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
+    using Fanex.Bot.Skynex.Models.UM;
     using HtmlAgilityPack;
     using Microsoft.Extensions.Configuration;
 
     public interface IUMService
     {
-        Task<bool> GetUMInformation();
+        Task<UM> GetUMInformation();
 
         Task<bool> CheckPageShowUM(Uri pageUrl);
     }
@@ -27,11 +28,11 @@
             _umKeywords = configuration.GetSection("UMInfo")?.GetSection("UMKeyWord").Get<string[]>();
         }
 
-        public async Task<bool> GetUMInformation()
+        public async Task<UM> GetUMInformation()
         {
-            var isUM = await _webClient.GetJsonAsync<bool>(new Uri($"{_mSiteUrl}/Bot/UMInformation"));
+            var umInfo = await _webClient.GetJsonAsync<UM>(new Uri($"{_mSiteUrl}/Bot/UMInformation"));
 
-            return isUM;
+            return umInfo;
         }
 
         public async Task<bool> CheckPageShowUM(Uri pageUrl)

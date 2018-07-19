@@ -16,5 +16,6 @@
         public const string UM = "um";
         public const string Start = "start";
         public const string UM_AddPage = "addpage";
+        public const string UM_Notify = "notify";
     }
 }

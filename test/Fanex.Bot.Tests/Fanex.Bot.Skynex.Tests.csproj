@@ -8,6 +8,14 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.4.0" />
     <PackageReference Include="Microsoft.Bot.Connector" Version="3.15.2.2" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.8.0" />

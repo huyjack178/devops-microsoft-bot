@@ -1,4 +1,6 @@
-﻿namespace Fanex.Bot.Client
+﻿using System.Threading.Tasks;
+
+namespace Fanex.Bot.Client
 {
     public interface IBotConnector
     {

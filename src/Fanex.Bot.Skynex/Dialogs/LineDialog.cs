@@ -28,7 +28,7 @@
             {
                 messageInfo = InitMessageInfo(activity);
                 await SaveMessageInfoAsync(messageInfo);
-                await Conversation.SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
+                await Conversation.SendAdminAsync($"New client **{activity.From.Id}** has been added");
             }
         }
 

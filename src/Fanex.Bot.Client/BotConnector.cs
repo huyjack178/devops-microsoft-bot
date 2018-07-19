@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.Client
 {
+    using System.Net;
     using System.Text;
     using Fanex.Bot.Client.Configuration;
     using Fanex.Bot.Client.Models;
@@ -23,10 +24,16 @@
             var token = GetToken();
             var result = ForwardToBot(message, conversationId, token);
 
-            return result;
+            if (result == (int)HttpStatusCode.Unauthorized)
+            {
+                token = GetToken();
+                result = ForwardToBot(message, conversationId, token);
+            }
+
+            return result.ToString();
         }
 
-        private string ForwardToBot(string message, string conversationId, Token token)
+        private int ForwardToBot(string message, string conversationId, Token token)
         {
             _webClient.BaseUrl = BotSettings.BotServiceUrl;
 
@@ -38,7 +45,7 @@
 
             var result = _webClient.Execute(request);
 
-            return result.Content;
+            return (int)result.StatusCode;
         }
 
         private Token GetToken()
