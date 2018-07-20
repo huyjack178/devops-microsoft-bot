@@ -163,22 +163,21 @@
 
             // Assert
             var expectedSessionInfo =
-                    $"**Session Info:** \n\n" +
-                    $"CustRoleId: 4 \n\n" +
-                    $"custid: 27671895 \n\n" +
-                    $"CustUname: supertestPRO2 \n\n" +
-                    $"MemberID: 0 \n\n" +
-                    $"MemberUserName: \n\n" +
-                    $"AgentID: 0 \n\n" +
-                    $"AgentUserName: \n\n" +
-                    $"MasterID: 0 \n\n" +
-                    $"MasterUserName: \n\n" +
-                    $"SuperID: 27671895 \n\n" +
-                    $"SusperUserName: supertestPRO2 \n\n" +
-                    $"IsSyncCSCurrentCust: False \n\n" +
-                    $"IsInternal: False \n\n" +
-                    $"TemplateFolderDefault: App_Templates\\Default \n\n" +
-                    $"sitename: BEST-ODDS \n\n\n\n";
+                   "**Session Info:**\n\nUsername: starix69 \n\n\n" +
+                   "AccUserName: starix69 \n\n\n" +
+                   "CustRoleId: 4 \n\n\n" +
+                   "custid: 27671895 \n\n\n" +
+                   "CustUname: supertestPRO2 \n\n\n" +
+                   "MemberID: 0 \n\n\nMemberUserName: \n\n\n" +
+                   "AgentID: 0 \n\n\n" +
+                   "AgentUserName: \n\n\n" +
+                   "MasterID: 0 \n\n\n" +
+                   "MasterUserName: \n\n\n" +
+                   "SuperID: 27671895 \n\n\n" +
+                   "SusperUserName: supertestPRO2 \n\n\n" +
+                   "IsSyncCSCurrentCust: False \n\n\n" +
+                   "IsInternal: False \n\n\n" +
+                   "sitename: BEST-ODDS \n\n\n";
             Assert.Contains(expectedSessionInfo, log.Message);
         }
 

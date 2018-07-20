@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Skynex.Utilities.Log
 {
     using System;
+    using System.Text;
     using Fanex.Bot.Skynex.Models.Log;
 
     public static class LogFormatter
@@ -157,32 +158,33 @@
         public static string FormatSessionInfo(string rawMessage)
         {
             var sessionInfoIndex = rawMessage.IndexOf(
-                    "SESSION INFO",
+                    LogFilterInfo.SessionInfo,
                     StringComparison.InvariantCultureIgnoreCase);
-            var returnMessage = string.Empty;
+            var returnMessage = new StringBuilder();
 
             if (sessionInfoIndex < 0)
             {
-                return returnMessage;
+                return returnMessage.ToString();
             }
 
-            var custRoleIdIndex = rawMessage.IndexOf(
-                    "CustRoleId", sessionInfoIndex,
-                    StringComparison.InvariantCultureIgnoreCase);
-            var settingSiteNameIndex = rawMessage.IndexOf(
-                   "SettingSiteName", sessionInfoIndex,
-                   StringComparison.InvariantCultureIgnoreCase);
+            returnMessage.Append($"{Constants.NewLine}**Session Info:**");
 
-            if (custRoleIdIndex > 0 && settingSiteNameIndex > 0 && settingSiteNameIndex > custRoleIdIndex)
+            foreach (var key in LogFilterInfo.SessionInfoKeys)
             {
-                var sessionInfo = rawMessage.Substring(custRoleIdIndex, settingSiteNameIndex - custRoleIdIndex);
+                var keyIndex = rawMessage.IndexOf(
+                    key, sessionInfoIndex,
+                    StringComparison.InvariantCultureIgnoreCase);
+                var firstNewLineCharIndex = rawMessage.IndexOf("\n", keyIndex, StringComparison.InvariantCultureIgnoreCase);
 
-                returnMessage =
-                    $"{Constants.NewLine}**Session Info:**" +
-                    $" {Constants.NewLine}{sessionInfo}";
+                if (keyIndex > 0 && firstNewLineCharIndex > keyIndex)
+                {
+                    var value = rawMessage.Substring(keyIndex, firstNewLineCharIndex - keyIndex);
+
+                    returnMessage.Append(Constants.NewLine + value);
+                }
             }
 
-            return returnMessage;
+            return returnMessage.ToString();
         }
     }
 }
