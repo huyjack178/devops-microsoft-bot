@@ -162,25 +162,23 @@
                     StringComparison.InvariantCultureIgnoreCase);
             var returnMessage = new StringBuilder();
 
-            if (sessionInfoIndex < 0)
+            if (sessionInfoIndex > 0)
             {
-                return returnMessage.ToString();
-            }
+                returnMessage.Append($"{Constants.NewLine}**Session Info:**");
 
-            returnMessage.Append($"{Constants.NewLine}**Session Info:**");
-
-            foreach (var key in LogFilterInfo.SessionInfoKeys)
-            {
-                var keyIndex = rawMessage.IndexOf(
-                    key, sessionInfoIndex,
-                    StringComparison.InvariantCultureIgnoreCase);
-                var firstNewLineCharIndex = rawMessage.IndexOf("\n", keyIndex, StringComparison.InvariantCultureIgnoreCase);
-
-                if (keyIndex > 0 && firstNewLineCharIndex > keyIndex)
+                foreach (var key in LogFilterInfo.SessionInfoKeys)
                 {
-                    var value = rawMessage.Substring(keyIndex, firstNewLineCharIndex - keyIndex);
+                    var keyIndex = rawMessage.IndexOf(
+                        key, sessionInfoIndex,
+                        StringComparison.InvariantCultureIgnoreCase);
+                    var firstNewLineCharIndex = rawMessage.IndexOf("\n", keyIndex, StringComparison.InvariantCultureIgnoreCase);
 
-                    returnMessage.Append(Constants.NewLine + value);
+                    if (keyIndex > 0 && firstNewLineCharIndex > keyIndex)
+                    {
+                        var value = rawMessage.Substring(keyIndex, firstNewLineCharIndex - keyIndex);
+
+                        returnMessage.Append(Constants.NewLine + value);
+                    }
                 }
             }
 
