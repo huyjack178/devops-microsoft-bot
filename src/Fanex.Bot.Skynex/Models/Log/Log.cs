@@ -12,15 +12,19 @@
 
         public string FormattedMessage { get; set; }
 
+        public int NumMessage { get; set; }
+
+        public int CategoryID { get; set; }
+
+        public string CategoryName { get; set; }
+
+        public string MachineName { get; set; }
+
+        public string MachineIP { get; set; }
+
         public string Message => FormatMessage();
 
         public string FullMessage => FormatMessage(isDetail: true);
-
-        public int NumMessage { get; set; }
-
-        public LogCategory Category { get; set; }
-
-        public Machine Machine { get; set; }
 
         private string FormatMessage(bool isDetail = false)
         {
@@ -40,9 +44,9 @@
             }
 
             var message = string.Empty;
-            message += LogFormatter.FormatRequestInfo(FormattedMessage, Category);
+            message += LogFormatter.FormatRequestInfo(FormattedMessage, CategoryName);
             message += LogFormatter.FormatBrowserInfo(FormattedMessage);
-            message += LogFormatter.FormatServerAndDatabaseInfo(FormattedMessage, Machine);
+            message += LogFormatter.FormatServerAndDatabaseInfo(FormattedMessage, MachineName, MachineIP);
             message += LogFormatter.FormatCustomInfo(FormattedMessage);
             message += LogFormatter.FormatSessionInfo(FormattedMessage);
             message += LogFormatter.FormatExceptionInfo(FormattedMessage);
@@ -63,7 +67,7 @@
                       .Replace("REQUEST HEADERS", "**REQUEST HEADERS**")
                       .Replace("SESSION INFO", "**SESSION INFO**");
 
-            return $"**Category**: {Category.CategoryName}{NewLine}" +
+            return $"**Category**: {CategoryName}{NewLine}" +
                     $"{WebUtility.HtmlDecode(returnMessage)}{NewLine}" +
                     $"**#Log Id**: {LogId} " +
                     $"**Count**: {NumMessage}{NewLine}{NewLine}" +

@@ -106,9 +106,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Log\GetLogCriteria.cs" />
+    <Compile Include="Models\Log\Log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\LogService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\LOCAL\mSiteSpNames.xml" />
     <Content Include="App_Data\UAT\mSiteSpNames.xml" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
@@ -119,13 +123,16 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\LOCAL\" />
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <PackageReference Include="Fanex.Data">
       <Version>2.1.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Fanex.Data.OldConnectionStringProvider">
+      <Version>1.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Fanex.Data.Repository">
+      <Version>1.0.2.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNet.Mvc">
       <Version>5.2.3</Version>
@@ -160,6 +167,12 @@
     <PackageReference Include="ONELab.UMService">
       <Version>1.0.17338.843</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.UAT.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web.LOCAL.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

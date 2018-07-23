@@ -6,7 +6,7 @@
 
     public static class LogFormatter
     {
-        public static string FormatRequestInfo(string rawMessage, LogCategory category)
+        public static string FormatRequestInfo(string rawMessage, string categoryName)
         {
             var requestInfoIndex = rawMessage.IndexOf("REQUEST INFO", StringComparison.InvariantCultureIgnoreCase);
             var returnMessage = string.Empty;
@@ -25,7 +25,7 @@
 
                 returnMessage = rawMessage.Remove(requestInfoIndex);
                 returnMessage += $"{Constants.NewLine}**Request:** " +
-                    $"{CheckAndHideAlphaDomain(requestUrl, category)}";
+                    $"{CheckAndHideAlphaDomain(requestUrl, categoryName)}";
             }
 
             return returnMessage;
@@ -63,9 +63,9 @@
             return returnMessage;
         }
 
-        public static string FormatServerAndDatabaseInfo(string rawMessage, Machine machine)
+        public static string FormatServerAndDatabaseInfo(string rawMessage, string machineName, string machineIP)
         {
-            var returnMessage = $"{Constants.NewLine}**Server:** {machine.MachineName} ({machine.MachineIP})";
+            var returnMessage = $"{Constants.NewLine}**Server:** {machineName} ({machineIP})";
 
             var databaseInfoIndex = rawMessage.IndexOf("DATABASE INFO", StringComparison.InvariantCultureIgnoreCase);
 
@@ -138,11 +138,11 @@
             return returnMessage;
         }
 
-        public static string CheckAndHideAlphaDomain(string request, LogCategory category)
+        public static string CheckAndHideAlphaDomain(string request, string categoryName)
         {
             var hideDomainRequest = request;
 
-            if (category.CategoryName.ToLowerInvariant().Contains("alpha"))
+            if (categoryName.ToLowerInvariant().Contains("alpha"))
             {
                 var requestUri = new Uri(request);
 
@@ -171,9 +171,15 @@
                     var keyIndex = rawMessage.IndexOf(
                         key, sessionInfoIndex,
                         StringComparison.InvariantCultureIgnoreCase);
+
+                    if (keyIndex <= 0)
+                    {
+                        continue;
+                    }
+
                     var firstNewLineCharIndex = rawMessage.IndexOf("\n", keyIndex, StringComparison.InvariantCultureIgnoreCase);
 
-                    if (keyIndex > 0 && firstNewLineCharIndex > keyIndex)
+                    if (firstNewLineCharIndex > keyIndex)
                     {
                         var value = rawMessage.Substring(keyIndex, firstNewLineCharIndex - keyIndex);
 

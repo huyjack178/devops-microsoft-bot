@@ -1,39 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-
-namespace Fanex.Bot.Service.Controllers
+﻿namespace Fanex.Bot.Service.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+    using Fanex.Bot.Service.Models.Log;
+    using Fanex.Bot.Service.Services;
+    using Fanex.Data.Repository;
+
     public class LogController : ApiController
     {
-        // GET api/values
-        public IEnumerable<string> Get()
+        [HttpPost]
+        public async Task<IHttpActionResult> List(GetLogCriteria criteria)
         {
-            return new string[] { "value1", "value2" };
-        }
+            var logService = new LogService(new DynamicRepository());
+            var logs = await logService.GetLogsAsync(criteria);
 
-        // GET api/values/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
+            return Json(logs);
         }
     }
 }

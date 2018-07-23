@@ -292,12 +292,12 @@
                         .Split(';')
                         .Where(category => !string.IsNullOrEmpty(category));
 
-            var groupErrorLogs = errorLogs.GroupBy(log => new { log.Category.CategoryName, log.Machine.MachineIP });
+            var groupErrorLogs = errorLogs.GroupBy(log => new { log.CategoryName, log.MachineIP });
 
             foreach (var groupErrorLog in groupErrorLogs)
             {
                 var errorLog = groupErrorLog.First();
-                var logCategory = errorLog.Category.CategoryName.ToLowerInvariant();
+                var logCategory = errorLog.CategoryName.ToLowerInvariant();
                 var hasLogCategory = filterCategories?.Any(
                         filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant())) ?? false;
                 var hasIgnoreMessage = await DbContext.LogIgnoreMessage.AnyAsync(

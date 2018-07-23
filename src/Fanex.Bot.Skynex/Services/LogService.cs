@@ -26,7 +26,7 @@
             IConfiguration configuration)
         {
             _webClient = webClient;
-            _mSiteUrl = configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value;
+            _mSiteUrl = configuration.GetSection("BotServiceUrl")?.Value;
         }
 
         public async Task<IEnumerable<Log>> GetErrorLogs(
@@ -35,11 +35,11 @@
             bool isProduction = true)
         {
             var errorLogs = await _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
-                new Uri($"{_mSiteUrl}/Bot/Logs"),
+                new Uri($"{_mSiteUrl}/Log/List"),
                 new GetLogFormData
                 {
-                    From = (fromDate ?? DateTime.UtcNow.AddSeconds(-70)).AddHours(7).ToString(CultureInfo.InvariantCulture),
-                    To = (toDate ?? DateTime.UtcNow).AddHours(7).ToString(CultureInfo.InvariantCulture),
+                    From = (fromDate ?? DateTime.UtcNow.AddSeconds(-65)).ToString(CultureInfo.InvariantCulture),
+                    To = (toDate ?? DateTime.UtcNow).ToString(CultureInfo.InvariantCulture),
                     Severity = "Error",
                     Size = 5,
                     Page = 0,

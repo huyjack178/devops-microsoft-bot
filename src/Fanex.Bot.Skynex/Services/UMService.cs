@@ -24,13 +24,13 @@
         public UMService(IWebClient webClient, IConfiguration configuration)
         {
             _webClient = webClient;
-            _mSiteUrl = configuration.GetSection("LogInfo")?.GetSection("mSiteUrl")?.Value;
+            _mSiteUrl = configuration.GetSection("BotServiceUrl")?.Value;
             _umKeywords = configuration.GetSection("UMInfo")?.GetSection("UMKeyWord").Get<string[]>();
         }
 
         public async Task<UM> GetUMInformation()
         {
-            var umInfo = await _webClient.GetJsonAsync<UM>(new Uri($"{_mSiteUrl}/Bot/UMInformation"));
+            var umInfo = await _webClient.GetJsonAsync<UM>(new Uri($"{_mSiteUrl}/UM/Information"));
 
             return umInfo;
         }
