@@ -11,6 +11,10 @@
                 "test message from Bot Client Test", "29:1VztMrVULRUlh1J7uBBFEWXZqHz41ZRQ6F-avnd5-874");
 
             System.Console.WriteLine(result);
+
+            result = botConnector.Send(
+              "test message from Bot Client Test 2", "29:1VztMrVULRUlh1J7uBBFEWXZqHz41ZRQ6F-avnd5-874");
+
             System.Console.ReadLine();
         }
     }

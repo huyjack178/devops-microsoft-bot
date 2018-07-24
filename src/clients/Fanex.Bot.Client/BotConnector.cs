@@ -1,27 +1,33 @@
 ﻿namespace Fanex.Bot.Client
 {
+    using System;
     using System.Net;
     using System.Text;
     using Fanex.Bot.Client.Configuration;
     using Fanex.Bot.Client.Models;
+    using Fanex.Caching;
     using RestSharp;
 
     public class BotConnector : IBotConnector
     {
+        private const string TokenCachedKey = "TokenCachedKey";
         private readonly IRestClient _webClient;
+        private readonly ICacheService _cacheService;
 
-        public BotConnector() : this(null)
+        public BotConnector() : this(null, null)
         {
         }
 
-        protected internal BotConnector(IRestClient webClient)
+        protected internal BotConnector(IRestClient webClient, ICacheService cacheService)
         {
             _webClient = webClient ?? new RestClient { Encoding = Encoding.UTF8 };
+            _cacheService = new CacheService();
         }
 
         public string Send(string message, string conversationId)
         {
             var token = GetToken();
+
             var result = ForwardToBot(message, conversationId, token);
 
             if (result == (int)HttpStatusCode.Unauthorized)
@@ -33,12 +39,12 @@
             return result.ToString();
         }
 
-        private int ForwardToBot(string message, string conversationId, Token token)
+        private int ForwardToBot(string message, string conversationId, string token)
         {
             _webClient.BaseUrl = BotSettings.BotServiceUrl;
 
             var request = new RestRequest("/messages/forward", Method.POST);
-            request.AddHeader("Authorization", $"Bearer {token.AccessToken}");
+            request.AddHeader("Authorization", $"Bearer {token}");
             request.AddHeader("content-type", "application/x-www-form-urlencoded");
             request.AddParameter("message", message);
             request.AddParameter("conversationId", conversationId);
@@ -48,21 +54,32 @@
             return (int)result.StatusCode;
         }
 
-        private Token GetToken()
+        private string GetToken()
         {
-            _webClient.BaseUrl = BotSettings.TokenUrl;
+            var token = _cacheService.Get<string>(TokenCachedKey);
 
-            var request = new RestRequest(Method.POST);
-            request.AddParameter("grant_type", "client_credentials");
-            request.AddParameter("client_id", BotSettings.ClientId);
-            request.AddParameter("client_secret", BotSettings.ClientPassword);
-            request.AddParameter("scope", $"{BotSettings.ClientId}/.default");
+            if (string.IsNullOrEmpty(token))
+            {
+                _webClient.BaseUrl = BotSettings.TokenUrl;
 
-            request.AddHeader("Content-type", "application/x-www-form-urlencoded");
+                var request = new RestRequest(Method.POST);
+                request.AddParameter("grant_type", "client_credentials");
+                request.AddParameter("client_id", BotSettings.ClientId);
+                request.AddParameter("client_secret", BotSettings.ClientPassword);
+                request.AddParameter("scope", $"{BotSettings.ClientId}/.default");
+                request.AddHeader("Content-type", "application/x-www-form-urlencoded");
+                var response = _webClient.Execute<Token>(request);
 
-            var response = _webClient.Execute<Token>(request);
+                token = response.Data.AccessToken;
 
-            return response.Data;
+                _cacheService.Set(
+                    TokenCachedKey,
+                    token,
+                    new CacheItemOptions().SetAbsoluteExpiration(
+                        TimeSpan.FromSeconds(response.Data.ExpiresIn)));
+            }
+
+            return token;
         }
     }
 }

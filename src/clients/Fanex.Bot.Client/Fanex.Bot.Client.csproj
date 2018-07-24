@@ -19,11 +19,10 @@
       var result = botConnector.SendAsync(message: "hello", "conversationId");
     </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.3.6</AssemblyVersion>
-    <FileVersion>1.0.3.6</FileVersion>
-    <Version>1.0.3.6</Version>
-    <PackageReleaseNotes>- Update the way to get token
-- BotConnector.Send() method returns status code (200, 401, ...)</PackageReleaseNotes>
+    <AssemblyVersion>1.0.3.7</AssemblyVersion>
+    <FileVersion>1.0.3.7</FileVersion>
+    <Version>1.0.3.7</Version>
+    <PackageReleaseNotes>- Add caching token</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet>Fanex.Bot.Client.ruleset</CodeAnalysisRuleSet>
@@ -34,6 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fanex.Caching" Version="2.2.0-beta2" />
     <PackageReference Include="RestSharp" Version="106.3.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
