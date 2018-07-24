@@ -171,12 +171,18 @@
             var umStartTime = umInfo.StartTime.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
 
             var now = DateTimeExtention.GetUTCNow().AddHours(userGMT);
+            await CheckTimeAndSendUMInfo(umInfo, forceNotifyUM, umGMT, umStartTime, now);
+        }
 
+        private async Task CheckTimeAndSendUMInfo(UM umInfo, bool forceNotifyUM, int umGMT, DateTime umStartTime, DateTime now)
+        {
             var isInUMDate = umInfo.StartTime.Date == now.Date;
-            var isIn10AM = now.Hour == 10 && now.Minute == 0;
+            var isAt10AM = now.Hour == 10 && now.Minute == 0;
             var isBefore30Mins = Convert.ToInt32((umStartTime - now).TotalMinutes) == 30;
+            var isBefore1DayAt10AM = isAt10AM && now.Date == umInfo.StartTime.Date.AddDays(-1);
+            var isInDay = isInUMDate && (isAt10AM || isBefore30Mins);
 
-            if (forceNotifyUM || (isInUMDate && (isIn10AM || isBefore30Mins)))
+            if (forceNotifyUM || isInDay || isBefore1DayAt10AM)
             {
                 await SendMessageUM(
                     $"System will be **under maintenance** " +
@@ -185,7 +191,7 @@
             }
         }
 
-        public async Task ScanPageUM()
+        private async Task ScanPageUM()
         {
             var umPageGroup = DbContext.UMPage
                 .Where(page => page.IsActive)

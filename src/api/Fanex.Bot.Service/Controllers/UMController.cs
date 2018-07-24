@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Service.Controllers
 {
     using System;
+    using System.Globalization;
     using System.Web.Http;
     using ONELab.UMService.UMClient;
 
@@ -15,8 +16,8 @@
             {
                 isUM = result,
                 WebSiteClient.VersionChkMessage,
-                startTime = startTime.ToString(),
-                endTime = endTime.ToString(),
+                startTime = startTime.ToString(CultureInfo.InvariantCulture),
+                endTime = endTime.ToString(CultureInfo.InvariantCulture),
                 errorCode
             });
         }

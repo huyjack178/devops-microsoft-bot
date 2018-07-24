@@ -3,6 +3,8 @@
     using System;
     using System.Configuration;
 
+#pragma warning disable S1075 // URIs should not be hardcoded
+
     public class BotSettings
     {
         public static BotSettings Settings => new BotSettings();
@@ -23,4 +25,6 @@
             = new Uri(ConfigurationManager.AppSettings["FanexBotClient:TokenUrl"] ??
                 "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token");
     }
+
+#pragma warning restore S1075 // URIs should not be hardcoded
 }

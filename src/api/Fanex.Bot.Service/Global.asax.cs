@@ -8,6 +8,9 @@
     using Fanex.Data.OldConnectionStringProvider;
 
     public class WebApiApplication : HttpApplication
+#pragma warning disable S1075 // URIs should not be hardcoded
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
+
     {
         protected void Application_Start()
         {
@@ -21,9 +24,11 @@
                 .Use(new OldConnectionStringProvider())
                 .UseDefaultDbSettingProvider(
                     resourcePath: "~/App_Data/UAT",
-                    ignoreRedundantParameters: false,
                     enableWatching: true)
                 .Run();
         }
     }
+
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
+#pragma warning restore S1075 // URIs should not be hardcoded
 }

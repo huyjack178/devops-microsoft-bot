@@ -47,6 +47,7 @@
         }
 
 #pragma warning disable S2325 // Methods and properties that don't access instance data should be static
+#pragma warning disable S1075 // URIs should not be hardcoded
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -56,6 +57,8 @@
             app.UseAuthentication();
             app.UseMvc();
         }
+
+#pragma warning restore S1075 // URIs should not be hardcoded
 
 #pragma warning restore S2325 // Methods and properties that don't access instance data should be static
     }

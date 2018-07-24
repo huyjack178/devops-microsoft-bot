@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web;
@@ -19,6 +20,8 @@
         {
             _dynamicRepository = dynamicRepository;
         }
+
+#pragma warning disable S3216 // "ConfigureAwait(false)" should be used
 
         public async Task<IEnumerable<Log>> GetLogsAsync(GetLogCriteria criteria)
         {
@@ -38,18 +41,18 @@
             return logs;
         }
 
-        private string ReplaceTimestampFromLogMessage(string message, int GMT)
+#pragma warning restore S3216 // "ConfigureAwait(false)" should be used
+
+        private static string ReplaceTimestampFromLogMessage(string message, int GMT)
         {
             var messageIndex = message.IndexOf("\r", StringComparison.InvariantCulture) - 1;
             var timestampLength = messageIndex - message.IndexOf(":", StringComparison.InvariantCulture);
             var timestamp = message.Substring(10, timestampLength);
             var offsetSign = GMT > 0 ? "+" : string.Empty;
 
-            message = message.Replace(
+            return message.Replace(
                 timestamp,
-                $" {Convert.ToDateTime(timestamp).AddHours(GMT).ToString()} (GMT{offsetSign}{GMT})");
-
-            return message;
+                $" {Convert.ToDateTime(timestamp).AddHours(GMT).ToString(CultureInfo.InvariantCulture)} (GMT{offsetSign}{GMT})");
         }
     }
 }

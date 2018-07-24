@@ -1,9 +1,8 @@
-﻿using System.Web;
-using System.Web.Mvc;
-
-namespace Fanex.Bot.Service
+﻿namespace Fanex.Bot.Service
 {
-    public class FilterConfig
+    using System.Web.Mvc;
+
+    public static class FilterConfig
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {

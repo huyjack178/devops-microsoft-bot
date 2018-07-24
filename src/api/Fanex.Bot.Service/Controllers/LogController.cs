@@ -1,10 +1,5 @@
 ﻿namespace Fanex.Bot.Service.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web.Http;
     using Fanex.Bot.Service.Models.Log;
@@ -13,6 +8,8 @@
 
     public class LogController : ApiController
     {
+#pragma warning disable S3216 // "ConfigureAwait(false)" should be used
+
         [HttpPost]
         public async Task<IHttpActionResult> List(GetLogCriteria criteria)
         {
@@ -21,5 +18,7 @@
 
             return Json(logs);
         }
+
+#pragma warning restore S3216 // "ConfigureAwait(false)" should be used
     }
 }

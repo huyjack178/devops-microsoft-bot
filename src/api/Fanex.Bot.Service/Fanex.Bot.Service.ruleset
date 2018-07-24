@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="SonarQube - NexOps / Fanex.Bot Nexcel CSharp" ToolsVersion="15.0">
   <Include Path="..\..\..\.sonarlint\fanex.botcsharp.ruleset" Action="Default" />
-  <Include Path="..\..\.sonarlint\fanex.botcsharp.ruleset" Action="Default" />
 </RuleSet>

@@ -44,6 +44,8 @@
             });
         }
 
+#pragma warning disable S1075 // URIs should not be hardcoded
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseExceptionHandler("/api/Error/");
@@ -57,6 +59,8 @@
             app.UseAuthentication();
             app.UseMvc();
         }
+
+#pragma warning restore S1075 // URIs should not be hardcoded
 
         private static void ConfigureAttributes(IServiceCollection services)
         {
