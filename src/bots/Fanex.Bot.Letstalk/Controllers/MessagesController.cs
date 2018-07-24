@@ -41,7 +41,7 @@
 
             if (activity.Type == ActivityTypes.Message)
             {
-                var message = BotHelper.GenerateMessage(activity.Text);
+                var message = BotHelper.GenerateMessage(activity.Text, "Letstalk-ChatBot");
 
                 if (message.StartsWith("group"))
                 {

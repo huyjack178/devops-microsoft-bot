@@ -91,11 +91,14 @@
             await _commonDialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
         }
 
-        [Fact]
-        public async Task Post_ActivityMessage_HandMessageCommand_TextHasBotName_RemoveBotName()
+        [Theory]
+        [InlineData("@Skynex group")]
+        [InlineData("Skynex group")]
+        public async Task Post_ActivityMessage_HandMessageCommand_TextHasBotName_RemoveBotName(string message)
         {
             // Arrange
-            var activity = new Activity { Type = ActivityTypes.Message, Text = "@Skynex group" };
+            var activity = new Activity { Type = ActivityTypes.Message, Text = message };
+            _conversationFixture.Configuration.GetSection("BotName")?.Value.Returns("Skynex");
 
             // Act
             await _messagesController.Post(activity);

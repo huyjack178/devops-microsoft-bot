@@ -1,9 +1,6 @@
 ﻿namespace Fanex.Bot.Controllers
 {
-    using System;
-    using System.Collections;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
     using Fanex.Bot.Skynex.Dialogs;
@@ -77,9 +74,25 @@
             return Ok(result);
         }
 
+        [HttpPost]
+        [Route("ForwardWithToken")]
+        public async Task<IActionResult> ForwardWithToken(string token, string message, string conversationId)
+        {
+            var validToken = _configuration.GetSection("BotSecretToken")?.Value;
+
+            if (validToken == token)
+            {
+                var result = await _conversation.SendAsync(conversationId, message);
+                return Ok(result);
+            }
+
+            return Unauthorized();
+        }
+
         private async Task HandleMessage(IMessageActivity activity)
         {
-            var message = BotHelper.GenerateMessage(activity.Text);
+            var botName = _configuration.GetSection("BotName")?.Value;
+            var message = BotHelper.GenerateMessage(activity.Text, botName);
 
             if (message.StartsWith("log"))
             {
