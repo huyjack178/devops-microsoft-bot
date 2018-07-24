@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fanex.Bot.Core\Fanex.Bot.Core.csproj" />
+    <ProjectReference Include="..\..\clients\Fanex.Bot.Core\Fanex.Bot.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

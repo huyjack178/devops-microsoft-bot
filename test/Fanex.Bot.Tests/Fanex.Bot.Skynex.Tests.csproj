@@ -28,7 +28,7 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj" />
+    <ProjectReference Include="..\..\src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj" />
   </ItemGroup>
 
   <ItemGroup>

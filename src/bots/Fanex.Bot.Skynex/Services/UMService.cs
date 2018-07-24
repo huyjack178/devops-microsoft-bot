@@ -18,19 +18,19 @@
     public class UMService : IUMService
     {
         private readonly IWebClient _webClient;
-        private readonly string _mSiteUrl;
+        private readonly string _botServiceUrl;
         private readonly string[] _umKeywords;
 
         public UMService(IWebClient webClient, IConfiguration configuration)
         {
             _webClient = webClient;
-            _mSiteUrl = configuration.GetSection("BotServiceUrl")?.Value;
+            _botServiceUrl = configuration.GetSection("BotServiceUrl")?.Value;
             _umKeywords = configuration.GetSection("UMInfo")?.GetSection("UMKeyWord").Get<string[]>();
         }
 
         public async Task<UM> GetUMInformation()
         {
-            var umInfo = await _webClient.GetJsonAsync<UM>(new Uri($"{_mSiteUrl}/UM/Information"));
+            var umInfo = await _webClient.GetJsonAsync<UM>(new Uri($"{_botServiceUrl}/UM/Information"));
 
             return umInfo;
         }

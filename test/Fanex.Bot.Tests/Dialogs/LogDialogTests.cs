@@ -355,18 +355,18 @@
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "log"
                 },
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "log"
                 },
                 new Log {
-                    Category = new LogCategory { CategoryName = "lrf" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "lrf",
+                    MachineIP = "machine",
                     FormattedMessage = "log_lrf"
                 }
             });
@@ -391,8 +391,8 @@
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "log"
                 }
             });
@@ -427,8 +427,8 @@
 
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "log"
                 }
             });
@@ -457,18 +457,18 @@
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "log"
                 },
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "log"
                 },
                 new Log {
-                    Category = new LogCategory { CategoryName = "lrf" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "lrf",
+                    MachineIP = "machine",
                     FormattedMessage = "log_lrf"
                 }
             });
@@ -501,8 +501,8 @@
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "log"
                 },
             });
@@ -528,8 +528,8 @@
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
-                    Category = new LogCategory { CategoryName = "alpha" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "alpha",
+                    MachineIP = "machine",
                     FormattedMessage = "thread was being aborted"
                 },
             });
@@ -558,8 +558,8 @@
             dbContext.SaveChanges();
             _logService.GetErrorLogs().Returns(new List<Log>(){
                 new Log {
-                    Category = new LogCategory { CategoryName = "nap" },
-                    Machine = new Machine { MachineIP = "machine" },
+                    CategoryName = "nap",
+                    MachineIP = "machine",
                     FormattedMessage = "thread was not being aborted"
                 },
             });
@@ -624,7 +624,7 @@
             _logService.GetErrorLogDetail(Arg.Is<long>(23423)).Returns(
                 new Log
                 {
-                    Category = new LogCategory { CategoryName = "alpha" },
+                    CategoryName = "alpha",
                     FormattedMessage = "log",
                 });
 

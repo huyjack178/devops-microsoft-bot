@@ -31,7 +31,7 @@
         {
             // Arrange
             var umInfo = new UM { IsUM = true };
-            _webClient.GetJsonAsync<UM>(Arg.Is(new Uri("http://msite.starific.net/V1//Bot/UMInformation"))).Returns(umInfo);
+            _webClient.GetJsonAsync<UM>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UM/Information"))).Returns(umInfo);
 
             // Act
             var actualUmInfo = await _umService.GetUMInformation();

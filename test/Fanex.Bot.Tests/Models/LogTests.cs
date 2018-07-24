@@ -62,7 +62,7 @@
             // Arrange
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
-            log.Category = new LogCategory { CategoryName = "alpha" };
+            log.CategoryName = "alpha";
 
             // Act
             log.FormattedMessage = GetLogDataTest();
@@ -101,7 +101,7 @@
 
             // Assert
             var expecteDbInfo = $"**Server:**" +
-                $" {log.Machine.MachineName} ({log.Machine.MachineIP})" +
+                $" {log.MachineName} ({log.MachineIP})" +
                 $"\n\n**Database:**\n\n" +
                 $"Server: 10.40.40.100 \n\n" +
                 $"DbName: DBACC.bodb02.BODBDownlineNet \n\n" +
@@ -194,7 +194,7 @@
                       .Replace("REQUEST HEADERS", "**REQUEST HEADERS**")
                       .Replace("SESSION INFO", "**SESSION INFO**");
 
-            return $"**Category**: {log.Category.CategoryName}\n\n" +
+            return $"**Category**: {log.CategoryName}\n\n" +
                     $"{returnMessage}\n\n" +
                     $"**#Log Id**: {log.LogId} " +
                     $"**Count**: {log.NumMessage}\n\n\n\n" +

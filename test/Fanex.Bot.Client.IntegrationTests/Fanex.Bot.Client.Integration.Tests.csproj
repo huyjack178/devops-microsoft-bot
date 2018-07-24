@@ -60,8 +60,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Fanex.Bot.Client\Fanex.Bot.Client.csproj">
-      <Project>{039b4150-3beb-4e1c-825b-9ebc252cda79}</Project>
+    <ProjectReference Include="..\..\src\clients\Fanex.Bot.Client\Fanex.Bot.Client.csproj">
+      <Project>{87690018-5553-4069-ba32-f0e0a26f4a1d}</Project>
       <Name>Fanex.Bot.Client</Name>
     </ProjectReference>
   </ItemGroup>

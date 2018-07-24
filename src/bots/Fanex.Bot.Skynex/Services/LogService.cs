@@ -55,7 +55,7 @@
         public async Task<Log> GetErrorLogDetail(long logId)
         {
             var logMessageDetail = await _webClient.GetJsonAsync<Log>(
-                new Uri($"{_mSiteUrl}/Bot/Log?logId={logId}"));
+                new Uri($"{_mSiteUrl}/Log?logId={logId}"));
 
             return logMessageDetail;
         }

@@ -20,7 +20,7 @@
         public LogServiceTests()
         {
             _configuration = Substitute.For<IConfiguration>();
-            _configuration.GetSection("LogInfo").GetSection("mSiteUrl").Value.Returns("http://log.com");
+            _configuration.GetSection("BotServiceUrl").Value.Returns("http://log.com");
             _webClient = Substitute.For<IWebClient>();
             _logService = new LogService(_webClient, _configuration);
         }
@@ -38,10 +38,10 @@
             };
 
             _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
-                new Uri("http://log.com/Bot/Logs"),
+                new Uri("http://log.com/Log/List"),
                 Arg.Is<GetLogFormData>(data =>
-                    data.From == fromDate.AddHours(7).ToString(CultureInfo.InvariantCulture) &&
-                    data.To == toDate.AddHours(7).ToString(CultureInfo.InvariantCulture) &&
+                    data.From == fromDate.ToString(CultureInfo.InvariantCulture) &&
+                    data.To == toDate.ToString(CultureInfo.InvariantCulture) &&
                     data.Severity == "Error" &&
                     data.Size == 5 &&
                     data.Page == 0 &&
@@ -68,7 +68,7 @@
             var expectedLogList = new List<Log>();
 
             _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
-                new Uri("http://log.com/Bot/Logs"), Arg.Any<GetLogFormData>())
+                new Uri("http://log.com/Log/List"), Arg.Any<GetLogFormData>())
                 .Returns(expectedLogList);
 
             // Act
@@ -84,7 +84,7 @@
             // Arrange
             var logId = 1;
             var expectedLog = new Log { LogId = 1 };
-            _webClient.GetJsonAsync<Log>(new Uri("http://log.com/Bot/Log" + $"?logId={logId}")).Returns(expectedLog);
+            _webClient.GetJsonAsync<Log>(new Uri("http://log.com/Log" + $"?logId={logId}")).Returns(expectedLog);
 
             // Act
             var actualLog = await _logService.GetErrorLogDetail(logId);
