@@ -169,8 +169,8 @@
             var umGMT = Convert.ToInt32(_configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
             var userGMT = Convert.ToInt32(_configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
             var umStartTime = umInfo.StartTime.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
-
             var now = DateTimeExtention.GetUTCNow().AddHours(userGMT);
+
             await CheckTimeAndSendUMInfo(umInfo, forceNotifyUM, umGMT, umStartTime, now);
         }
 

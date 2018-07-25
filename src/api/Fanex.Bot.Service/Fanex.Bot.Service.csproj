@@ -102,6 +102,7 @@
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\UnityResolver.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\UMController.cs" />
     <Compile Include="Controllers\LogController.cs" />
@@ -168,6 +169,9 @@
     </PackageReference>
     <PackageReference Include="ONELab.UMService">
       <Version>1.0.17338.843</Version>
+    </PackageReference>
+    <PackageReference Include="Unity">
+      <Version>5.8.6</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

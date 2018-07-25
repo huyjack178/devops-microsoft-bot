@@ -9,10 +9,12 @@
     using Fanex.Bot.Service.Models.Log;
     using Fanex.Data.Repository;
 
-    /// <summary>
-    /// Log service.
-    /// </summary>
-    public class LogService
+    public interface ILogService
+    {
+        Task<IEnumerable<Log>> GetLogsAsync(GetLogCriteria criteria);
+    }
+
+    public class LogService : ILogService
     {
         private readonly IDynamicRepository _dynamicRepository;
 
