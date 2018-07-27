@@ -60,7 +60,7 @@
 
         public async Task SendAdminAsync(string message)
         {
-            var adminMessageInfos = _dbContext.MessageInfo.Where(messageInfo => messageInfo.IsAdmin);
+            var adminMessageInfos = _dbContext.MessageInfo.Where(messageInfo => messageInfo.IsAdmin).AsNoTracking();
 
             foreach (var adminMessageInfo in adminMessageInfos)
             {

@@ -155,7 +155,7 @@
             {
                 await SendMessageUM("UM is started now!");
                 _memoryCache.Set(InformedUMCacheKey, true, TimeSpan.FromHours(2));
-                await ScanPageUM();
+                await ScanPages();
             }
         }
 
@@ -191,54 +191,54 @@
             }
         }
 
-        private async Task ScanPageUM()
+        private async Task ScanPages()
         {
             var umPageGroup = DbContext.UMPage
                 .Where(page => page.IsActive)
                 .GroupBy(page => page.Name);
 
-            await SendMessageUM($"UM Scanning start");
+            await SendMessageUM($"UM Scanning started!");
 
             foreach (var group in umPageGroup)
             {
-                await ScanUMPageInGroup(group);
+                await ScanPageInGroup(group);
             }
 
             await SendMessageUM($"UM Scanning completed!");
         }
 
-        private async Task ScanUMPageInGroup(IGrouping<string, UMPage> group)
+        private async Task ScanPageInGroup(IGrouping<string, UMPage> groupPage)
         {
-            await SendMessageUM($"**{group.Key}** ...");
             var allPagesShowUM = true;
+            var message = new StringBuilder($"**{groupPage.Key}**");
 
-            foreach (var page in group)
+            foreach (var page in groupPage)
             {
                 Uri.TryCreate(page.SiteUrl, UriKind.Absolute, out Uri pageUri);
                 var isShowUM = await _umService.CheckPageShowUM(pageUri);
 
                 if (!isShowUM)
                 {
-                    await SendMessageUM($"**{page.SiteUrl} is not in UM**");
+                    message.Append($"{Constants.NewLine}**{page.SiteUrl} does not show UM**");
                     allPagesShowUM = false;
                 }
             }
 
             if (allPagesShowUM)
             {
-                await SendMessageUM($"**{group.Key}** PASSED!");
+                message.Append($" PASSED! {Constants.NewLine}");
             }
 
-            await SendMessageUM("----------------------------");
+            await SendMessageUM(message.ToString());
         }
 
         private async Task SendMessageUM(string message)
         {
-            var umMessageInfos = DbContext.UMInfo.Where(info => info.IsActive);
+            var umInfos = DbContext.UMInfo.Where(info => info.IsActive);
 
-            foreach (var umMessageInfo in umMessageInfos)
+            foreach (var info in umInfos)
             {
-                await Conversation.SendAsync(umMessageInfo.ConversationId, message);
+                await Conversation.SendAsync(info.ConversationId, message);
             }
         }
 

@@ -2,7 +2,7 @@
 {
     using RestSharp.Deserializers;
 
-    internal class Token
+    public class Token
     {
         [DeserializeAs(Name = "token_type")]
         public string TokenType { get; set; }

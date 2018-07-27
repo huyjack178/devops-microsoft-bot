@@ -202,19 +202,13 @@
 
             // Assert
             await _conversationFixture.Conversation.Received()
-             .SendAsync("374i2374982dfas343748923", "UM Scanning start");
+             .SendAsync("374i2374982dfas343748923", "UM Scanning started!");
             await _conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", "**google** ...");
+                .SendAsync("374i2374982dfas343748923", "**google** PASSED! \n\n");
             await _conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", "**google** PASSED!");
-            await _conversationFixture.Conversation.Received()
-               .SendAsync("374i2374982dfas343748923", "**alpha** ...");
-            await _conversationFixture.Conversation.Received()
-               .SendAsync("374i2374982dfas343748923", "**http://www.agbong888888.com is not in UM**");
+               .SendAsync("374i2374982dfas343748923", "**alpha**\n\n**http://www.agbong888888.com does not show UM**");
             await _conversationFixture.Conversation.DidNotReceive()
               .SendAsync("374i2374982dfas343748923", "**alpha** PASSED!");
-            await _conversationFixture.Conversation.Received()
-               .SendAsync("374i2374982dfas343748923", "----------------------------");
             await _conversationFixture.Conversation.Received()
                 .SendAsync("374i2374982dfas343748923", "UM Scanning completed!");
         }

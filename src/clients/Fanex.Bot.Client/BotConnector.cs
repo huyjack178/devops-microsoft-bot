@@ -39,7 +39,7 @@
             return result.ToString();
         }
 
-        private int ForwardToBot(string message, string conversationId, string token)
+        internal int ForwardToBot(string message, string conversationId, string token)
         {
             _webClient.BaseUrl = BotSettings.BotServiceUrl;
 
@@ -54,7 +54,7 @@
             return (int)result.StatusCode;
         }
 
-        private string GetToken()
+        internal string GetToken()
         {
             var token = _cacheService.Get<string>(TokenCachedKey);
 

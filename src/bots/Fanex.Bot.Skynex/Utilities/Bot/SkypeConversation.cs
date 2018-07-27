@@ -48,7 +48,7 @@
                 _configuration.GetSection("MicrosoftAppId").Value,
                 _configuration.GetSection("MicrosoftAppPassword").Value);
 
-            var jwtToken = await account.GetTokenAsync();
+            var jwtToken = await account.GetTokenAsync(forceRefresh: true);
 
             return new ConnectorClient(
                  serviceUrl,
