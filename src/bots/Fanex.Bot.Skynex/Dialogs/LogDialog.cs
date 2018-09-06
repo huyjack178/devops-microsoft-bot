@@ -300,6 +300,7 @@
                 var logCategory = errorLog.CategoryName.ToLowerInvariant();
                 var hasLogCategory = filterCategories?.Any(
                         filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant())) ?? false;
+
                 var hasIgnoreMessage = await DbContext.LogIgnoreMessage.AnyAsync(
                         message => logCategory.Contains(message.Category.ToLowerInvariant()) &&
                         errorLog.Message.ToLowerInvariant().Contains(message.IgnoreMessage.ToLowerInvariant()));

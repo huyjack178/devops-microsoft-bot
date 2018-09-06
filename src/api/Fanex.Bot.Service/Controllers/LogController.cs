@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
     using System.Web.Http;
     using Fanex.Bot.Service.Models.Log;
+    using Fanex.Bot.Service.Models.Log.Param;
     using Fanex.Bot.Service.Services;
 
     public class LogController : ApiController
@@ -22,6 +23,11 @@
             var logs = await _logService.GetLogsAsync(criteria);
 
             return Json(logs);
+        }
+
+        public async Task<IHttpActionResult> DBLogList([FromBody] DBLogParam param)
+        {
+            return Json("");
         }
 
 #pragma warning restore S3216 // "ConfigureAwait(false)" should be used

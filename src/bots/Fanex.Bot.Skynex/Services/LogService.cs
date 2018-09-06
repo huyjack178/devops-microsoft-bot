@@ -14,6 +14,8 @@
         Task<IEnumerable<Log>> GetErrorLogs(DateTime? fromDate = null, DateTime? toDate = null, bool isProduction = true);
 
         Task<Log> GetErrorLogDetail(long logId);
+
+        Task<IEnumerable<DBLog>> GetDBLogs();
     }
 
     public class LogService : ILogService
@@ -58,6 +60,11 @@
                 new Uri($"{_mSiteUrl}/Log?logId={logId}"));
 
             return logMessageDetail;
+        }
+
+        public async Task<IEnumerable<DBLog>> GetDBLogs()
+        {
+            return new List<DBLog>();
         }
     }
 }

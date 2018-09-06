@@ -22,9 +22,7 @@
             DbSettingProviderManager
                 .StartNewSession()
                 .Use(new OldConnectionStringProvider())
-                .UseDefaultDbSettingProvider(
-                    resourcePath: "~/App_Data/UAT",
-                    enableWatching: true)
+                .UseDefaultDbSettingProvider("~/App_Data")
                 .Run();
         }
     }

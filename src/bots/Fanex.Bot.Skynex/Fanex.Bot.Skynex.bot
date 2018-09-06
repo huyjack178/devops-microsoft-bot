@@ -4,20 +4,20 @@
     "secretKey": "",
     "services": [
         {
+            "appId": "1e071c91-8bf1-4b7c-9c02-8e2447cf71ac",
             "id": "f1f0e2f0-5f23-11e8-bdbf-b9c360a047d6",
-            "name": "local",
+            "type": "endpoint",
+            "appPassword": "gxhVTOK2132[}akhdDMS7%+",
+            "endpoint": "http://localhost:3978/api/messages",
+            "name": "local"
+        },
+        {
+            "id": "5e9cfb70-5fd1-11e8-bdbf-b9c360a047d6",
+            "name": "test",
             "type": "endpoint",
             "appId": "1e071c91-8bf1-4b7c-9c02-8e2447cf71ac",
             "appPassword": "gxhVTOK2132[}akhdDMS7%+",
-            "endpoint": "http://localhost:3978/api/messages"
-        },
-        {
-            "appId": "74cab44c-d551-42a7-9bbe-4d460d320516",
-            "id": "5e9cfb70-5fd1-11e8-bdbf-b9c360a047d6",
-            "type": "endpoint",
-            "appPassword": "qevQN7959^^iaiuNCZUR2@@",
-            "endpoint": "https://1c4872b7.ngrok.io/api/messages",
-            "name": "test"
+            "endpoint": "https://bot.nexdev.net:6969/skynex.test/api/messages"
         }
     ]
 }
