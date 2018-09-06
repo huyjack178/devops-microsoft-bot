@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Service.Services
+﻿namespace Fanex.Bot.API.Services
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web;
-    using Fanex.Bot.Service.Models.Log;
+    using Fanex.Bot.API.Models.Log;
     using Fanex.Data.Repository;
 
     public interface ILogService

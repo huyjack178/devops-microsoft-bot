@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Service.Models.Log.Param
+﻿namespace Fanex.Bot.API.Models.Log.Param
 {
     using System;
 

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Fanex.Data.Repository;
-
-namespace Fanex.Bot.Service.Models.Log.DB.Criterias
+﻿namespace Fanex.Bot.API.Models.Log.DB.Criterias
 {
+    using System;
+    using Fanex.Data.Repository;
+
     public class GetDbLogCriteria : CriteriaBase
     {
         public override string GetSettingKey()

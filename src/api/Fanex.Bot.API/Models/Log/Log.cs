@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Service.Models.Log
+﻿namespace Fanex.Bot.API.Models.Log
 {
     public class Log
     {

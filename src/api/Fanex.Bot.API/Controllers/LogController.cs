@@ -1,8 +1,8 @@
-﻿namespace Fanex.Bot.Service.Core.Controllers
+﻿namespace Fanex.Bot.API.Controllers
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Service.Models.Log;
-    using Fanex.Bot.Service.Services;
+    using Fanex.Bot.API.Models.Log;
+    using Fanex.Bot.API.Services;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]

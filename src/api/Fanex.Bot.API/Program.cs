@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Fanex.Bot.Service.Core
+namespace Fanex.Bot.API
 {
     public class Program
     {

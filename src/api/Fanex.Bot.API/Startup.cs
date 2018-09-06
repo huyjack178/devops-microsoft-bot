@@ -1,8 +1,8 @@
-﻿namespace Fanex.Bot.Service.Core
+﻿namespace Fanex.Bot.API
 {
     using System;
     using System.Linq;
-    using Fanex.Bot.Service.Services;
+    using Fanex.Bot.API.Services;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.Logging;

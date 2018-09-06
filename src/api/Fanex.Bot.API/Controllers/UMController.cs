@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Service.Controllers
+﻿namespace Fanex.Bot.API.Controllers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
