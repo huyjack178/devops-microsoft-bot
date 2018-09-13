@@ -4,24 +4,23 @@
     using System.Net;
     using System.Text;
     using Fanex.Bot.Client.Configuration;
-    using Fanex.Bot.Client.Models;
     using Fanex.Caching;
     using RestSharp;
 
     public class BotConnector : IBotConnector
     {
         private const string TokenCachedKey = "TokenCachedKey";
-        private readonly IRestClient _webClient;
-        private readonly ICacheService _cacheService;
+        private readonly IRestClient restClient;
+        private readonly ICacheService cacheService;
 
         public BotConnector() : this(null, null)
         {
         }
 
-        protected internal BotConnector(IRestClient webClient, ICacheService cacheService)
+        protected internal BotConnector(IRestClient restClient, ICacheService cacheService)
         {
-            _webClient = webClient ?? new RestClient { Encoding = Encoding.UTF8 };
-            _cacheService = new CacheService();
+            this.restClient = restClient ?? new RestClient { Encoding = Encoding.UTF8, Timeout = 10000 };
+            this.cacheService = cacheService ?? new CacheService();
         }
 
         public string Send(string message, string conversationId)
@@ -41,7 +40,7 @@
 
         internal int ForwardToBot(string message, string conversationId, string token)
         {
-            _webClient.BaseUrl = BotSettings.BotServiceUrl;
+            restClient.BaseUrl = BotSettings.BotServiceUrl;
 
             var request = new RestRequest("/messages/forward", Method.POST);
             request.AddHeader("Authorization", $"Bearer {token}");
@@ -49,37 +48,42 @@
             request.AddParameter("message", message);
             request.AddParameter("conversationId", conversationId);
 
-            var result = _webClient.Execute(request);
-
-            return (int)result.StatusCode;
+            var response = restClient.Execute(request);
+            TimeoutCheck(response);
+            return (int)response.StatusCode;
         }
 
         internal string GetToken()
         {
-            var token = _cacheService.Get<string>(TokenCachedKey);
+            var token = cacheService.Get<string>(TokenCachedKey);
 
             if (string.IsNullOrEmpty(token))
             {
-                _webClient.BaseUrl = BotSettings.TokenUrl;
+                restClient.BaseUrl = BotSettings.TokenUrl;
 
-                var request = new RestRequest(Method.POST);
-                request.AddParameter("grant_type", "client_credentials");
-                request.AddParameter("client_id", BotSettings.ClientId);
-                request.AddParameter("client_secret", BotSettings.ClientPassword);
-                request.AddParameter("scope", $"{BotSettings.ClientId}/.default");
-                request.AddHeader("Content-type", "application/x-www-form-urlencoded");
-                var response = _webClient.Execute<Token>(request);
+                var request = new RestRequest(Method.GET);
+                request.AddQueryParameter("clientId", BotSettings.ClientId);
+                request.AddQueryParameter("clientPassword", BotSettings.ClientPassword);
+                var response = restClient.Execute(request);
+                TimeoutCheck(response);
+                token = response.Content.Replace("\"", string.Empty);
 
-                token = response.Data.AccessToken;
-
-                _cacheService.Set(
+                cacheService.Set(
                     TokenCachedKey,
                     token,
                     new CacheItemOptions().SetAbsoluteExpiration(
-                        TimeSpan.FromSeconds(response.Data.ExpiresIn)));
+                        TimeSpan.FromDays(1)));
             }
 
             return token;
+        }
+
+        private static void TimeoutCheck(IRestResponse response)
+        {
+            if (response.StatusCode == 0)
+            {
+                throw new TimeoutException("The request timed out!");
+            }
         }
     }
 }

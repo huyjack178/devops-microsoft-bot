@@ -10,7 +10,7 @@
     <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.4.0.6452">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.5.0.6605">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
