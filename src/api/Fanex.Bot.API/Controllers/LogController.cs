@@ -1,7 +1,6 @@
 ﻿namespace Fanex.Bot.API.Controllers
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.API.Models.Log;
     using Fanex.Bot.API.Services;
     using Microsoft.AspNetCore.Mvc;
 

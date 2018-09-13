@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web;
+    using Fanex.Bot.API.DbParams.Criterias;
     using Fanex.Bot.API.Models.Log;
     using Fanex.Data.Repository;
 

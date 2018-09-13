@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.API.Models.Log
+﻿namespace Fanex.Bot.API.DbParams.Criterias
 {
     using System;
     using System.ComponentModel.DataAnnotations;
