@@ -28,10 +28,6 @@
             = GetValue<string>("FanexBotClient:ClientPassword")
             ?? throw new InvalidOperationException("Missing config FanexBotClient:ClientPassword");
 
-        public static Uri TokenUrl { get; internal set; }
-             = new Uri(GetValue<string>("FanexBotClient:TokenUrl")
-                ?? throw new InvalidOperationException("Missing config FanexBotClient:TokenUrl"));
-
         private static T GetValue<T>(string key)
         {
             var value = ConfigurationManager.AppSettings[key] ?? Configuration.GetSection(key).Value;

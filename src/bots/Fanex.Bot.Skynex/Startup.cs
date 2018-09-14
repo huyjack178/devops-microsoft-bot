@@ -94,6 +94,7 @@
         {
             services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<IUMService, UMService>();
+            services.AddSingleton<ITokenService, TokenService>();
         }
 
         private static void ConfigureBotDialogs(IServiceCollection services)

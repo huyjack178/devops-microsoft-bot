@@ -6,8 +6,6 @@
 
     public class Log
     {
-        private const string NewLine = "\n\n";
-
         public long LogId { get; set; }
 
         public string FormattedMessage { get; set; }
@@ -56,22 +54,26 @@
 
         private string FormatAll(string message)
         {
-            var returnMessage = message.Replace("\r", "\n").Replace("\t", string.Empty)
-                      .Replace("Timestamp", "**Timestamp**")
-                      .Replace("Message", "**Message**")
-                      .Replace("REQUEST INFO", "**REQUEST INFO**")
-                      .Replace("BROWSER INFO", "**BROWSER INFO**")
-                      .Replace("SERVER INFO", "**SERVER INFO**")
-                      .Replace("DATABASE INFO", "**DATABASE INFO**")
-                      .Replace("EXCEPTION INFO", "**EXCEPTION INFO**")
-                      .Replace("REQUEST HEADERS", "**REQUEST HEADERS**")
-                      .Replace("SESSION INFO", "**SESSION INFO**");
+            var returnMessage = message
+                    .Replace("\r", "\n")
+                    .Replace("\n\n", "\n")
+                    .Replace("\n \n", "\n")
+                    .Replace("\t", string.Empty)
+                    .Replace("Timestamp", "**Timestamp**")
+                    .Replace("Message", "**Message**")
+                    .Replace("REQUEST INFO", "**REQUEST INFO**")
+                    .Replace("BROWSER INFO", "**BROWSER INFO**")
+                    .Replace("SERVER INFO", "**SERVER INFO**")
+                    .Replace("DATABASE INFO", "**DATABASE INFO**")
+                    .Replace("EXCEPTION INFO", "**EXCEPTION INFO**")
+                    .Replace("REQUEST HEADERS", "**REQUEST HEADERS**")
+                    .Replace("SESSION INFO", "**SESSION INFO**");
 
-            return $"**Category**: {CategoryName}{NewLine}" +
-                    $"{WebUtility.HtmlDecode(returnMessage)}{NewLine}" +
+            return $"**Category**: {CategoryName}{Constants.NewLine}" +
+                    $"{WebUtility.HtmlDecode(returnMessage)}{Constants.NewLine}" +
                     $"**#Log Id**: {LogId} " +
-                    $"**Count**: {NumMessage}{NewLine}{NewLine}" +
-                    $"===================================={NewLine}";
+                    $"**Count**: {NumMessage}{Constants.NewLine}{Constants.NewLine}" +
+                    $"===================================={Constants.NewLine}";
         }
     }
 }

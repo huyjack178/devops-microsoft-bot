@@ -10,7 +10,6 @@
         <add key="FanexBotClient:BotServiceUrl" value="https://bot.nexdev.net:6969/skynex/api" />
         <add key="FanexBotClient:ClientId" value="YOUR_CLIENT_ID_PROVIDED_BY_NEXOPS" />
         <add key="FanexBotClient:ClientPassword" value="YOUR_CLIENT_PASSWORD_PROVIDED_BY_NEXOPS" />
-        <add key="FanexBotClient:TokenUrl" value="https://ha.nexdev.net:7918/Main/api/token" />
       </appSettings>
       2. Find and add Skynex to your group https://join.skype.com/bot/74cab44c-d551-42a7-9bbe-4d460d320516
       3. Call "@Skynex group" to get "Conversation Id"
@@ -19,9 +18,9 @@
       var result = botConnector.SendAsync(message: "hello", "conversationId");
 </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>
-    <FileVersion>1.0.4.0</FileVersion>
-    <Version>1.0.4.0</Version>
+    <AssemblyVersion>1.0.4.2</AssemblyVersion>
+    <FileVersion>1.0.4.2</FileVersion>
+    <Version>1.0.4.2</Version>
     <PackageReleaseNotes>- Add caching token</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

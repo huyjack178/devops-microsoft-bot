@@ -59,9 +59,9 @@
 
             if (string.IsNullOrEmpty(token))
             {
-                restClient.BaseUrl = BotSettings.TokenUrl;
+                restClient.BaseUrl = BotSettings.BotServiceUrl;
 
-                var request = new RestRequest(Method.GET);
+                var request = new RestRequest("/token", Method.GET);
                 request.AddQueryParameter("clientId", BotSettings.ClientId);
                 request.AddQueryParameter("clientPassword", BotSettings.ClientPassword);
                 var response = restClient.Execute(request);

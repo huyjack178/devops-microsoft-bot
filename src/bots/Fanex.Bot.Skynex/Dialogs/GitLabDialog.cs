@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
     using Fanex.Bot.Core.Utilities.Bot;
     using Fanex.Bot.Skynex.Models;
     using Fanex.Bot.Skynex.Models.GitLab;
@@ -155,7 +154,7 @@
                     $"{Constants.NewLine}");
             }
 
-            commitMessageBuilder.Append($"================={Constants.NewLine}");
+            commitMessageBuilder.Append($"--------------------------------------{Constants.NewLine}");
 
             message += commitMessageBuilder;
 
