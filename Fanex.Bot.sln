@@ -34,8 +34,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.Core", "src\clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.API", "src\api\Fanex.Bot.API\Fanex.Bot.API.csproj", "{791F25C7-D9F9-4ADF-8E3E-C1D33E84F1BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Bot.Authentication.API", "Fanex.Bot.Authentication.API\Fanex.Bot.Authentication.API.csproj", "{05508695-F6FC-4F47-B13F-984E97BFD8B7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,10 +72,6 @@ Global
 		{791F25C7-D9F9-4ADF-8E3E-C1D33E84F1BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{791F25C7-D9F9-4ADF-8E3E-C1D33E84F1BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{791F25C7-D9F9-4ADF-8E3E-C1D33E84F1BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05508695-F6FC-4F47-B13F-984E97BFD8B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05508695-F6FC-4F47-B13F-984E97BFD8B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05508695-F6FC-4F47-B13F-984E97BFD8B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05508695-F6FC-4F47-B13F-984E97BFD8B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,7 +88,6 @@ Global
 		{87690018-5553-4069-BA32-F0E0A26F4A1D} = {F989CE04-59F0-4CB7-A014-FCCA0A5C6E1A}
 		{F5416144-A49E-4E4A-90B7-73EFFFE9D559} = {F989CE04-59F0-4CB7-A014-FCCA0A5C6E1A}
 		{791F25C7-D9F9-4ADF-8E3E-C1D33E84F1BC} = {4837DC41-4C68-4F8A-9F82-C5A4D4695621}
-		{05508695-F6FC-4F47-B13F-984E97BFD8B7} = {4837DC41-4C68-4F8A-9F82-C5A4D4695621}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E13B60B8-2253-498C-9232-54FB4EA7EEB6}

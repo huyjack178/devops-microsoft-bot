@@ -1,4 +1,7 @@
-﻿namespace Fanex.Bot.Client.Console
+﻿using System;
+using System.Configuration;
+
+namespace Fanex.Bot.Client.Console
 {
 #pragma warning disable S1118 // Utility classes should not have public constructors
 
@@ -6,6 +9,11 @@
     {
         public static void Main(string[] args)
         {
+            BotClientManager.UseConfig(new Configuration.BotSettings(
+                    new Uri(ConfigurationManager.AppSettings["FanexBotClient:BotServiceUrl"]),
+                    ConfigurationManager.AppSettings["FanexBotClient:ClientId"],
+                    ConfigurationManager.AppSettings["FanexBotClient:ClientPassword"]));
+
             var botConnector = new BotConnector();
             var result = botConnector.Send(
                 "test message from Bot Client Test", "29:1VztMrVULRUlh1J7uBBFEWXZqHz41ZRQ6F-avnd5-874");

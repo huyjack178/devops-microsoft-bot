@@ -7,6 +7,11 @@
     using Fanex.Caching;
     using RestSharp;
 
+    public interface IBotConnector
+    {
+        string Send(string message, string conversationId);
+    }
+
     public class BotConnector : IBotConnector
     {
         private const string TokenCachedKey = "TokenCachedKey";
@@ -40,7 +45,7 @@
 
         internal int ForwardToBot(string message, string conversationId, string token)
         {
-            restClient.BaseUrl = BotSettings.BotServiceUrl;
+            restClient.BaseUrl = BotClientManager.BotSettings.BotServiceUrl;
 
             var request = new RestRequest("/messages/forward", Method.POST);
             request.AddHeader("Authorization", $"Bearer {token}");
@@ -59,11 +64,11 @@
 
             if (string.IsNullOrEmpty(token))
             {
-                restClient.BaseUrl = BotSettings.BotServiceUrl;
+                restClient.BaseUrl = BotClientManager.BotSettings.BotServiceUrl;
 
                 var request = new RestRequest("/token", Method.GET);
-                request.AddQueryParameter("clientId", BotSettings.ClientId);
-                request.AddQueryParameter("clientPassword", BotSettings.ClientPassword);
+                request.AddQueryParameter("clientId", BotClientManager.BotSettings.ClientId);
+                request.AddQueryParameter("clientPassword", BotClientManager.BotSettings.ClientPassword);
                 var response = restClient.Execute(request);
                 TimeoutCheck(response);
                 token = response.Content.Replace("\"", string.Empty);

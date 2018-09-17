@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using Fanex.Bot.Client.Configuration;
 using Fanex.Bot.Client.Models;
 using Fanex.Caching;
@@ -18,9 +19,7 @@ namespace Fanex.Bot.Client.Tests
         {
             _restClient = Substitute.For<IRestClient>();
             _cacheService = new CacheService();
-            BotSettings.ClientId = "12345";
-            BotSettings.ClientPassword = "234234";
-            BotSettings.TokenUrl = new Uri("http://www.google.com");
+            BotClientManager.UseConfig(new BotSettings(new Uri("http://www.google.com"), "12345", "234234"));
         }
 
         [Fact]
@@ -31,7 +30,8 @@ namespace Fanex.Bot.Client.Tests
             RestRequest request = GetRequestToken();
             var response = new RestResponse<Token>
             {
-                Data = new Token { AccessToken = "!23", ExpiresIn = 100 }
+                Data = new Token { AccessToken = "!23", ExpiresIn = 100 },
+                StatusCode = HttpStatusCode.OK
             };
 
             _restClient.Execute<Token>(request).Returns(response);
@@ -42,7 +42,6 @@ namespace Fanex.Bot.Client.Tests
             var token = botConnector.GetToken();
 
             // Assert
-            Assert.Equal(BotSettings.TokenUrl, _restClient.BaseUrl);
             Assert.Equal("!23", token);
             Assert.Equal("!23", _cacheService.Get<string>(TokenCachedKey));
         }
