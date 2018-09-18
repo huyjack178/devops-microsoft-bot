@@ -35,6 +35,7 @@
             services.AddSingleton<IMaintenanceService, MaintenanceService>();
             services.AddSingleton<IDynamicRepository, DynamicRepository>();
             services.AddSingleton<ILogService, Services.LogService>();
+            services.AddSingleton<IDBLogService, DBLogService>();
             services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

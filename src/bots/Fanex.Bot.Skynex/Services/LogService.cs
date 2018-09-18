@@ -64,7 +64,9 @@
 
         public async Task<IEnumerable<DBLog>> GetDBLogs()
         {
-            return new List<DBLog>();
+            var dbLogs = await _webClient.GetJsonAsync<IEnumerable<DBLog>>(new Uri($"{_mSiteUrl}/DbLog/List"));
+
+            return dbLogs;
         }
     }
 }

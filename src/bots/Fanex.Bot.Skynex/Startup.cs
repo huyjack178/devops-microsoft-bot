@@ -107,6 +107,7 @@
             services.AddScoped<IGitLabDialog, GitLabDialog>();
             services.AddScoped<ILineDialog, LineDialog>();
             services.AddScoped<IUMDialog, UMDialog>();
+            services.AddScoped<IDBLogDialog, DBLogDialog>();
         }
 
         private void ConfigureBotAuthentication(IServiceCollection services)

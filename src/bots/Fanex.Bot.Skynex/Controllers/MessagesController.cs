@@ -20,6 +20,7 @@
         private readonly IUMDialog _umDialog;
         private readonly IConversation _conversation;
         private readonly IConfiguration _configuration;
+        private readonly IDBLogDialog dbLogDialog;
 
         public MessagesController(
             ICommonDialog commonDialog,
@@ -28,7 +29,8 @@
             ILineDialog lineDialog,
             IUMDialog umDialog,
             IConversation conversation,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IDBLogDialog dbLogDialog)
         {
             _commonDialog = commonDialog;
             _logDialog = logDialog;
@@ -37,6 +39,7 @@
             _umDialog = umDialog;
             _conversation = conversation;
             _configuration = configuration;
+            this.dbLogDialog = dbLogDialog;
         }
 
         [Authorize(Roles = "Bot")]
@@ -105,6 +108,10 @@
             else if (message.StartsWith(MessageCommand.UM))
             {
                 await _umDialog.HandleMessageAsync(activity, message);
+            }
+            else if (message.StartsWith("dblog"))
+            {
+                await dbLogDialog.HandleMessageAsync(activity, message);
             }
             else
             {

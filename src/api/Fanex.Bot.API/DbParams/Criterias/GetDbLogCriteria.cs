@@ -6,15 +6,15 @@
     {
         public GetDbLogCriteria(int minute = 5)
         {
-            Minutes = minute;
+            Minute = minute;
         }
 
-        public int Minutes { get; }
+        public int Minute { get; }
 
         public override string GetSettingKey()
             => "Get_DBLog";
 
         public override bool IsValid()
-            => Minutes > 0;
+            => Minute > 0;
     }
 }

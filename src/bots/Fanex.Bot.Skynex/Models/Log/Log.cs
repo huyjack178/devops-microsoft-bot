@@ -56,8 +56,6 @@
         {
             var returnMessage = message
                     .Replace("\r", "\n")
-                    .Replace("\n\n", "\n")
-                    .Replace("\n \n", "\n")
                     .Replace("\t", string.Empty)
                     .Replace("Timestamp", "**Timestamp**")
                     .Replace("Message", "**Message**")

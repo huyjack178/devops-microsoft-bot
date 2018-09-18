@@ -10,7 +10,7 @@
     using Microsoft.Bot.Connector;
     using Microsoft.Extensions.Configuration;
 
-    public interface IDBLogDialog
+    public interface IDBLogDialog : IDialog
     {
         Task GetAndSendLogAsync();
     }
@@ -69,7 +69,7 @@
 
             foreach (var log in dbLogs)
             {
-                await Conversation.SendAsync(log.SkypeGroupId, log.Message);
+                await Conversation.SendAsync(log.SkypeGroupId, log.MsgInfo);
             }
         }
     }

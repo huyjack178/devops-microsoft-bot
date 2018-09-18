@@ -9,6 +9,6 @@ namespace Fanex.Bot.Skynex.Models.Log
     {
         public string SkypeGroupId { get; set; }
 
-        public string Message { get; set; }
+        public string MsgInfo { get; set; }
     }
 }
