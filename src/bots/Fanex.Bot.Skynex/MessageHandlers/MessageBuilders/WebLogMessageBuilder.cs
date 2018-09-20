@@ -48,17 +48,10 @@
         private static string FinalizeMessage(string message, Log log)
         {
             var returnMessage = message
-                    .Replace("\r", "\n")
+                    .Replace("\r", string.Empty)
                     .Replace("\t", string.Empty)
                     .Replace("Timestamp", $"{MessageFormatSignal.BeginBold}Timestamp{MessageFormatSignal.EndBold}")
-                    .Replace("Message", $"{MessageFormatSignal.BeginBold}Message{MessageFormatSignal.EndBold}")
-                    .Replace("REQUEST INFO", $"{MessageFormatSignal.BeginBold}REQUEST INFO{MessageFormatSignal.EndBold}")
-                    .Replace("BROWSER INFO", $"{MessageFormatSignal.BeginBold}BROWSER INFO{MessageFormatSignal.EndBold}")
-                    .Replace("SERVER INFO", $"{MessageFormatSignal.BeginBold}SERVER INFO{MessageFormatSignal.EndBold}")
-                    .Replace("DATABASE INFO", $"{MessageFormatSignal.BeginBold}DATABASE INFO{MessageFormatSignal.EndBold}")
-                    .Replace("EXCEPTION INFO", $"{MessageFormatSignal.BeginBold}EXCEPTION INFO{MessageFormatSignal.EndBold}")
-                    .Replace("REQUEST HEADERS", $"{MessageFormatSignal.BeginBold}REQUEST HEADERS{MessageFormatSignal.EndBold}")
-                    .Replace("SESSION INFO", $"{MessageFormatSignal.BeginBold}SESSION INFO{MessageFormatSignal.EndBold}");
+                    .Replace("Message", $"{MessageFormatSignal.BeginBold}Message{MessageFormatSignal.EndBold}");
 
             return $"{MessageFormatSignal.BeginBold}Category{MessageFormatSignal.EndBold}: {log.CategoryName}{MessageFormatSignal.NewLine}" +
                     $"{WebUtility.HtmlDecode(returnMessage)}{MessageFormatSignal.NewLine}" +
@@ -128,7 +121,7 @@
 
         public static string FormatServerAndDatabaseInfo(string rawMessage, string machineName, string machineIP)
         {
-            var returnMessage = $"{MessageFormatSignal.NewLine}**Server:** {machineName} ({machineIP})";
+            var returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Server:{MessageFormatSignal.EndBold} {machineName} ({machineIP})";
 
             var databaseInfoIndex = rawMessage.IndexOf("DATABASE INFO", StringComparison.InvariantCultureIgnoreCase);
 

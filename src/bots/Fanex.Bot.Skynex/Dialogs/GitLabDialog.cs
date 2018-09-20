@@ -8,6 +8,7 @@
     using Fanex.Bot.Core.Utilities.Bot;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.GitLab;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageBuilders;
     using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
@@ -22,12 +23,15 @@
         private const string MasterBranchName = "heads/master";
         private const string RemoveProjectCmd = "gitlab removeproject";
         private const string AddProjectCmd = "gitlab addproject";
+        private readonly IGitLabMessageBuilder gitLabMessageBuilder;
 
         public GitLabDialog(
            BotDbContext dbContext,
-           IConversation conversation)
+           IConversation conversation,
+           IGitLabMessageBuilder gitLabMessageBuilder)
            : base(dbContext, conversation)
         {
+            this.gitLabMessageBuilder = gitLabMessageBuilder;
         }
 
         public override async Task HandleMessage(IMessageActivity activity, string message)
@@ -60,7 +64,7 @@
             gitLabInfo.IsActive = true;
 
             await SaveGitLabInfoAsync(gitLabInfo);
-            await Conversation.ReplyAsync(activity, $"You will receive notification of project **{projectUrl}**");
+            await Conversation.ReplyAsync(activity, $"You will receive notification of project {MessageFormatSignal.BeginBold}{projectUrl}{MessageFormatSignal.EndBold}");
         }
 
         private async Task DisableProjectAsync(IMessageActivity activity, string message)
@@ -83,7 +87,7 @@
 
             gitLabInfo.IsActive = false;
             await SaveGitLabInfoAsync(gitLabInfo);
-            await Conversation.ReplyAsync(activity, $"You will not receive notification of project **{projectUrl}**");
+            await Conversation.ReplyAsync(activity, $"You will not receive notification of project {MessageFormatSignal.BeginBold}{projectUrl}{MessageFormatSignal.EndBold}");
         }
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)
@@ -116,8 +120,8 @@
             return gitLabInfo;
         }
 
-        private async Task<GitLabInfo> GetExistingGitLabInfo(IMessageActivity activity, string formatedProjectUrl)
-            => await DbContext.GitLabInfo
+        private Task<GitLabInfo> GetExistingGitLabInfo(IMessageActivity activity, string formatedProjectUrl)
+            => DbContext.GitLabInfo
                 .AsNoTracking()
                 .FirstOrDefaultAsync(info =>
                     info.ConversationId == activity.Conversation.Id &&
@@ -126,39 +130,14 @@
         public async Task HandlePushEventAsync(PushEvent pushEvent)
         {
             var project = pushEvent.Project;
-            var commits = pushEvent.Commits;
             var branchName = pushEvent.Ref?.ToLowerInvariant() ?? string.Empty;
 
             if (branchName.Contains(MasterBranchName))
             {
-                var message = GeneratePushMasterMessage(project, commits);
+                var message = gitLabMessageBuilder.BuildMessage(pushEvent);
 
                 await SendEventMessageAsync(project, message);
             }
-        }
-
-        private static string GeneratePushMasterMessage(Project project, IList<Commit> commits)
-        {
-            var message = $"**GitLab Master Branch Change** (bell){Constants.NewLine}" +
-                            $"**Repository:** {project.WebUrl}{Constants.NewLine}";
-            var commitMessageBuilder = new StringBuilder();
-            commitMessageBuilder.Append($"**Commits:**{Constants.NewLine}");
-
-            foreach (var commit in commits)
-            {
-                var commitUrl = $"{project.WebUrl}/commit/{commit.Id}";
-
-                commitMessageBuilder.Append(
-                    $"**[{commit.Id.Substring(0, 8)}]({commitUrl})**" +
-                    $" {commit.Message} ({commit.Author.Name})" +
-                    $"{Constants.NewLine}");
-            }
-
-            commitMessageBuilder.Append($"--------------------------------------{Constants.NewLine}");
-
-            message += commitMessageBuilder;
-
-            return message;
         }
 
         private async Task SendEventMessageAsync(Project project, string message)

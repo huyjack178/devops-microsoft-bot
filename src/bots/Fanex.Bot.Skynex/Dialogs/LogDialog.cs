@@ -188,7 +188,8 @@
         {
             var allowSendLogInUM = Convert.ToBoolean(
                     configuration.GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value);
-
+            var isProduction = Convert.ToBoolean(
+                    configuration.GetSection("LogInfo")?.GetSection("IsProduction")?.Value ?? "true");
             var umInfo = await umService.GetUMInformation();
 
             if (!allowSendLogInUM && umInfo.IsUM)
@@ -197,7 +198,8 @@
             }
 
             var logInfos = DbContext.LogInfo.ToList();
-            var errorLogs = await logService.GetErrorLogs();
+
+            var errorLogs = await logService.GetErrorLogs(isProduction: isProduction);
 
             foreach (var logInfo in logInfos)
             {
