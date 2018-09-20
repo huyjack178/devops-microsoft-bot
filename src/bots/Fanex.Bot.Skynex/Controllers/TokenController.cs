@@ -1,7 +1,7 @@
 ﻿namespace Fanex.Bot.Skynex.Controllers
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Skynex.Services;
+    using Fanex.Bot.Services;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]

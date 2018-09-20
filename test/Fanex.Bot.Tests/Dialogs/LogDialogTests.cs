@@ -3,11 +3,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Models.UM;
+    using Fanex.Bot.Services;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.Log;
-    using Fanex.Bot.Skynex.Models.UM;
-    using Fanex.Bot.Skynex.Services;
     using Fanex.Bot.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
@@ -63,7 +63,7 @@
             var message = "log add";
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -87,7 +87,7 @@
             _conversationFixture.InitDbContextData();
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -111,7 +111,7 @@
             _conversationFixture.InitDbContextData();
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.Equal(
@@ -141,7 +141,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5555" });
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.Equal(
@@ -170,7 +170,7 @@
             var message = "log remove";
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -189,7 +189,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "55" });
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -209,7 +209,7 @@
             _conversationFixture.InitDbContextData();
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.Equal(
@@ -238,7 +238,7 @@
             _memoryCache.Set("5", "1234");
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.True(_conversationFixture
@@ -273,7 +273,7 @@
             _memoryCache.Set("6", "1234");
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.False(_conversationFixture
@@ -303,7 +303,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "126" });
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.False(_conversationFixture
@@ -587,7 +587,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = conversationId });
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -605,7 +605,7 @@
             var message = "log detail";
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -629,7 +629,7 @@
                 });
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             var expectedLogMesasge = "**Category**: alpha\n\nlog\n\n**#Log Id**: 0 **Count**: 0\n\n\n\n====================================\n\n";
@@ -649,7 +649,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "669" });
 
             // Act
-            await _logDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _logDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture

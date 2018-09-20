@@ -2,10 +2,10 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Utilities.Bot;
-    using Connector = Microsoft.Bot.Connector;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.EntityFrameworkCore;
+    using Connector = Microsoft.Bot.Connector;
 
     public interface ICommonDialog : IDialog
     {
@@ -22,7 +22,7 @@
         {
         }
 
-        public override async Task HandleMessageAsync(Connector.IMessageActivity activity, string message)
+        public override async Task HandleMessage(Connector.IMessageActivity activity, string message)
         {
             if (message.StartsWith("group"))
             {
@@ -47,7 +47,7 @@
             if (messageInfo == null)
             {
                 messageInfo = InitMessageInfo(activity);
-                await SaveMessageInfoAsync(messageInfo);
+                await SaveMessageInfo(messageInfo);
                 await Conversation.SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
             }
         }

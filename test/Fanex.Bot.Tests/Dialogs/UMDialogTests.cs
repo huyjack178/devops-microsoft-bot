@@ -1,15 +1,12 @@
 ﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
-    using Fanex.Bot.Core.Utilities.Common;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.UM;
+    using Fanex.Bot.Services;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.UM;
-    using Fanex.Bot.Skynex.Services;
     using Fanex.Bot.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
@@ -50,7 +47,7 @@
             _conversationFixture.Activity.Conversation.Id = "1243452df13qqer";
 
             // Act
-            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _dialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.True(_conversationFixture
@@ -77,7 +74,7 @@
             var message = "um addpage";
 
             // Act
-            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _dialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture.Conversation.Received()
@@ -93,7 +90,7 @@
             var message = "um addpage www.google.com;www.gmail.com";
 
             // Act
-            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _dialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.True(_conversationFixture
@@ -127,7 +124,7 @@
             dbContext.SaveChanges();
 
             // Act
-            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _dialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture.Conversation.Received(1)

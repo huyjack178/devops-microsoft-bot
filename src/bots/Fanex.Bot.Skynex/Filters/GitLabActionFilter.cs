@@ -8,11 +8,11 @@
     [AttributeUsage(AttributeTargets.Class)]
     public class GitLabAttribute : Attribute, IActionFilter
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration configuration;
 
         public GitLabAttribute(IConfiguration configuration)
         {
-            _configuration = configuration;
+            this.configuration = configuration;
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -24,7 +24,7 @@
         {
             var request = context.HttpContext.Request;
             var gitLabToken = request.Headers["X-Gitlab-Token"];
-            var validGitLabToken = _configuration.GetSection("GitLabInfo")?.GetSection("SecretToken")?.Value;
+            var validGitLabToken = configuration.GetSection("GitLabInfo")?.GetSection("SecretToken")?.Value;
 
             if (gitLabToken != validGitLabToken)
             {

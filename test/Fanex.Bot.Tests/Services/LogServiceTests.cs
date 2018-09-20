@@ -5,24 +5,24 @@
     using System.Globalization;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Skynex.Models.Log;
-    using Fanex.Bot.Skynex.Services;
+    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using Xunit;
 
     public class LogServiceTests
     {
-        private readonly IWebClient _webClient;
-        private readonly ILogService _logService;
-        private readonly IConfiguration _configuration;
+        private readonly IWebClient webClient;
+        private readonly ILogService logService;
+        private readonly IConfiguration configuration;
 
         public LogServiceTests()
         {
-            _configuration = Substitute.For<IConfiguration>();
-            _configuration.GetSection("BotServiceUrl").Value.Returns("http://log.com");
-            _webClient = Substitute.For<IWebClient>();
-            _logService = new LogService(_webClient, _configuration);
+            configuration = Substitute.For<IConfiguration>();
+            configuration.GetSection("BotServiceUrl").Value.Returns("http://log.com");
+            webClient = Substitute.For<IWebClient>();
+            logService = new LogService(webClient, configuration);
         }
 
         [Fact]
@@ -37,7 +37,7 @@
                 new Log { LogId = 2 }
             };
 
-            _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
+            webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
                 new Uri("http://log.com/Log/List"),
                 Arg.Is<GetLogFormData>(data =>
                     data.From == fromDate.ToString(CultureInfo.InvariantCulture) &&
@@ -52,7 +52,7 @@
                 .Returns(expectedLogList);
 
             // Act
-            var actualLogList = await _logService.GetErrorLogs(fromDate, toDate, isProduction);
+            var actualLogList = await logService.GetErrorLogs(fromDate, toDate, isProduction);
 
             // Assert
             Assert.Equal(expectedLogList, actualLogList);
@@ -64,15 +64,15 @@
             // Arrange
             var fromDate = new DateTime(2018, 01, 01);
             var toDate = new DateTime(2018, 01, 02);
-            var isProduction = true;
+            const bool isProduction = true;
             var expectedLogList = new List<Log>();
 
-            _webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
+            webClient.PostJsonAsync<GetLogFormData, IEnumerable<Log>>(
                 new Uri("http://log.com/Log/List"), Arg.Any<GetLogFormData>())
                 .Returns(expectedLogList);
 
             // Act
-            var actualLogList = await _logService.GetErrorLogs(fromDate, toDate, isProduction);
+            var actualLogList = await logService.GetErrorLogs(fromDate, toDate, isProduction);
 
             // Assert
             Assert.Equal(expectedLogList, actualLogList);
@@ -82,12 +82,12 @@
         public async Task GetErrorLogDetail_Always_GetFromApi()
         {
             // Arrange
-            var logId = 1;
+            const int logId = 1;
             var expectedLog = new Log { LogId = 1 };
-            _webClient.GetJsonAsync<Log>(new Uri("http://log.com/Log" + $"?logId={logId}")).Returns(expectedLog);
+            webClient.GetJsonAsync<Log>(new Uri("http://log.com/Log" + $"?logId={logId}")).Returns(expectedLog);
 
             // Act
-            var actualLog = await _logService.GetErrorLogDetail(logId);
+            var actualLog = await logService.GetErrorLogDetail(logId);
 
             // Assert
             Assert.Equal(expectedLog, actualLog);

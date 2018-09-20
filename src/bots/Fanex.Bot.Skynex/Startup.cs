@@ -3,10 +3,12 @@
     using System.Linq;
     using Fanex.Bot.Core.Utilities.Web;
     using Fanex.Bot.Filters;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Services;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Services;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageBuilders;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
+    using Fanex.Bot.Skynex.MessageHandlers.MessengerFormatters;
     using Hangfire;
     using Hangfire.Dashboard;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,7 +37,8 @@
             ConfigureDbContext(services);
             ConfigureAttributes(services);
             ConfigureBotServices(services);
-            ConfigureBotDialogs(services);
+            ConfigureBotMessageHandlers(services);
+            ConfigureBotDialog(services);
             ConfigureBotAuthentication(services);
 
             services.AddMvc(options =>
@@ -79,7 +82,7 @@
             services.AddMemoryCache();
             services.AddSingleton(_ => Configuration);
             services.AddSingleton<IRestClient, RestClient>();
-            services.AddSingleton<IWebClient, WebClient>();
+            services.AddSingleton<IWebClient, RestSharpWebClient>();
         }
 
         private void ConfigureHangfire(IServiceCollection services)
@@ -97,17 +100,24 @@
             services.AddSingleton<ITokenService, TokenService>();
         }
 
-        private static void ConfigureBotDialogs(IServiceCollection services)
+        private static void ConfigureBotDialog(IServiceCollection services)
         {
-            services.AddScoped<ILineConversation, LineConversation>();
-            services.AddScoped<ISkypeConversation, SkypeConversation>();
-            services.AddScoped<IConversation, Skynex.Utilities.Bot.Conversation>();
             services.AddScoped<ICommonDialog, CommonDialog>();
             services.AddScoped<ILogDialog, LogDialog>();
             services.AddScoped<IGitLabDialog, GitLabDialog>();
             services.AddScoped<ILineDialog, LineDialog>();
             services.AddScoped<IUMDialog, UMDialog>();
             services.AddScoped<IDBLogDialog, DBLogDialog>();
+        }
+
+        private static void ConfigureBotMessageHandlers(IServiceCollection services)
+        {
+            services.AddSingleton<IDBLogMessageBuilder, DBLogMessageBuilder>();
+            services.AddSingleton<IMessengerFormatter, DefaultFormatter>();
+            services.AddSingleton<ILineFormatter, LineFormatter>();
+            services.AddScoped<ILineConversation, LineConversation>();
+            services.AddScoped<ISkypeConversation, SkypeConversation>();
+            services.AddScoped<IConversation, Skynex.MessageHandlers.MessageSenders.Conversation>();
         }
 
         private void ConfigureBotAuthentication(IServiceCollection services)

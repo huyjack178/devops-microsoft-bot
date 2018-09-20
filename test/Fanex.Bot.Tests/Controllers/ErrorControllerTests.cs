@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using Fanex.Bot.Skynex.Controllers;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

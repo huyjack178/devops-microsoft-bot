@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Connector;
@@ -13,13 +13,13 @@
     [Route("api/[controller]")]
     public class MessagesController : Controller
     {
-        private readonly ICommonDialog _commonDialog;
-        private readonly ILogDialog _logDialog;
-        private readonly IGitLabDialog _gitLabDialog;
-        private readonly ILineDialog _lineDialog;
-        private readonly IUMDialog _umDialog;
-        private readonly IConversation _conversation;
-        private readonly IConfiguration _configuration;
+        private readonly ICommonDialog commonDialog;
+        private readonly ILogDialog logDialog;
+        private readonly IGitLabDialog gitLabDialog;
+        private readonly ILineDialog lineDialog;
+        private readonly IUMDialog umDialog;
+        private readonly IConversation conversation;
+        private readonly IConfiguration configuration;
         private readonly IDBLogDialog dbLogDialog;
 
         public MessagesController(
@@ -32,13 +32,13 @@
             IConfiguration configuration,
             IDBLogDialog dbLogDialog)
         {
-            _commonDialog = commonDialog;
-            _logDialog = logDialog;
-            _gitLabDialog = gitLabDialog;
-            _lineDialog = lineDialog;
-            _umDialog = umDialog;
-            _conversation = conversation;
-            _configuration = configuration;
+            this.commonDialog = commonDialog;
+            this.logDialog = logDialog;
+            this.gitLabDialog = gitLabDialog;
+            this.lineDialog = lineDialog;
+            this.umDialog = umDialog;
+            this.conversation = conversation;
+            this.configuration = configuration;
             this.dbLogDialog = dbLogDialog;
         }
 
@@ -72,7 +72,7 @@
         [Route("Forward")]
         public async Task<OkObjectResult> Forward(string message, string conversationId)
         {
-            var result = await _conversation.SendAsync(conversationId, message);
+            var result = await conversation.SendAsync(conversationId, message);
 
             return Ok(result);
         }
@@ -81,11 +81,11 @@
         [Route("ForwardWithToken")]
         public async Task<IActionResult> ForwardWithToken(string token, string message, string conversationId)
         {
-            var validToken = _configuration.GetSection("BotSecretToken")?.Value;
+            var validToken = configuration.GetSection("BotSecretToken")?.Value;
 
             if (validToken == token)
             {
-                var result = await _conversation.SendAsync(conversationId, message);
+                var result = await conversation.SendAsync(conversationId, message);
                 return Ok(result);
             }
 
@@ -94,62 +94,62 @@
 
         private async Task HandleMessage(IMessageActivity activity)
         {
-            var botName = _configuration.GetSection("BotName")?.Value;
+            var botName = configuration.GetSection("BotName")?.Value;
             var message = BotHelper.GenerateMessage(activity.Text, botName);
 
             if (message.StartsWith("log"))
             {
-                await _logDialog.HandleMessageAsync(activity, message);
+                await logDialog.HandleMessage(activity, message);
             }
             else if (message.StartsWith("gitlab"))
             {
-                await _gitLabDialog.HandleMessageAsync(activity, message);
+                await gitLabDialog.HandleMessage(activity, message);
             }
             else if (message.StartsWith(MessageCommand.UM))
             {
-                await _umDialog.HandleMessageAsync(activity, message);
+                await umDialog.HandleMessage(activity, message);
             }
             else if (message.StartsWith("dblog"))
             {
-                await dbLogDialog.HandleMessageAsync(activity, message);
+                await dbLogDialog.HandleMessage(activity, message);
             }
             else
             {
-                await _commonDialog.HandleMessageAsync(activity, message);
+                await commonDialog.HandleMessage(activity, message);
             }
         }
 
         private async Task HandleConversationUpdate(Activity activity)
         {
             var conversationUpdate = activity.AsConversationUpdateActivity();
-            var botId = _configuration.GetSection("BotId")?.Value;
+            var botId = configuration.GetSection("BotId")?.Value;
 
             if (conversationUpdate.MembersRemoved != null &&
                 conversationUpdate.MembersRemoved.Any(mem => mem.Id == botId))
             {
-                await _commonDialog.RemoveConversationData(activity);
+                await commonDialog.RemoveConversationData(activity);
                 return;
             }
 
             if (conversationUpdate.MembersAdded != null &&
                 conversationUpdate.MembersAdded.Any(mem => mem.Id == botId))
             {
-                await _commonDialog.RegisterMessageInfo(activity);
+                await commonDialog.RegisterMessageInfo(activity);
             }
 
-            await _conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
+            await conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
         }
 
         private async Task HandleContactRelationUpdate(Activity activity)
         {
             if (activity.Action?.ToLowerInvariant() == "remove")
             {
-                await _commonDialog.RemoveConversationData(activity);
+                await commonDialog.RemoveConversationData(activity);
             }
             else
             {
-                await _commonDialog.RegisterMessageInfo(activity);
-                await _conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
+                await commonDialog.RegisterMessageInfo(activity);
+                await conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
             }
         }
 
@@ -159,7 +159,7 @@
             {
                 activity.Conversation.Id = activity.From.Id;
                 activity.ChannelId = Channel.Line;
-                await _lineDialog.RegisterMessageInfo(activity);
+                await lineDialog.RegisterMessageInfo(activity);
             }
 
             return activity;

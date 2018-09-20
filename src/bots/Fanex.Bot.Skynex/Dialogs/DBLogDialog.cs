@@ -2,9 +2,10 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Services;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Services;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageBuilders;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Bot.Connector;
@@ -21,6 +22,7 @@
         private readonly ILogService logService;
         private readonly IConfiguration configuration;
         private readonly IRecurringJobManager recurringJobManager;
+        private readonly IDBLogMessageBuilder messageBuilder;
 
         public DBLogDialog(
             BotDbContext dbContext,
@@ -28,16 +30,18 @@
             IUMService umService,
             ILogService logService,
             IConfiguration configuration,
-            IRecurringJobManager recurringJobManager) :
+            IRecurringJobManager recurringJobManager,
+            IDBLogMessageBuilder messageBuilder) :
                 base(dbContext, conversation)
         {
             this.umService = umService;
             this.logService = logService;
             this.configuration = configuration;
             this.recurringJobManager = recurringJobManager;
+            this.messageBuilder = messageBuilder;
         }
 
-        public override async Task HandleMessageAsync(IMessageActivity activity, string message)
+        public override async Task HandleMessage(IMessageActivity activity, string message)
         {
             if (message.StartsWith("dblog start"))
             {
@@ -69,7 +73,8 @@
 
             foreach (var log in dbLogs)
             {
-                await Conversation.SendAsync(log.SkypeGroupId, log.MsgInfo);
+                var message = messageBuilder.BuildMessage(log);
+                await Conversation.SendAsync(log.SkypeGroupId, message);
             }
         }
     }

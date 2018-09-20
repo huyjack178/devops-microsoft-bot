@@ -1,19 +1,19 @@
 ﻿namespace Fanex.Bot.Tests.Controllers
 {
     using System.Threading.Tasks;
+    using Fanex.Bot.Models.GitLab;
     using Fanex.Bot.Skynex.Controllers;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Models.GitLab;
     using NSubstitute;
     using Xunit;
 
     public class GitLabWebHookControllerTests
     {
-        private readonly IGitLabDialog _gitLabDialog;
+        private readonly IGitLabDialog gitLabDialog;
 
         public GitLabWebHookControllerTests()
         {
-            _gitLabDialog = Substitute.For<IGitLabDialog>();
+            gitLabDialog = Substitute.For<IGitLabDialog>();
         }
 
         [Fact]
@@ -26,10 +26,10 @@
             };
 
             // Act
-            var result = await new GitLabWebHookController(_gitLabDialog).PushEventInfo(pushEvent);
+            var result = await new GitLabWebHookController(gitLabDialog).PushEventInfo(pushEvent);
 
             // Assert
-            await _gitLabDialog.Received().HandlePushEventAsync(Arg.Is(pushEvent));
+            await gitLabDialog.Received().HandlePushEventAsync(Arg.Is(pushEvent));
             Assert.Equal(0, result);
         }
     }

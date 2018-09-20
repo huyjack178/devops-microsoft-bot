@@ -5,17 +5,17 @@
     using System.Text;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.UM;
-    using Fanex.Bot.Skynex.Services;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Core.Utilities.Common;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.UM;
+    using Fanex.Bot.Services;
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
-    using Fanex.Bot.Core.Utilities.Common;
 
     public interface IUMDialog : IDialog
     {
@@ -45,7 +45,7 @@
             _configuration = configuration;
         }
 
-        public async override Task HandleMessageAsync(IMessageActivity activity, string message)
+        public async override Task HandleMessage(IMessageActivity activity, string message)
         {
             var command = message.Replace(MessageCommand.UM, string.Empty).Trim();
 

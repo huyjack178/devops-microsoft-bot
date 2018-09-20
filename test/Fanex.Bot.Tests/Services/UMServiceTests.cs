@@ -1,29 +1,26 @@
 ﻿namespace Fanex.Bot.Skynex.Tests.Services
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Skynex.Models.UM;
-    using Fanex.Bot.Skynex.Services;
+    using Fanex.Bot.Models.UM;
+    using Fanex.Bot.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using Xunit;
 
     public class UMServiceTests
     {
-        private readonly IWebClient _webClient;
-        private readonly IUMService _umService;
+        private readonly IWebClient webClient;
+        private readonly IUMService umService;
 
         public UMServiceTests()
         {
             var config = new ConfigurationBuilder()
                .AddJsonFile($"{AppDomain.CurrentDomain.BaseDirectory}/../../../appsettings.json")
                .Build();
-            _webClient = Substitute.For<IWebClient>();
-            _umService = new UMService(_webClient, config);
+            webClient = Substitute.For<IWebClient>();
+            umService = new UMService(webClient, config);
         }
 
         [Fact]
@@ -31,10 +28,10 @@
         {
             // Arrange
             var umInfo = new UM { IsUM = true };
-            _webClient.GetJsonAsync<UM>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UM/Information"))).Returns(umInfo);
+            webClient.GetJsonAsync<UM>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UM/Information"))).Returns(umInfo);
 
             // Act
-            var actualUmInfo = await _umService.GetUMInformation();
+            var actualUmInfo = await umService.GetUMInformation();
 
             // Assert
             Assert.Equal(umInfo, actualUmInfo);
@@ -45,10 +42,10 @@
         {
             // Arrange
             var pageUrl = new Uri("http://google.com");
-            _webClient.GetContentAsync(Arg.Is(pageUrl)).Returns("<html><title>offline</title><body>offline</body></html>");
+            webClient.GetContentAsync(Arg.Is(pageUrl)).Returns("<html><title>offline</title><body>offline</body></html>");
 
             // Act
-            var result = await _umService.CheckPageShowUM(pageUrl);
+            var result = await umService.CheckPageShowUM(pageUrl);
 
             // Assert
             Assert.True(result);
@@ -59,10 +56,10 @@
         {
             // Arrange
             var pageUrl = new Uri("http://google.com");
-            _webClient.GetContentAsync(Arg.Is(pageUrl)).Returns("<html><title>ok</title><body>ok</body></html>");
+            webClient.GetContentAsync(Arg.Is(pageUrl)).Returns("<html><title>ok</title><body>ok</body></html>");
 
             // Act
-            var result = await _umService.CheckPageShowUM(pageUrl);
+            var result = await umService.CheckPageShowUM(pageUrl);
 
             // Assert
             Assert.False(result);
@@ -73,10 +70,10 @@
         {
             // Arrange
             var pageUrl = new Uri("http://google.com");
-            _webClient.GetContentAsync(Arg.Is(pageUrl)).Returns("");
+            webClient.GetContentAsync(Arg.Is(pageUrl)).Returns("");
 
             // Act
-            var result = await _umService.CheckPageShowUM(pageUrl);
+            var result = await umService.CheckPageShowUM(pageUrl);
 
             // Assert
             Assert.False(result);

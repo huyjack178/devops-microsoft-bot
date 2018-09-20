@@ -3,7 +3,7 @@
     using System;
     using System.IO;
     using AutoFixture;
-    using Fanex.Bot.Skynex.Models.Log;
+    using Fanex.Bot.Models.Log;
     using Xunit;
 
     public class LogTests

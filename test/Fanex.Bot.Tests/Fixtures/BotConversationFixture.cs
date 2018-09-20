@@ -3,9 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.Log;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;

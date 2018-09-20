@@ -6,10 +6,10 @@
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Common;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.Log;
-    using Fanex.Bot.Skynex.Services;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Services;
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Bot.Connector;
@@ -55,7 +55,7 @@
             _cache = cache;
         }
 
-        public override async Task HandleMessageAsync(IMessageActivity activity, string message)
+        public override async Task HandleMessage(IMessageActivity activity, string message)
         {
             if (message.StartsWith("log add"))
             {

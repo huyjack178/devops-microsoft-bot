@@ -2,10 +2,10 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.GitLab;
+    using Fanex.Bot.Models.Log;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.GitLab;
-    using Fanex.Bot.Skynex.Models.Log;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using NSubstitute;
@@ -30,7 +30,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324" });
 
             // Act
-            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _dialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -46,7 +46,7 @@
             var message = "help";
 
             // Act
-            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _dialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -62,7 +62,7 @@
             var message = "any";
 
             // Act
-            await _dialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _dialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture

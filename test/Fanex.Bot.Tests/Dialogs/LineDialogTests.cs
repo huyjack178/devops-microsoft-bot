@@ -4,9 +4,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.GitLab;
-    using Fanex.Bot.Skynex.Models.Log;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using NSubstitute;

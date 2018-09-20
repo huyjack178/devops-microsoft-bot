@@ -18,6 +18,7 @@
         private readonly IGitLabDialog _gitLabDialog;
         private readonly ILineDialog _lineDialog;
         private readonly IUMDialog _umDialog;
+        private readonly IDBLogDialog dbLogDialog;
         private readonly MessagesController _messagesController;
 
         public MessagesControllerTests(BotConversationFixture conversationFixture)
@@ -28,7 +29,7 @@
             _gitLabDialog = Substitute.For<IGitLabDialog>();
             _lineDialog = Substitute.For<ILineDialog>();
             _umDialog = Substitute.For<IUMDialog>();
-
+            dbLogDialog = Substitute.For<IDBLogDialog>();
             _messagesController = new MessagesController(
                 _commonDialog,
                 _logDialog,
@@ -36,7 +37,8 @@
                 _lineDialog,
                 _umDialog,
                 _conversationFixture.Conversation,
-                _conversationFixture.Configuration);
+                _conversationFixture.Configuration,
+                dbLogDialog);
         }
 
         [Fact]
@@ -49,7 +51,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _logDialog.Received().HandleMessageAsync(Arg.Is(activity), "log add");
+            await _logDialog.Received().HandleMessage(Arg.Is(activity), "log add");
         }
 
         [Fact]
@@ -62,7 +64,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _gitLabDialog.Received().HandleMessageAsync(Arg.Is(activity), "gitlab");
+            await _gitLabDialog.Received().HandleMessage(Arg.Is(activity), "gitlab");
         }
 
         [Fact]
@@ -75,7 +77,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _umDialog.Received().HandleMessageAsync(Arg.Is(activity), "um");
+            await _umDialog.Received().HandleMessage(Arg.Is(activity), "um");
         }
 
         [Fact]
@@ -88,7 +90,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _commonDialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
+            await _commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
         }
 
         [Theory]
@@ -104,7 +106,7 @@
             await _messagesController.Post(activity);
 
             // Asserts
-            await _commonDialog.Received().HandleMessageAsync(Arg.Is(activity), "group");
+            await _commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
         }
 
         [Fact]

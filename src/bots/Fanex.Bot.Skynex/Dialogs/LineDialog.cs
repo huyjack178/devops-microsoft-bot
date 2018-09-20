@@ -2,8 +2,8 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +27,7 @@
             if (messageInfo == null)
             {
                 messageInfo = InitMessageInfo(activity);
-                await SaveMessageInfoAsync(messageInfo);
+                await SaveMessageInfo(messageInfo);
                 await Conversation.SendAdminAsync($"New client **{activity.From.Id}** has been added");
             }
         }

@@ -4,8 +4,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.GitLab;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.GitLab;
     using Fanex.Bot.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
@@ -33,7 +33,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -53,7 +53,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "1332433" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -73,7 +73,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "3333" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             Assert.True(_conversationFixture.BotDbContext.MessageInfo.AsNoTracking()
@@ -88,7 +88,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -108,7 +108,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "6" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -125,7 +125,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "7" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -146,7 +146,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "33" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture
@@ -201,7 +201,7 @@
             _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "34" });
 
             // Act
-            await _gitLabDialog.HandleMessageAsync(_conversationFixture.Activity, message);
+            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
 
             // Assert
             await _conversationFixture

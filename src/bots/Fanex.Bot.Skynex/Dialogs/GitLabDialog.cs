@@ -6,9 +6,9 @@
     using System.Text;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
-    using Fanex.Bot.Skynex.Models;
-    using Fanex.Bot.Skynex.Models.GitLab;
-    using Fanex.Bot.Skynex.Utilities.Bot;
+    using Fanex.Bot.Models;
+    using Fanex.Bot.Models.GitLab;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +30,7 @@
         {
         }
 
-        public override async Task HandleMessageAsync(IMessageActivity activity, string message)
+        public override async Task HandleMessage(IMessageActivity activity, string message)
         {
             if (message.StartsWith(AddProjectCmd))
             {
