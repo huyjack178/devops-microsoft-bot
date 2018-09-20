@@ -112,6 +112,7 @@
 
         private static void ConfigureBotMessageHandlers(IServiceCollection services)
         {
+            services.AddSingleton<IWebLogMessageBuilder, WebLogMessageBuilder>();
             services.AddSingleton<IDBLogMessageBuilder, DBLogMessageBuilder>();
             services.AddSingleton<IMessengerFormatter, DefaultFormatter>();
             services.AddSingleton<ILineFormatter, LineFormatter>();

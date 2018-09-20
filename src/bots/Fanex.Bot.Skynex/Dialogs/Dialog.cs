@@ -26,27 +26,31 @@
         public BotDbContext DbContext { get; }
 
         public static string GetCommandMessages()
-        {
-            return $"Skynex's available commands:{MessageFormatSignal.NewLine} " +
-                    $"------------- {MessageFormatSignal.NewLine}" +
-                    $"**group** ==> Get your group ID {MessageFormatSignal.NewLine}" +
-                    $"------------- {MessageFormatSignal.NewLine}" +
-                    $"**log add [Contains-LogCategory]** " +
-                        $"==> Register to get log which has category name **contains [Contains-LogCategory]**. " +
-                        $"Example: log add Alpha;NAP {MessageFormatSignal.NewLine}" +
-                    $"**log remove [LogCategory]**{MessageFormatSignal.NewLine}" +
-                    $"**log start** ==> Start receiving logs{MessageFormatSignal.NewLine}" +
-                    $"**log stop [TimeSpan(Optional)]** ==> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
-                        $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSignal.NewLine}" +
-                    $"**log detail [LogId] (BETA)** ==> Get log detail{MessageFormatSignal.NewLine}" +
-                    $"**log status** ==> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSignal.NewLine}" +
-                    $"------------- {MessageFormatSignal.NewLine}" +
-                    $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{MessageFormatSignal.NewLine}" +
-                    $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{MessageFormatSignal.NewLine}" +
-                    $"------------- {MessageFormatSignal.NewLine}" +
-                    $"**um start** ==> Start get notification when UM starts {MessageFormatSignal.NewLine}" +
-                    $"**um addPage [PageUrl]** ==> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
-        }
+            => $"Skynex's available commands:{MessageFormatSignal.NewLine} " +
+                $"{MessageFormatSignal.BeginBold}group{MessageFormatSignal.EndBold} " +
+                    $"=> Get your group ID {MessageFormatSignal.NewLine}" + MessageFormatSignal.BreakLine + MessageFormatSignal.NewLine +
+                $"{MessageFormatSignal.BeginBold}log add [Contains-LogCategory]{MessageFormatSignal.EndBold} " +
+                    $"==> Register to get log which has category name " +
+                    $"{MessageFormatSignal.BeginBold}contains [Contains-LogCategory]{MessageFormatSignal.EndBold}. " +
+                    $"Example: log add Alpha;NAP {MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log remove [LogCategory]{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log start{MessageFormatSignal.EndBold} " +
+                    $"=> Start receiving logs{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log stop [TimeSpan(Optional)]{MessageFormatSignal.EndBold} " +
+                    $"=> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
+                    $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log status{MessageFormatSignal.EndBold} " +
+                    $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BreakLine}{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}gitlab addProject [GitlabProjectUrl]{MessageFormatSignal.EndBold} " +
+                    $"=> Register to get notification of Gitlab's project{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}gitlab removeProject [GitlabProjectUrl]{MessageFormatSignal.EndBold} " +
+                    $"=> Disable getting notification of Gitlab's project{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BreakLine}{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}um start{MessageFormatSignal.EndBold} " +
+                    $"=> Start get notification when UM starts {MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}um addPage [PageUrl]{MessageFormatSignal.EndBold} " +
+                    $"=> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
 
         public virtual Task HandleMessage(Connector.IMessageActivity activity, string message)
         {

@@ -4,9 +4,13 @@
     using Fanex.Bot.Helpers;
     using Fanex.Bot.Models.Log;
 
-    public interface IDBLogMessageBuilder
+    public interface IMessageBuilder
     {
         string BuildMessage(object model);
+    }
+
+    public interface IDBLogMessageBuilder : IMessageBuilder
+    {
     }
 
     public class DBLogMessageBuilder : IDBLogMessageBuilder

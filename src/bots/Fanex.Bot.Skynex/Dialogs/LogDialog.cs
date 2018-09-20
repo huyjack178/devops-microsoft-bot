@@ -16,6 +16,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageBuilders;
 
     public interface ILogDialog : IDialog
     {
@@ -26,12 +27,13 @@
 
     public class LogDialog : Dialog, ILogDialog
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogService _logService;
-        private readonly IUMService _umService;
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IBackgroundJobClient _backgroundJobClient;
-        private readonly IMemoryCache _cache;
+        private readonly IConfiguration configuration;
+        private readonly ILogService logService;
+        private readonly IUMService umService;
+        private readonly IRecurringJobManager recurringJobManager;
+        private readonly IBackgroundJobClient backgroundJobClient;
+        private readonly IMemoryCache cache;
+        private readonly IWebLogMessageBuilder webLogMessageBuilder;
 
 #pragma warning disable S107 // Methods should not have too many parameters
 
@@ -43,16 +45,18 @@
             IConversation conversation,
             IRecurringJobManager recurringJobManager,
             IBackgroundJobClient backgroundJobClient,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            IWebLogMessageBuilder webLogMessageBuilder)
 #pragma warning restore S107 // Methods should not have too many parameters
                 : base(dbContext, conversation)
         {
-            _configuration = configuration;
-            _logService = logService;
-            _umService = umService;
-            _recurringJobManager = recurringJobManager;
-            _backgroundJobClient = backgroundJobClient;
-            _cache = cache;
+            this.configuration = configuration;
+            this.logService = logService;
+            this.umService = umService;
+            this.recurringJobManager = recurringJobManager;
+            this.backgroundJobClient = backgroundJobClient;
+            this.cache = cache;
+            this.webLogMessageBuilder = webLogMessageBuilder;
         }
 
         public override async Task HandleMessage(IMessageActivity activity, string message)
@@ -77,10 +81,6 @@
             {
                 await StopNotifyingLogAsync(activity, message);
             }
-            else if (message.StartsWith("log detail"))
-            {
-                await GetLogDetailAsync(activity, message);
-            }
             else
             {
                 await Conversation.ReplyAsync(activity, GetCommandMessages());
@@ -98,7 +98,7 @@
             }
 
             var isDisableAddCategories = Convert.ToBoolean(
-                _configuration.GetSection("LogInfo")?.GetSection("DisableAddCategories")?.Value);
+                configuration.GetSection("LogInfo")?.GetSection("DisableAddCategories")?.Value);
 
             if (!CheckAdmin(activity) && isDisableAddCategories)
             {
@@ -149,7 +149,7 @@
 
             RemoveRestartLogJob(activity);
 
-            _recurringJobManager.AddOrUpdate(
+            recurringJobManager.AddOrUpdate(
                 "NotifyLogPeriodically", Job.FromExpression(() => GetAndSendLogAsync()), Cron.Minutely());
 
             await Conversation.ReplyAsync(activity, "Log has been started!");
@@ -187,9 +187,9 @@
         public async Task GetAndSendLogAsync()
         {
             var allowSendLogInUM = Convert.ToBoolean(
-                    _configuration.GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value);
+                    configuration.GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value);
 
-            var umInfo = await _umService.GetUMInformation();
+            var umInfo = await umService.GetUMInformation();
 
             if (!allowSendLogInUM && umInfo.IsUM)
             {
@@ -197,7 +197,7 @@
             }
 
             var logInfos = DbContext.LogInfo.ToList();
-            var errorLogs = await _logService.GetErrorLogs();
+            var errorLogs = await logService.GetErrorLogs();
 
             foreach (var logInfo in logInfos)
             {
@@ -218,21 +218,6 @@
             message += logInfo.IsActive ? $"**Running**\n\n" : $"**Stopped**\n\n";
 
             await Conversation.ReplyAsync(activity, message);
-        }
-
-        public async Task GetLogDetailAsync(IMessageActivity activity, string messageCmd)
-        {
-            var logId = messageCmd.Substring(10).Trim();
-
-            if (string.IsNullOrEmpty(logId))
-            {
-                await Conversation.ReplyAsync(activity, "I need [LogId].");
-                return;
-            }
-
-            var logDetail = await _logService.GetErrorLogDetail(Convert.ToInt64(logId));
-
-            await Conversation.ReplyAsync(activity, logDetail.FullMessage);
         }
 
         #region Private Methods
@@ -297,17 +282,18 @@
             foreach (var groupErrorLog in groupErrorLogs)
             {
                 var errorLog = groupErrorLog.First();
+                var logMessage = webLogMessageBuilder.BuildMessage(errorLog);
                 var logCategory = errorLog.CategoryName.ToLowerInvariant();
                 var hasLogCategory = filterCategories?.Any(
                         filterCategory => logCategory.Contains(filterCategory.ToLowerInvariant())) ?? false;
 
                 var hasIgnoreMessage = await DbContext.LogIgnoreMessage.AnyAsync(
                         message => logCategory.Contains(message.Category.ToLowerInvariant()) &&
-                        errorLog.Message.ToLowerInvariant().Contains(message.IgnoreMessage.ToLowerInvariant()));
+                        logMessage.ToLowerInvariant().Contains(message.IgnoreMessage.ToLowerInvariant()));
 
                 if (hasLogCategory && !hasIgnoreMessage)
                 {
-                    await Conversation.SendAsync(logInfo.ConversationId, errorLog.Message);
+                    await Conversation.SendAsync(logInfo.ConversationId, logMessage);
                 }
             }
         }
@@ -339,8 +325,8 @@
         {
             RemoveRestartLogJob(activity);
 
-            var jobId = _backgroundJobClient.Schedule(() => RestartNotifyingLog(activity.Conversation.Id), logStopDelayTime);
-            _cache.Set(
+            var jobId = backgroundJobClient.Schedule(() => RestartNotifyingLog(activity.Conversation.Id), logStopDelayTime);
+            cache.Set(
                 activity.Conversation.Id,
                 jobId,
                 new MemoryCacheEntryOptions
@@ -351,11 +337,11 @@
 
         private void RemoveRestartLogJob(IMessageActivity activity)
         {
-            var restartLogJobId = _cache.Get<string>(activity.Conversation.Id);
+            var restartLogJobId = cache.Get<string>(activity.Conversation.Id);
 
             if (!string.IsNullOrEmpty(restartLogJobId))
             {
-                _backgroundJobClient.Delete(restartLogJobId);
+                backgroundJobClient.Delete(restartLogJobId);
             }
         }
 
