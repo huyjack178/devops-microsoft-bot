@@ -11,7 +11,7 @@
     {
         Task<IEnumerable<DBLog>> GetLogs(int rangeMinute = 5);
 
-        Task AckLogs(string[] logNotificationIds);
+        Task AckLogs(int[] logNotificationIds);
     }
 
     public class DBLogService : IDBLogService
@@ -28,7 +28,7 @@
             return dynamicRepository.FetchAsync<DBLog>(new GetDbLogCriteria(rangeMinute));
         }
 
-        public async Task AckLogs(string[] logNotificationIds)
+        public async Task AckLogs(int[] logNotificationIds)
         {
             await dynamicRepository.ExecuteAsync(new AckDbLogCommand(logNotificationIds));
         }

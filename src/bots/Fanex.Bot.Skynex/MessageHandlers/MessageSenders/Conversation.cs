@@ -14,7 +14,7 @@
 
         Task SendAsync(MessageInfo messageInfo);
 
-        Task<string> SendAsync(string conversationId, string message);
+        Task<Result> SendAsync(string conversationId, string message);
 
         Task SendAdminAsync(string message);
     }
@@ -88,7 +88,7 @@
             }
         }
 
-        public async Task<string> SendAsync(string conversationId, string message)
+        public async Task<Result> SendAsync(string conversationId, string message)
         {
             var messageInfo = await dbContext
                 .MessageInfo
@@ -99,14 +99,14 @@
                 messageInfo.Text = message;
                 await SendAsync(messageInfo);
 
-                return "Success";
+                return Result.CreateSuccessfulResult();
             }
             else
             {
                 var errorMessage = $"Error: **{conversationId}** not found";
                 await SendAdminAsync(errorMessage);
 
-                return errorMessage;
+                return Result.CreateFailedResult(errorMessage);
             }
         }
 

@@ -1,6 +1,8 @@
 ﻿namespace Fanex.Bot.Skynex.Dialogs
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
@@ -70,11 +72,22 @@
             }
 
             var dbLogs = await logService.GetDBLogs();
+            var successfulSentLogNotificationIds = new List<int>();
 
             foreach (var log in dbLogs)
             {
                 var message = messageBuilder.BuildMessage(log);
-                await Conversation.SendAsync(log.SkypeGroupId, message);
+                var result = await Conversation.SendAsync(log.SkypeGroupId, message);
+
+                if (result.IsOk)
+                {
+                    successfulSentLogNotificationIds.Add(log.NotificationId);
+                }
+            }
+
+            if (successfulSentLogNotificationIds.Count > 0)
+            {
+                await logService.AckDBLog(successfulSentLogNotificationIds.ToArray());
             }
         }
     }

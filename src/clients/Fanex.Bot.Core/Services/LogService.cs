@@ -4,8 +4,10 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
+    using Fanex.Bot.Models;
     using Fanex.Bot.Models.Log;
     using Microsoft.Extensions.Configuration;
 
@@ -16,6 +18,8 @@
         Task<Log> GetErrorLogDetail(long logId);
 
         Task<IEnumerable<DBLog>> GetDBLogs();
+
+        Task<Result> AckDBLog(int[] notificationIds);
     }
 
     public class LogService : ILogService
@@ -59,5 +63,14 @@
 
         public Task<IEnumerable<DBLog>> GetDBLogs()
             => webClient.GetJsonAsync<IEnumerable<DBLog>>(new Uri($"{botServiceUrl}/DbLog/List"));
+
+        public async Task<Result> AckDBLog(int[] notificationIds)
+        {
+            var statusCode = await webClient
+                .PostJsonAsync(new Uri($"{botServiceUrl}/DbLog/Ack"), notificationIds)
+                .ConfigureAwait(false);
+
+            return statusCode == HttpStatusCode.OK ? Result.CreateSuccessfulResult() : Result.CreateFailedResult();
+        }
     }
 }

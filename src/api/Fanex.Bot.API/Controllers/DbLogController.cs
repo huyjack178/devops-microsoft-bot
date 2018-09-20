@@ -25,8 +25,8 @@
         }
 
         [HttpPost]
-        [Route("List")]
-        public async Task<IActionResult> AckLog(string[] notificationIds)
+        [Route("Ack")]
+        public async Task<IActionResult> AckLog([FromBody]int[] notificationIds)
         {
             await dbLogService.AckLogs(notificationIds);
 

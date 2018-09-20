@@ -4,7 +4,7 @@
 
     public class AckDbLogCommand : NonQueryCommand
     {
-        public AckDbLogCommand(string[] notiList)
+        public AckDbLogCommand(int[] notiList)
         {
             NotiList = string.Join(",", notiList);
         }
