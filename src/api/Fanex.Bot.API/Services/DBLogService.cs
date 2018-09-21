@@ -9,7 +9,7 @@
 
     public interface IDBLogService
     {
-        Task<IEnumerable<DBLog>> GetLogs(int rangeMinute = 5);
+        Task<IEnumerable<DBLog>> GetLogs();
 
         Task AckLogs(int[] logNotificationIds);
     }
@@ -23,9 +23,9 @@
             this.dynamicRepository = dynamicRepository;
         }
 
-        public Task<IEnumerable<DBLog>> GetLogs(int rangeMinute = 5)
+        public Task<IEnumerable<DBLog>> GetLogs()
         {
-            return dynamicRepository.FetchAsync<DBLog>(new GetDbLogCriteria(rangeMinute));
+            return dynamicRepository.FetchAsync<DBLog>(new GetDbLogCriteria());
         }
 
         public async Task AckLogs(int[] logNotificationIds)

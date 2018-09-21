@@ -19,7 +19,7 @@
         [Route("List")]
         public async Task<IActionResult> List()
         {
-            var logs = await dbLogService.GetLogs(5);
+            var logs = await dbLogService.GetLogs();
 
             return new JsonResult(logs);
         }
