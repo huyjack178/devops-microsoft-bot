@@ -15,6 +15,7 @@
         {
             _restClient = restClient;
             _restClient.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+            _restClient.AddDefaultHeader("Cache-Control", "no-cache");
         }
 
 #pragma warning disable S3216 // "ConfigureAwait(false)" should be used

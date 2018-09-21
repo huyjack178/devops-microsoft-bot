@@ -76,11 +76,15 @@
         public async Task CheckUMAsync()
         {
             var umInfo = await umService.GetUMInformation();
-            bool informedUM = Convert.ToBoolean(memoryCache.Get(InformedUMCacheKey) ?? false);
 
-            await SendUMInformation(umInfo);
-            await SendUMStartMessage(umInfo, informedUM);
-            await SendUMFinisedMessage(umInfo, informedUM);
+            if (umInfo.ConnectionResult.IsOk)
+            {
+                bool informedUM = Convert.ToBoolean(memoryCache.Get(InformedUMCacheKey) ?? false);
+
+                await SendUMInformation(umInfo);
+                await SendUMStartMessage(umInfo, informedUM);
+                await SendUMFinisedMessage(umInfo, informedUM);
+            }
         }
 
         protected async Task StartNotifyingUM(IMessageActivity activity)
@@ -177,17 +181,19 @@
 
         private async Task SendUMInformation(UM umInfo, bool forceNotifyUM = false)
         {
-            if (umInfo.ConnectionResult.IsNotOk)
+            try
             {
-                return;
+                var umGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
+                var userGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
+                var umStartTime = umInfo.From.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
+                var now = DateTimeExtention.GetUTCNow().AddHours(userGMT);
+
+                await CheckTimeAndSendUMInfo(umInfo, forceNotifyUM, umGMT, umStartTime, now);
             }
-
-            var umGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
-            var userGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
-            var umStartTime = umInfo.From.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
-            var now = DateTimeExtention.GetUTCNow().AddHours(userGMT);
-
-            await CheckTimeAndSendUMInfo(umInfo, forceNotifyUM, umGMT, umStartTime, now);
+            catch
+            {
+                // Do nothing
+            }
         }
 
         private async Task CheckTimeAndSendUMInfo(UM umInfo, bool forceNotifyUM, int umGMT, DateTime umStartTime, DateTime now)

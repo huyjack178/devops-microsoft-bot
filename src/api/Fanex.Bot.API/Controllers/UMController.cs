@@ -16,6 +16,7 @@
             this.maintenanceService = maintenanceService;
         }
 
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [HttpGet]
         [Route("Information")]
         public async Task<IActionResult> Information()
