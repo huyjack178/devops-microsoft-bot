@@ -11,9 +11,9 @@
         Task HandleMessage(Connector.IMessageActivity activity, string message);
     }
 
-    public class Dialog : IDialog
+    public class BaseDialog
     {
-        public Dialog(
+        public BaseDialog(
             BotDbContext dbContext,
             IConversation conversation)
         {
@@ -51,11 +51,6 @@
                     $"=> Start get notification when UM starts {MessageFormatSignal.NewLine}" +
                 $"{MessageFormatSignal.BeginBold}um addPage [PageUrl]{MessageFormatSignal.EndBold} " +
                     $"=> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
-
-        public virtual Task HandleMessage(Connector.IMessageActivity activity, string message)
-        {
-            throw new System.NotImplementedException();
-        }
 
         protected async Task SaveMessageInfo(MessageInfo messageInfo)
         {

@@ -17,7 +17,7 @@
         Task GetAndSendLogAsync();
     }
 
-    public class DBLogDialog : Dialog, IDBLogDialog
+    public class DBLogDialog : BaseDialog, IDBLogDialog
     {
         private readonly IUMService umService;
         private readonly ILogService logService;
@@ -42,9 +42,11 @@
             this.messageBuilder = messageBuilder;
         }
 
-        public override async Task HandleMessage(IMessageActivity activity, string message)
+        public async Task HandleMessage(IMessageActivity activity, string message)
         {
-            if (message.StartsWith("dblog start"))
+            var command = message.Replace(MessageCommand.DBLOG, string.Empty).Trim();
+
+            if (command.StartsWith(MessageCommand.Start))
             {
                 await StartNotifyingDbLogAsync(activity);
             }

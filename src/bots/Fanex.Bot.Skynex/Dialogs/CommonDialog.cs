@@ -14,7 +14,7 @@
         Task RemoveConversationData(Connector.IMessageActivity activity);
     }
 
-    public class CommonDialog : Dialog, ICommonDialog
+    public class CommonDialog : BaseDialog, ICommonDialog
     {
         public CommonDialog(
             BotDbContext dbContext,
@@ -22,7 +22,7 @@
         {
         }
 
-        public override async Task HandleMessage(Connector.IMessageActivity activity, string message)
+        public async Task HandleMessage(Connector.IMessageActivity activity, string message)
         {
             if (message.StartsWith("group"))
             {
@@ -36,7 +36,9 @@
                 return;
             }
 
-            await Conversation.ReplyAsync(activity, "Please send **help** to get my commands");
+            await Conversation.ReplyAsync(
+                activity,
+                $"Please send {MessageFormatSignal.BeginBold}help{MessageFormatSignal.EndBold} to get my commands");
         }
 
         public virtual async Task RegisterMessageInfo(Connector.IMessageActivity activity)
@@ -48,7 +50,8 @@
             {
                 messageInfo = InitMessageInfo(activity);
                 await SaveMessageInfo(messageInfo);
-                await Conversation.SendAdminAsync($"New client **{activity.Conversation.Id}** has been added");
+                await Conversation.SendAdminAsync(
+                    $"New client {MessageFormatSignal.BeginBold}{activity.Conversation.Id}{MessageFormatSignal.EndBold} has been added");
             }
         }
 
@@ -79,7 +82,8 @@
             }
 
             await DbContext.SaveChangesAsync();
-            await Conversation.SendAdminAsync($"Client **{activity.Conversation.Id}** has been removed");
+            await Conversation.SendAdminAsync(
+                $"Client {MessageFormatSignal.BeginBold}{activity.Conversation.Id}{MessageFormatSignal.EndBold} has been removed");
         }
 
         private static MessageInfo InitMessageInfo(Connector.IMessageActivity activity)

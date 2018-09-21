@@ -1,10 +1,5 @@
 ﻿namespace Fanex.Bot
 {
-    public static class Constants
-    {
-        public const string NewLine = "\n";
-    }
-
     public static class MessageFormatSignal
     {
         public const string NewLine = "{{NewLine}}";
@@ -24,7 +19,9 @@
     {
         public const string UM = "um";
         public const string Start = "start";
+        public const string Stop = "stop";
         public const string UM_AddPage = "addpage";
         public const string UM_Notify = "notify";
+        public const string DBLOG = "dblog";
     }
 }

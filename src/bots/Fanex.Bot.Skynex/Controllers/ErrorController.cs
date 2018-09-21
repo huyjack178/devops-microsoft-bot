@@ -31,8 +31,8 @@
                     $"{exceptionThatOccurred.Message}\n{exceptionThatOccurred.StackTrace}\n");
 
                 await conversation.SendAdminAsync(
-                    $"**Exception occured in Skynex** {Constants.NewLine}" +
-                    $"{exceptionThatOccurred.Message} {Constants.NewLine}" +
+                    $"**Exception occured in Skynex** {MessageFormatSignal.NewLine}" +
+                    $"{exceptionThatOccurred.Message} {MessageFormatSignal.NewLine}" +
                     $"{exceptionThatOccurred.StackTrace}");
 
                 return Forbid();

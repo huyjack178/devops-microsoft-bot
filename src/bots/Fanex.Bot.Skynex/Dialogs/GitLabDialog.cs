@@ -1,9 +1,7 @@
 ﻿namespace Fanex.Bot.Skynex.Dialogs
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
     using Fanex.Bot.Models;
@@ -18,7 +16,7 @@
         Task HandlePushEventAsync(PushEvent pushEvent);
     }
 
-    public class GitLabDialog : Dialog, IGitLabDialog
+    public class GitLabDialog : BaseDialog, IGitLabDialog
     {
         private const string MasterBranchName = "heads/master";
         private const string RemoveProjectCmd = "gitlab removeproject";
@@ -34,7 +32,7 @@
             this.gitLabMessageBuilder = gitLabMessageBuilder;
         }
 
-        public override async Task HandleMessage(IMessageActivity activity, string message)
+        public async Task HandleMessage(IMessageActivity activity, string message)
         {
             if (message.StartsWith(AddProjectCmd))
             {

@@ -25,7 +25,7 @@
         Task RestartNotifyingLog(string conversationId);
     }
 
-    public class LogDialog : Dialog, ILogDialog
+    public class LogDialog : BaseDialog, ILogDialog
     {
         private readonly IConfiguration configuration;
         private readonly ILogService logService;
@@ -59,7 +59,7 @@
             this.webLogMessageBuilder = webLogMessageBuilder;
         }
 
-        public override async Task HandleMessage(IMessageActivity activity, string message)
+        public async Task HandleMessage(IMessageActivity activity, string message)
         {
             if (message.StartsWith("log add"))
             {
@@ -110,7 +110,8 @@
             logInfo.LogCategories += $"{logCategories};";
             await SaveLogInfoAsync(logInfo);
 
-            await Conversation.ReplyAsync(activity, $"You will receive log with categories contain **[{logCategories}]**");
+            await Conversation.ReplyAsync(activity,
+                $"You will receive log with categories contain {MessageFormatSignal.BeginBold}[{logCategories}]{MessageFormatSignal.EndBold}");
         }
 
         public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd)
@@ -134,11 +135,12 @@
 
             foreach (var logCategory in logCategoryList)
             {
-                logInfo.LogCategories = logInfo.LogCategories.Replace($"{logCategory}", "");
+                logInfo.LogCategories = logInfo.LogCategories.Replace(logCategory, "");
             }
 
             await SaveLogInfoAsync(logInfo);
-            await Conversation.ReplyAsync(activity, $"You will not receive log with categories contain **[{logCategories}]**");
+            await Conversation.ReplyAsync(activity,
+                $"You will not receive log with categories contain {MessageFormatSignal.BeginBold}[{logCategories}]{MessageFormatSignal.EndBold}");
         }
 
         public async Task StartNotifyingLogAsync(IMessageActivity activity)
@@ -215,9 +217,11 @@
             var logInfo = await GetOrCreateLogInfoAsync(activity);
 
             var message = $"Your log status \n\n" +
-                $"**Log Categories:** [{logInfo.LogCategories}]\n\n";
+                $"{MessageFormatSignal.BeginBold}Log Categories:{MessageFormatSignal.EndBold} [{logInfo.LogCategories}]{MessageFormatSignal.NewLine}";
 
-            message += logInfo.IsActive ? $"**Running**\n\n" : $"**Stopped**\n\n";
+            message += logInfo.IsActive ?
+                $"{MessageFormatSignal.BeginBold}Running{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" :
+                $"{MessageFormatSignal.BeginBold}Stopped{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}";
 
             await Conversation.ReplyAsync(activity, message);
         }

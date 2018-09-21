@@ -11,7 +11,7 @@
     {
     }
 
-    public class LineDialog : Dialog, ILineDialog
+    public class LineDialog : BaseDialog, ILineDialog
     {
         public LineDialog(
          BotDbContext dbContext,
@@ -28,7 +28,8 @@
             {
                 messageInfo = InitMessageInfo(activity);
                 await SaveMessageInfo(messageInfo);
-                await Conversation.SendAdminAsync($"New client **{activity.From.Id}** has been added");
+                await Conversation.SendAdminAsync(
+                    $"New client {MessageFormatSignal.BeginBold}{activity.From.Id}{MessageFormatSignal.EndBold} has been added");
             }
         }
 
@@ -48,6 +49,11 @@
         }
 
         public Task RemoveConversationData(IMessageActivity activity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task HandleMessage(IMessageActivity activity, string message)
         {
             throw new NotImplementedException();
         }

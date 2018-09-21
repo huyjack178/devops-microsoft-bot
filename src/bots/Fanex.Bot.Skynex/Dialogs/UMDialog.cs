@@ -22,13 +22,13 @@
         Task CheckUMAsync();
     }
 
-    public class UMDialog : Dialog, IUMDialog
+    public class UMDialog : BaseDialog, IUMDialog
     {
         private const string InformedUMCacheKey = "InformedUM";
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IUMService _umService;
-        private readonly IMemoryCache _memoryCache;
-        private readonly IConfiguration _configuration;
+        private readonly IRecurringJobManager recurringJobManager;
+        private readonly IUMService umService;
+        private readonly IMemoryCache memoryCache;
+        private readonly IConfiguration configuration;
 
         public UMDialog(
             BotDbContext dbContext,
@@ -39,19 +39,25 @@
             IConfiguration configuration)
             : base(dbContext, conversation)
         {
-            _recurringJobManager = recurringJobManager;
-            _umService = umService;
-            _memoryCache = memoryCache;
-            _configuration = configuration;
+            this.recurringJobManager = recurringJobManager;
+            this.umService = umService;
+            this.memoryCache = memoryCache;
+            this.configuration = configuration;
         }
 
-        public async override Task HandleMessage(IMessageActivity activity, string message)
+        public async Task HandleMessage(IMessageActivity activity, string message)
         {
             var command = message.Replace(MessageCommand.UM, string.Empty).Trim();
 
             if (command.StartsWith(MessageCommand.Start))
             {
                 await StartNotifyingUM(activity);
+                return;
+            }
+
+            if (command.StartsWith(MessageCommand.Stop))
+            {
+                await StopNotifyingUM(activity);
                 return;
             }
 
@@ -67,14 +73,24 @@
             }
         }
 
-        public async Task StartNotifyingUM(IMessageActivity activity)
+        public async Task CheckUMAsync()
+        {
+            var umInfo = await umService.GetUMInformation();
+            bool informedUM = Convert.ToBoolean(memoryCache.Get(InformedUMCacheKey) ?? false);
+
+            await SendUMInformation(umInfo);
+            await SendUMStartMessage(umInfo, informedUM);
+            await SendUMFinisedMessage(umInfo, informedUM);
+        }
+
+        protected async Task StartNotifyingUM(IMessageActivity activity)
         {
             var umInfo = await GetOrCreateUMInfoAsync(activity);
             umInfo.IsActive = true;
 
             await SaveUMInfoAsync(umInfo);
 
-            _recurringJobManager.AddOrUpdate(
+            recurringJobManager.AddOrUpdate(
                 "CheckUMPeriodically",
                 Job.FromExpression(() => CheckUMAsync()),
                 Cron.Minutely());
@@ -82,7 +98,16 @@
             await Conversation.ReplyAsync(activity, "UM notification has been started!");
         }
 
-        public async Task AddUMPage(IMessageActivity activity, string message)
+        protected async Task StopNotifyingUM(IMessageActivity activity)
+        {
+            var umInfo = await GetOrCreateUMInfoAsync(activity);
+            umInfo.IsActive = false;
+
+            await SaveUMInfoAsync(umInfo);
+            await Conversation.ReplyAsync(activity, "UM notification has been stopped!");
+        }
+
+        protected async Task AddUMPage(IMessageActivity activity, string message)
         {
             var umPageUrls = message
                 .Replace(MessageCommand.UM_AddPage, string.Empty)
@@ -102,15 +127,16 @@
             {
                 var processedUmPageUrl = BotHelper.ExtractProjectLink(umPageUrl);
                 var umPages = DbContext.UMPage;
-                var existUMPage = await umPages.AnyAsync(
-                        umPage => umPage.SiteUrl.ToLowerInvariant() == processedUmPageUrl.ToLowerInvariant());
+                var existUMPage = await umPages
+                    .AnyAsync(umPage => string.Equals(umPage.SiteUrl, processedUmPageUrl, StringComparison.InvariantCultureIgnoreCase))
+                    .ConfigureAwait(false);
 
                 if (!existUMPage)
                 {
                     await umPages.AddAsync(new UMPage { SiteUrl = processedUmPageUrl });
                 }
 
-                umPageUrlMessage.Append($"**{umPageUrl}**{Constants.NewLine}");
+                umPageUrlMessage.Append($"{MessageFormatSignal.BeginBold}{umPageUrl}{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}");
             }
 
             await DbContext.SaveChangesAsync();
@@ -118,22 +144,12 @@
             await Conversation.ReplyAsync(
                 activity,
                 $"Pages will be checked in UM Time" +
-                $"{Constants.NewLine}{umPageUrlMessage.ToString()}");
+                $"{MessageFormatSignal.NewLine}{umPageUrlMessage}");
         }
 
-        public async Task CheckUMAsync()
+        protected async Task NotifyUMAsync()
         {
-            var umInfo = await _umService.GetUMInformation();
-            bool informedUM = Convert.ToBoolean(_memoryCache.Get(InformedUMCacheKey) ?? false);
-
-            await SendUMInformation(umInfo);
-            await SendUMStartMessage(umInfo, informedUM);
-            await SendUMFinisedMessage(umInfo, informedUM);
-        }
-
-        public async Task NotifyUMAsync()
-        {
-            var umInfo = await _umService.GetUMInformation();
+            var umInfo = await umService.GetUMInformation();
 
             await SendUMInformation(umInfo, forceNotifyUM: true);
         }
@@ -145,7 +161,7 @@
             if (!umInfo.IsUM && informedUM)
             {
                 await SendMessageUM("UM is finished!");
-                _memoryCache.Remove(InformedUMCacheKey);
+                memoryCache.Remove(InformedUMCacheKey);
             }
         }
 
@@ -154,7 +170,7 @@
             if (umInfo.IsUM && !informedUM)
             {
                 await SendMessageUM("UM is started now!");
-                _memoryCache.Set(InformedUMCacheKey, true, TimeSpan.FromHours(2));
+                memoryCache.Set(InformedUMCacheKey, true, TimeSpan.FromHours(2));
                 await ScanPages();
             }
         }
@@ -166,8 +182,8 @@
                 return;
             }
 
-            var umGMT = Convert.ToInt32(_configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
-            var userGMT = Convert.ToInt32(_configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
+            var umGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
+            var userGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
             var umStartTime = umInfo.StartTime.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
             var now = DateTimeExtention.GetUTCNow().AddHours(userGMT);
 
@@ -185,9 +201,10 @@
             if (forceNotifyUM || isInDay || isBefore1DayAt10AM)
             {
                 await SendMessageUM(
-                    $"System will be **under maintenance** " +
-                    $"from **{umInfo.StartTime}** to **{umInfo.EndTime}** " +
-                    $"**(GMT{DateTimeExtention.GenerateGMTText(umGMT)})**");
+                    $"System will be {MessageFormatSignal.BeginBold}under maintenance{MessageFormatSignal.EndBold} " +
+                    $"from {MessageFormatSignal.BeginBold}{umInfo.StartTime}{MessageFormatSignal.EndBold} " +
+                    $"to {MessageFormatSignal.BeginBold}{umInfo.EndTime}{MessageFormatSignal.EndBold} " +
+                    $"{MessageFormatSignal.BeginBold}(GMT{DateTimeExtention.GenerateGMTText(umGMT)}){MessageFormatSignal.EndBold}");
             }
         }
 
@@ -210,23 +227,23 @@
         private async Task ScanPageInGroup(IGrouping<string, UMPage> groupPage)
         {
             var allPagesShowUM = true;
-            var message = new StringBuilder($"**{groupPage.Key}**");
+            var message = new StringBuilder($"{MessageFormatSignal.BeginBold}{groupPage.Key}{MessageFormatSignal.EndBold}");
 
             foreach (var page in groupPage)
             {
                 Uri.TryCreate(page.SiteUrl, UriKind.Absolute, out Uri pageUri);
-                var isShowUM = await _umService.CheckPageShowUM(pageUri);
+                var isShowUM = await umService.CheckPageShowUM(pageUri);
 
                 if (!isShowUM)
                 {
-                    message.Append($"{Constants.NewLine}**{page.SiteUrl} does not show UM**");
+                    message.Append($"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}{page.SiteUrl} does not show UM{MessageFormatSignal.EndBold}");
                     allPagesShowUM = false;
                 }
             }
 
             if (allPagesShowUM)
             {
-                message.Append($" PASSED! {Constants.NewLine}");
+                message.Append($" PASSED! {MessageFormatSignal.NewLine}");
             }
 
             await SendMessageUM(message.ToString());
@@ -265,8 +282,8 @@
             await DbContext.SaveChangesAsync();
         }
 
-        private async Task<UMInfo> GetUMInfo(string conversationId)
-         => await DbContext.UMInfo
+        private Task<UMInfo> GetUMInfo(string conversationId)
+         => DbContext.UMInfo
              .AsNoTracking()
              .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
 

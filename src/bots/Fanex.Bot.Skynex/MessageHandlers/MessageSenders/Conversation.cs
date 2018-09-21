@@ -82,8 +82,8 @@
                 logger.LogError($"{ex.Message}\n{ex.StackTrace}");
 
                 await SendAdminAsync(
-                    $"Can not send message to **{messageInfo?.ConversationId}** {Constants.NewLine}" +
-                    $"**Exception:** {ex.Message} {Constants.NewLine}" +
+                    $"Can not send message to {MessageFormatSignal.BeginBold}{messageInfo?.ConversationId}{MessageFormatSignal.EndBold} {MessageFormatSignal.NewLine}" +
+                    $"{MessageFormatSignal.BeginBold}Exception:{MessageFormatSignal.EndBold} {ex.Message} {MessageFormatSignal.NewLine}" +
                     $"==========================");
             }
         }
@@ -103,7 +103,7 @@
             }
             else
             {
-                var errorMessage = $"Error: **{conversationId}** not found";
+                var errorMessage = $"Error: {MessageFormatSignal.BeginBold}{conversationId}{MessageFormatSignal.EndBold} not found";
                 await SendAdminAsync(errorMessage);
 
                 return Result.CreateFailedResult(errorMessage);
