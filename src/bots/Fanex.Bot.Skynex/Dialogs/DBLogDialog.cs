@@ -55,7 +55,7 @@
         public async Task StartNotifyingDbLogAsync(IMessageActivity activity)
         {
             recurringJobManager.AddOrUpdate(
-                "NotifyDbLogPeriodically", Job.FromExpression(() => GetAndSendLogAsync()), "0/15 0 0 ? * * *");
+                "NotifyDbLogPeriodically", Job.FromExpression(() => GetAndSendLogAsync()), Cron.Minutely());
 
             await Conversation.ReplyAsync(activity, "DBLog has been started!");
         }
