@@ -2,7 +2,9 @@
 {
     using System.Threading.Tasks;
     using Fanex.Bot.API.Services;
+    using Fanex.Logging;
     using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -15,12 +17,13 @@
             this.dbLogService = dbLogService;
         }
 
-        [HttpGet]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+        [HttpPost]
         [Route("List")]
         public async Task<IActionResult> List()
         {
             var logs = await dbLogService.GetLogs();
-
+            Logger.Log.Info(JsonConvert.SerializeObject(logs));
             return new JsonResult(logs);
         }
 

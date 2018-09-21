@@ -62,7 +62,7 @@
             => webClient.GetJsonAsync<Log>(new Uri($"{botServiceUrl}/Log?logId={logId}"));
 
         public Task<IEnumerable<DBLog>> GetDBLogs()
-            => webClient.GetJsonAsync<IEnumerable<DBLog>>(new Uri($"{botServiceUrl}/DbLog/List"));
+            => webClient.PostJsonAsync<string, IEnumerable<DBLog>>(new Uri($"{botServiceUrl}/DbLog/List"), string.Empty);
 
         public async Task<Result> AckDBLog(int[] notificationIds)
         {

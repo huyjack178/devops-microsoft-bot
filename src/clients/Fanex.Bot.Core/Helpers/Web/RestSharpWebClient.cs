@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net;
+    using System.Net.Cache;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using RestSharp;
@@ -13,6 +14,7 @@
         public RestSharpWebClient(IRestClient restClient)
         {
             _restClient = restClient;
+            _restClient.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
         }
 
 #pragma warning disable S3216 // "ConfigureAwait(false)" should be used
