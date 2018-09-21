@@ -1,5 +1,6 @@
 ﻿namespace Fanex.Bot.API.Controllers
 {
+    using System;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using ONEbook.UM.Services;
@@ -20,6 +21,12 @@
         public async Task<IActionResult> Information()
         {
             var umInfo = await maintenanceService.GetUnderMaintenanceTime();
+
+            if (!umInfo.IsUnderMaintenanceTime)
+            {
+                umInfo.From = DateTime.MinValue.ToString();
+                umInfo.To = DateTime.MinValue.ToString();
+            }
 
             return new JsonResult(umInfo);
         }

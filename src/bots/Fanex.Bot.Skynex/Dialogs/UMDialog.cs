@@ -158,7 +158,7 @@
 
         private async Task SendUMFinisedMessage(UM umInfo, bool informedUM)
         {
-            if (!umInfo.IsUM && informedUM)
+            if (!umInfo.IsUnderMaintenanceTime && informedUM)
             {
                 await SendMessageUM("UM is finished!");
                 memoryCache.Remove(InformedUMCacheKey);
@@ -167,7 +167,7 @@
 
         private async Task SendUMStartMessage(UM umInfo, bool informedUM)
         {
-            if (umInfo.IsUM && !informedUM)
+            if (umInfo.IsUnderMaintenanceTime && !informedUM)
             {
                 await SendMessageUM("UM is started now!");
                 memoryCache.Set(InformedUMCacheKey, true, TimeSpan.FromHours(2));
@@ -177,14 +177,14 @@
 
         private async Task SendUMInformation(UM umInfo, bool forceNotifyUM = false)
         {
-            if (umInfo.ErrorCode != 0)
+            if (umInfo.ConnectionResult.IsNotOk)
             {
                 return;
             }
 
             var umGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
             var userGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
-            var umStartTime = umInfo.StartTime.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
+            var umStartTime = umInfo.From.ConvertFromSourceGMTToEndGMT(umGMT, userGMT);
             var now = DateTimeExtention.GetUTCNow().AddHours(userGMT);
 
             await CheckTimeAndSendUMInfo(umInfo, forceNotifyUM, umGMT, umStartTime, now);
@@ -192,18 +192,18 @@
 
         private async Task CheckTimeAndSendUMInfo(UM umInfo, bool forceNotifyUM, int umGMT, DateTime umStartTime, DateTime now)
         {
-            var isInUMDate = umInfo.StartTime.Date == now.Date;
+            var isInUMDate = umInfo.From.Date == now.Date;
             var isAt10AM = now.Hour == 10 && now.Minute == 0;
             var isBefore30Mins = Convert.ToInt32((umStartTime - now).TotalMinutes) == 30;
-            var isBefore1DayAt10AM = isAt10AM && now.Date == umInfo.StartTime.Date.AddDays(-1);
+            var isBefore1DayAt10AM = isAt10AM && now.Date == umInfo.From.Date.AddDays(-1);
             var isInDay = isInUMDate && (isAt10AM || isBefore30Mins);
 
             if (forceNotifyUM || isInDay || isBefore1DayAt10AM)
             {
                 await SendMessageUM(
                     $"System will be {MessageFormatSignal.BeginBold}under maintenance{MessageFormatSignal.EndBold} " +
-                    $"from {MessageFormatSignal.BeginBold}{umInfo.StartTime}{MessageFormatSignal.EndBold} " +
-                    $"to {MessageFormatSignal.BeginBold}{umInfo.EndTime}{MessageFormatSignal.EndBold} " +
+                    $"from {MessageFormatSignal.BeginBold}{umInfo.From}{MessageFormatSignal.EndBold} " +
+                    $"to {MessageFormatSignal.BeginBold}{umInfo.To}{MessageFormatSignal.EndBold} " +
                     $"{MessageFormatSignal.BeginBold}(GMT{DateTimeExtention.GenerateGMTText(umGMT)}){MessageFormatSignal.EndBold}");
             }
         }

@@ -1,18 +1,24 @@
 ﻿namespace Fanex.Bot.Models.UM
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public class UM
     {
-        public DateTime StartTime { get; set; }
+        public DateTime From { get; set; }
 
-        public DateTime EndTime { get; set; }
+        public DateTime To { get; set; }
 
-        public bool IsUM { get; set; }
+        public bool IsUnderMaintenanceTime { get; set; }
 
-        public int ErrorCode { get; set; }
+        public ConnectionResult ConnectionResult { get; set; }
+    }
+
+    public class ConnectionResult
+    {
+        public bool IsOk { get; set; }
+
+        public bool IsNotOk { get; set; }
+
+        public string Message { get; set; }
     }
 }

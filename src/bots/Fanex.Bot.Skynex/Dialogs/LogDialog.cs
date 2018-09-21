@@ -194,7 +194,7 @@
                     configuration.GetSection("LogInfo")?.GetSection("IsProduction")?.Value ?? "true");
             var umInfo = await umService.GetUMInformation();
 
-            if (!allowSendLogInUM && umInfo.IsUM)
+            if (!allowSendLogInUM && umInfo.IsUnderMaintenanceTime)
             {
                 return;
             }

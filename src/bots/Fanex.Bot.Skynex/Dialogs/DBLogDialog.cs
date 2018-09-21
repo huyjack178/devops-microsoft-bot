@@ -67,7 +67,7 @@
 
             var umInfo = await umService.GetUMInformation();
 
-            if (!allowSendLogInUM && umInfo.IsUM)
+            if (!allowSendLogInUM && umInfo.IsUnderMaintenanceTime)
             {
                 return;
             }
