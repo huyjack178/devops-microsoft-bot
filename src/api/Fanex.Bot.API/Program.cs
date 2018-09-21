@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-
-namespace Fanex.Bot.API
+﻿namespace Fanex.Bot.API
 {
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    using Serilog;
+
     public class Program
     {
         public static void Main(string[] args)
@@ -21,6 +15,11 @@ namespace Fanex.Bot.API
             WebHost.CreateDefaultBuilder(args)
                 .UseKestrel()
                 .UseIISIntegration()
+                .UseSerilog(
+                (hostingContext, loggerConfiguration) => loggerConfiguration
+                    .WriteTo.File(
+                        $"{hostingContext.HostingEnvironment.ContentRootPath}\\Logs\\log.txt",
+                        rollingInterval: RollingInterval.Day))
                 .UseStartup<Startup>();
     }
 }

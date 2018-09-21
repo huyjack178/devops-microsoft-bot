@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using Fanex.Bot.API.Middlewares;
     using Fanex.Bot.API.Services;
     using Fanex.Data;
     using Fanex.Data.Repository;
@@ -31,6 +32,10 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            LogManager
+                .SetDefaultLogCategory(Configuration["Fanex.Logging:DefaultCategory"])
+                .Use(new RabbitMQLogging(Configuration["Fanex.Logging:RabbitMQConnectionStrings"]));
+            services.AddSingleton(Logger.Log);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IMaintenanceService, MaintenanceService>();
             services.AddSingleton<IDynamicRepository, DynamicRepository>();
@@ -52,13 +57,10 @@
                 app.UseHsts();
             }
 
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseSession();
             app.UseHttpsRedirection();
             app.UseMvc();
-
-            LogManager
-              .SetDefaultLogCategory(Configuration["Fanex.Logging:DefaultCategory"])
-              .Use(new RabbitMQLogging(Configuration["Fanex.Logging:RabbitMQConnectionStrings"]));
 
             var umConfig = new UMClientConfiguration(Configuration);
 

@@ -73,6 +73,12 @@
             }
 
             var dbLogs = await logService.GetDBLogs();
+
+            if (dbLogs == null)
+            {
+                return;
+            }
+
             var successfulSentLogNotificationIds = new List<int>();
 
             foreach (var log in dbLogs)
