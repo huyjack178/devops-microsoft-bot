@@ -62,16 +62,6 @@
 
         public async Task GetAndSendLogAsync()
         {
-            var allowSendLogInUM = Convert.ToBoolean(
-                   configuration.GetSection("DBLogInfo")?.GetSection("SendLogInUM")?.Value);
-
-            var umInfo = await umService.GetUMInformation();
-
-            if (!allowSendLogInUM && umInfo.IsUnderMaintenanceTime)
-            {
-                return;
-            }
-
             var dbLogs = await logService.GetDBLogs();
 
             if (dbLogs == null)
