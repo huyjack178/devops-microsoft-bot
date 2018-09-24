@@ -76,8 +76,7 @@
                 cacheService.Set(
                     TokenCachedKey,
                     token,
-                    new CacheItemOptions().SetAbsoluteExpiration(
-                        TimeSpan.FromDays(1)));
+                    new CacheItemOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(BotClientManager.BotSettings.CacheTimeout)));
             }
 
             return token;
