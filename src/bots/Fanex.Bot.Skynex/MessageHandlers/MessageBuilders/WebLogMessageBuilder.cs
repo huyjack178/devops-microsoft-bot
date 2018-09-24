@@ -78,6 +78,7 @@
                 }
 
                 returnMessage = rawMessage.Remove(requestInfoIndex);
+                returnMessage = returnMessage.Trim('\n', ' ');
                 returnMessage +=
                     $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Request:{MessageFormatSignal.EndBold} " +
                     CheckAndHideAlphaDomain(requestUrl, categoryName);
@@ -113,7 +114,7 @@
                 }
 
                 returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Browser:{MessageFormatSignal.EndBold}" +
-                    $" {browser} {mobileDeviceModel}";
+                    $" {browser} {mobileDeviceModel.Trim('\n', ' ')}";
             }
 
             return returnMessage;
@@ -191,7 +192,7 @@
                     "EXCEPTION INFO", string.Empty);
 
                 returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Exception:{MessageFormatSignal.EndBold}" +
-                    $" {MessageFormatSignal.NewLine}{exceptionInfo}";
+                    $" {MessageFormatSignal.NewLine}{exceptionInfo.Trim('\n', ' ')}";
             }
 
             return returnMessage;
@@ -201,11 +202,11 @@
         {
             var hideDomainRequest = request;
 
-            if (categoryName.ToLowerInvariant().Contains("alpha"))
+            if (categoryName.IndexOf("alpha", StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 var requestUri = new Uri(request);
 
-                if (!requestUri.Host.ToLowerInvariant().Contains("staging"))
+                if (requestUri.Host.IndexOf("staging", StringComparison.InvariantCultureIgnoreCase) < 0)
                 {
                     hideDomainRequest = $"http://alpha.site{requestUri.AbsolutePath}";
                 }

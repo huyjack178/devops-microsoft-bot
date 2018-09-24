@@ -50,7 +50,7 @@
                 $"{MessageFormatSignal.BeginBold}um start{MessageFormatSignal.EndBold} " +
                     $"=> Start getting notification when UM starts {MessageFormatSignal.NewLine}" +
                 $"{MessageFormatSignal.BeginBold}um stop{MessageFormatSignal.EndBold} " +
-                    $"=> Stop getting UM information" +
+                    $"=> Stop getting UM information {MessageFormatSignal.NewLine}" +
                 $"{MessageFormatSignal.BeginBold}um addPage [PageUrl]{MessageFormatSignal.EndBold} " +
                     $"=> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
 

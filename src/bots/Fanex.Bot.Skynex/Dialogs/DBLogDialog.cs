@@ -19,25 +19,19 @@
 
     public class DBLogDialog : BaseDialog, IDBLogDialog
     {
-        private readonly IUMService umService;
         private readonly ILogService logService;
-        private readonly IConfiguration configuration;
         private readonly IRecurringJobManager recurringJobManager;
         private readonly IDBLogMessageBuilder messageBuilder;
 
         public DBLogDialog(
             BotDbContext dbContext,
             IConversation conversation,
-            IUMService umService,
             ILogService logService,
-            IConfiguration configuration,
             IRecurringJobManager recurringJobManager,
             IDBLogMessageBuilder messageBuilder) :
                 base(dbContext, conversation)
         {
-            this.umService = umService;
             this.logService = logService;
-            this.configuration = configuration;
             this.recurringJobManager = recurringJobManager;
             this.messageBuilder = messageBuilder;
         }
