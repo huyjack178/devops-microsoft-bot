@@ -52,10 +52,6 @@
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseSession();

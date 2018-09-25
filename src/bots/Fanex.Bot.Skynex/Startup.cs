@@ -96,7 +96,7 @@
         private static void ConfigureBotServices(IServiceCollection services)
         {
             services.AddSingleton<ILogService, LogService>();
-            services.AddSingleton<IUMService, UMService>();
+            services.AddSingleton<IUnderMaintenanceService, UnderMaintenanceService>();
             services.AddSingleton<ITokenService, TokenService>();
         }
 
@@ -106,7 +106,7 @@
             services.AddScoped<ILogDialog, LogDialog>();
             services.AddScoped<IGitLabDialog, GitLabDialog>();
             services.AddScoped<ILineDialog, LineDialog>();
-            services.AddScoped<IUMDialog, UMDialog>();
+            services.AddScoped<IUnderMaintenanceDialog, UnderMaintenanceDialog>();
             services.AddScoped<IDBLogDialog, DBLogDialog>();
         }
 

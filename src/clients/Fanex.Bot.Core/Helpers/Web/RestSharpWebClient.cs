@@ -9,13 +9,14 @@
 
     public class RestSharpWebClient : IWebClient
     {
-        private readonly IRestClient _restClient;
+        private readonly IRestClient restClient;
 
         public RestSharpWebClient(IRestClient restClient)
         {
-            _restClient = restClient;
-            _restClient.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-            _restClient.AddDefaultHeader("Cache-Control", "no-cache");
+            this.restClient = restClient;
+            this.restClient.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+            this.restClient.AddDefaultHeader("Cache-Control", "no-cache");
+            this.restClient.Timeout = 10000;
         }
 
 #pragma warning disable S3216 // "ConfigureAwait(false)" should be used
@@ -50,10 +51,10 @@
 
         private async Task<IRestResponse> ExecuteGetAsync(Uri url)
         {
-            _restClient.BaseUrl = url;
+            restClient.BaseUrl = url;
             var request = new RestRequest(Method.GET);
 
-            var response = await _restClient.ExecuteTaskAsync(request);
+            var response = await restClient.ExecuteTaskAsync(request);
             TimeoutCheck(request, response);
 
             return response;
@@ -61,12 +62,12 @@
 
         private async Task<IRestResponse> ExecutePostAsync<T>(Uri url, T data)
         {
-            _restClient.BaseUrl = url;
+            restClient.BaseUrl = url;
             var jsonData = JsonConvert.SerializeObject(data);
             var request = new RestRequest(Method.POST);
             request.AddParameter("application/json", jsonData, ParameterType.RequestBody);
 
-            var response = await _restClient.ExecuteTaskAsync(request);
+            var response = await restClient.ExecuteTaskAsync(request);
             TimeoutCheck(request, response);
 
             return response;

@@ -1,0 +1,23 @@
+2018-09-24 17:13:23.249 +07:00 [INF] User profile is available. Using 'C:\Users\harrison.nguyen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2018-09-24 17:13:24.158 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:44367/  
+2018-09-24 17:13:24.567 +07:00 [INF] Request finished in 410.0291ms 404 
+2018-09-24 17:13:27.749 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:44367/api/um/information  
+2018-09-24 17:13:27.824 +07:00 [INF] Route matched with {action = "Information", controller = "UM"}. Executing action Fanex.Bot.API.Controllers.UMController.Information (Fanex.Bot.API)
+2018-09-24 17:13:27.882 +07:00 [INF] Executing action method Fanex.Bot.API.Controllers.UMController.Information (Fanex.Bot.API) - Validation state: "Valid"
+2018-09-24 17:13:28.240 +07:00 [INF] Executed action Fanex.Bot.API.Controllers.UMController.Information (Fanex.Bot.API) in 410.0559ms
+2018-09-24 17:13:28.386 +07:00 [INF] Request finished in 636.4999ms 500 application/json
+2018-09-24 17:13:28.433 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:44367/favicon.ico  
+2018-09-24 17:13:28.434 +07:00 [INF] Request finished in 0.3808ms 404 
+2018-09-24 17:14:37.449 +07:00 [INF] User profile is available. Using 'C:\Users\harrison.nguyen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2018-09-24 17:14:38.034 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:44367/  
+2018-09-24 17:14:38.312 +07:00 [INF] Request finished in 280.386ms 404 
+2018-09-24 17:14:39.635 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:44367/api/um/information  
+2018-09-24 17:14:39.719 +07:00 [INF] Route matched with {action = "Information", controller = "UM"}. Executing action Fanex.Bot.API.Controllers.UMController.Information (Fanex.Bot.API)
+2018-09-24 17:14:39.768 +07:00 [INF] Executing action method Fanex.Bot.API.Controllers.UMController.Information (Fanex.Bot.API) - Validation state: "Valid"
+2018-09-24 17:14:40.071 +07:00 [INF] Executed action method Fanex.Bot.API.Controllers.UMController.Information (Fanex.Bot.API), returned result Microsoft.AspNetCore.Mvc.JsonResult in 294.6403ms.
+2018-09-24 17:14:40.107 +07:00 [INF] Executing JsonResult, writing value of type 'System.Collections.Generic.Dictionary`2[[System.Int32, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[ONEbook.UM.Models.UnderMaintenanceTime, ONEbook.UM, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2018-09-24 17:14:40.173 +07:00 [INF] Executed action Fanex.Bot.API.Controllers.UMController.Information (Fanex.Bot.API) in 447.1848ms
+2018-09-24 17:14:40.183 +07:00 [INF] Request finished in 547.553ms 200 application/json; charset=utf-8
+2018-09-24 17:16:46.198 +07:00 [INF] User profile is available. Using 'C:\Users\harrison.nguyen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2018-09-24 17:16:46.603 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:44367/  
+2018-09-24 17:16:46.760 +07:00 [INF] Request finished in 158.3905ms 404 

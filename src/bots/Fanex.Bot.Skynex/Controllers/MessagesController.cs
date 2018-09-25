@@ -17,7 +17,7 @@
         private readonly ILogDialog logDialog;
         private readonly IGitLabDialog gitLabDialog;
         private readonly ILineDialog lineDialog;
-        private readonly IUMDialog umDialog;
+        private readonly IUnderMaintenanceDialog umDialog;
         private readonly IConversation conversation;
         private readonly IConfiguration configuration;
         private readonly IDBLogDialog dbLogDialog;
@@ -27,7 +27,7 @@
             ILogDialog logDialog,
             IGitLabDialog gitLabDialog,
             ILineDialog lineDialog,
-            IUMDialog umDialog,
+            IUnderMaintenanceDialog umDialog,
             IConversation conversation,
             IConfiguration configuration,
             IDBLogDialog dbLogDialog)

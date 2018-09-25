@@ -29,7 +29,7 @@
     {
         private readonly IConfiguration configuration;
         private readonly ILogService logService;
-        private readonly IUMService umService;
+        private readonly IUnderMaintenanceService umService;
         private readonly IRecurringJobManager recurringJobManager;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IMemoryCache cache;
@@ -40,7 +40,7 @@
         public LogDialog(
             IConfiguration configuration,
             ILogService logService,
-            IUMService umService,
+            IUnderMaintenanceService umService,
             BotDbContext dbContext,
             IConversation conversation,
             IRecurringJobManager recurringJobManager,
@@ -192,9 +192,9 @@
                     configuration.GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value);
             var isProduction = Convert.ToBoolean(
                     configuration.GetSection("LogInfo")?.GetSection("IsProduction")?.Value ?? "true");
-            var umInfo = await umService.GetUMInformation();
+            var actualUnderMaintenanceInformation = await umService.GetActualInfo();
 
-            if (!allowSendLogInUM && umInfo.IsUnderMaintenanceTime)
+            if (!allowSendLogInUM && actualUnderMaintenanceInformation.Any(info => info.Value.IsUnderMaintenanceTime))
             {
                 return;
             }
