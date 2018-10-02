@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Tests.Controllers
+﻿namespace Fanex.Bot.Skynex.Tests.Controllers
 {
     using System;
     using System.Threading.Tasks;

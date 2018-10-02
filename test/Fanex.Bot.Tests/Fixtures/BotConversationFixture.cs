@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Tests.Fixtures
+﻿namespace Fanex.Bot.Skynex.Tests.Fixtures
 {
     using System;
     using System.Collections.Generic;
@@ -23,11 +23,11 @@
 
         public IConfiguration Configuration { get; private set; }
 
-        public BotDbContext BotDbContext { get; private set; }
+        public BotDbContext BotDbContext { get; }
 
         public IConversation Conversation { get; private set; }
 
-        public IMessageActivity Activity { get; private set; }
+        public IMessageActivity Activity { get; }
 
         public string CommandMessage { get; }
             = $"Skynex's available commands:{Constants.NewLine} " +

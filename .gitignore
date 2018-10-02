@@ -33,3 +33,4 @@ packages/
 CoverageReport/
 /OpenCover.coverageresults
 /Cobertura.coverageresults
+_NCrunch_*

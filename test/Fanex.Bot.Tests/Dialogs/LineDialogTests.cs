@@ -1,10 +1,10 @@
-﻿namespace Fanex.Bot.Tests.Dialogs
+﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Tests.Fixtures;
+    using Fanex.Bot.Skynex.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using NSubstitute;
     using Xunit;

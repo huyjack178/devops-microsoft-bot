@@ -22,6 +22,8 @@
         private readonly IConfiguration configuration;
         private readonly IDBLogDialog dbLogDialog;
 
+#pragma warning disable S107 // Methods should not have too many parameters
+
         public MessagesController(
             ICommonDialog commonDialog,
             ILogDialog logDialog,
@@ -41,6 +43,8 @@
             this.configuration = configuration;
             this.dbLogDialog = dbLogDialog;
         }
+
+#pragma warning restore S107 // Methods should not have too many parameters
 
         [Authorize(Roles = "Bot")]
         [HttpPost]

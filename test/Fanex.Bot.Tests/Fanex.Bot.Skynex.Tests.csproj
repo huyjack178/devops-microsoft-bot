@@ -1,15 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TieredCompilation>true</TieredCompilation>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="appsettings.json" />
-  </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -17,8 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.4.0" />
-    <PackageReference Include="Microsoft.Bot.Connector" Version="3.15.2.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.8.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
@@ -30,7 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Update="SonarAnalyzer.CSharp" Version="7.2.0.5463" />
   </ItemGroup>

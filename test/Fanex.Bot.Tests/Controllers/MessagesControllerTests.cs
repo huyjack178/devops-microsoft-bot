@@ -1,10 +1,10 @@
-﻿namespace Fanex.Bot.Tests.Controllers
+﻿namespace Fanex.Bot.Skynex.Tests.Controllers
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Fanex.Bot.Controllers;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Tests.Fixtures;
+    using Fanex.Bot.Skynex.Tests.Fixtures;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Connector;
     using NSubstitute;
@@ -17,7 +17,7 @@
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
         private readonly ILineDialog _lineDialog;
-        private readonly IUMDialog _umDialog;
+        private readonly IUnderMaintenanceDialog _umDialog;
         private readonly IDBLogDialog dbLogDialog;
         private readonly MessagesController _messagesController;
 
@@ -28,7 +28,7 @@
             _logDialog = Substitute.For<ILogDialog>();
             _gitLabDialog = Substitute.For<IGitLabDialog>();
             _lineDialog = Substitute.For<ILineDialog>();
-            _umDialog = Substitute.For<IUMDialog>();
+            _umDialog = Substitute.For<IUnderMaintenanceDialog>();
             dbLogDialog = Substitute.For<IDBLogDialog>();
             _messagesController = new MessagesController(
                 _commonDialog,
@@ -245,7 +245,7 @@
             // Arrange
             var conversationId = "@#423424";
             var message = "hello";
-            _conversationFixture.Conversation.SendAsync(conversationId, message).Returns("success");
+            //_conversationFixture.Conversation.SendAsync(conversationId, message).Returns("success");
 
             // Act
             var result = await _messagesController.Forward(message, conversationId);

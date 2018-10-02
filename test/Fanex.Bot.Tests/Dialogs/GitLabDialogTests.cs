@@ -1,4 +1,4 @@
-﻿namespace Fanex.Bot.Tests.Dialogs
+﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -6,11 +6,11 @@
     using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.GitLab;
-    using Fanex.Bot.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using NSubstitute;
     using Xunit;
+    using Fanex.Bot.Skynex.Tests.Fixtures;
 
     public class GitLabDialogTests : IClassFixture<BotConversationFixture>
     {
@@ -22,7 +22,8 @@
             _conversationFixture = conversationFixture;
             _gitLabDialog = new GitLabDialog(
                 _conversationFixture.MockDbContext(),
-                _conversationFixture.Conversation);
+                _conversationFixture.Conversation,
+                null);
         }
 
         [Fact]

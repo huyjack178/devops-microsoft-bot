@@ -1,14 +1,13 @@
-﻿namespace Fanex.Bot.Tests.Dialogs
+﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Models.UM;
     using Fanex.Bot.Services;
     using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Tests.Fixtures;
+    using Fanex.Bot.Skynex.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
@@ -22,7 +21,7 @@
         private readonly BotConversationFixture _conversationFixture;
         private readonly ILogDialog _logDialog;
         private readonly ILogService _logService;
-        private readonly IUMService _umService;
+        private readonly IUnderMaintenanceService _umService;
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBackgroundJobClient _backgroundJobClient;
         private readonly IMemoryCache _memoryCache;
@@ -31,7 +30,7 @@
         {
             _conversationFixture = conversationFixture;
             _logService = Substitute.For<ILogService>();
-            _umService = Substitute.For<IUMService>();
+            _umService = Substitute.For<IUnderMaintenanceService>();
             _recurringJobManager = Substitute.For<IRecurringJobManager>();
             _backgroundJobClient = Substitute.For<IBackgroundJobClient>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -43,7 +42,8 @@
                 _conversationFixture.Conversation,
                 _recurringJobManager,
                 _backgroundJobClient,
-                _memoryCache);
+                _memoryCache,
+                null);
 
             _conversationFixture.Configuration
                .GetSection("LogInfo").GetSection("DisableAddCategories").Value
@@ -51,7 +51,6 @@
             _conversationFixture.Configuration
                .GetSection("LogInfo").GetSection("SendLogInUM").Value
                .Returns("false");
-            _umService.GetUMInformation().Returns(new UM { IsUM = false });
         }
 
         #region AddCategory
@@ -396,7 +395,7 @@
                     FormattedMessage = "log"
                 }
             });
-            _umService.GetUMInformation().Returns(new UM { IsUM = true });
+            //_umService.GetUMInformation().Returns(new UM { IsUM = true });
             _conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("SendLogInUM").Value
                 .Returns("false");
@@ -432,7 +431,7 @@
                     FormattedMessage = "log"
                 }
             });
-            _umService.GetUMInformation().Returns(new UM { IsUM = true });
+            //_umService.GetUMInformation().Returns(new UM { IsUM = true });
             _conversationFixture.Configuration
                 .GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value
                 .Returns("true");
@@ -492,7 +491,7 @@
         public async Task GetAndSendLogAsync_IsUM_DontAllowSendLogInUM_NotSendLog()
         {
             // Arrange
-            _umService.GetUMInformation().Returns(new UM { IsUM = true });
+            //_umService.GetUMInformation().Returns(new UM { IsUM = true });
             _conversationFixture.Configuration.GetSection("LogInfo").GetSection("SendLogInUM").Value.Returns("false");
 
             var dbContext = _conversationFixture.MockDbContext();
