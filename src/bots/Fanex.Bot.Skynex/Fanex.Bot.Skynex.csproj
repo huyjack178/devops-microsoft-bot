@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <TieredCompilation>true</TieredCompilation>
-    <AssemblyName>Fanex.Bot.Skynex</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -16,13 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="build\**" />
     <Compile Remove="publish\**" />
-    <Content Remove="build\**" />
     <Content Remove="publish\**" />
-    <EmbeddedResource Remove="build\**" />
     <EmbeddedResource Remove="publish\**" />
-    <None Remove="build\**" />
     <None Remove="publish\**" />
   </ItemGroup>
 
@@ -34,15 +29,9 @@
     <PackageReference Include="Microsoft.Bot.Connector" Version="3.16.1.38846" />
     <PackageReference Include="Microsoft.Bot.Connector.AspNetCore" Version="2.0.1.38846" />
     <PackageReference Include="Microsoft.Bot.Connector.DirectLine" Version="3.0.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.9.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="NLog" Version="4.5.10" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.7.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>

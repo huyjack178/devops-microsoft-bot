@@ -84,7 +84,8 @@
                 await SendAdminAsync(
                     $"Can not send message to {MessageFormatSignal.BeginBold}{messageInfo?.ConversationId}{MessageFormatSignal.EndBold} {MessageFormatSignal.NewLine}" +
                     $"{MessageFormatSignal.BeginBold}Exception:{MessageFormatSignal.EndBold} {ex.Message} {MessageFormatSignal.NewLine}" +
-                    $"==========================");
+                    $"Message: {messageInfo?.Text}" +
+                    $"{MessageFormatSignal.BreakLine}").ConfigureAwait(false);
             }
         }
 

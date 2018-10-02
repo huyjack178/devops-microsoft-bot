@@ -295,7 +295,7 @@
 
                 var hasIgnoreMessage = await DbContext.LogIgnoreMessage.AnyAsync(
                         message => logCategory.Contains(message.Category.ToLowerInvariant()) &&
-                        logMessage.ToLowerInvariant().Contains(message.IgnoreMessage.ToLowerInvariant()));
+                        logMessage.IndexOf(message.IgnoreMessage, StringComparison.InvariantCultureIgnoreCase) >= 0);
 
                 if (hasLogCategory && !hasIgnoreMessage)
                 {

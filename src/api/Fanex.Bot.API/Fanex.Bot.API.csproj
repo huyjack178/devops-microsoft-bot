@@ -5,6 +5,14 @@
     <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet>Fanex.Bot.API.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CodeAnalysisRuleSet>Fanex.Bot.API.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="App_Data\LOCAL\SPNames.xml" />
     <None Remove="App_Data\UAT\SPNames.xml" />
