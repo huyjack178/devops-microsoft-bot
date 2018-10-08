@@ -39,7 +39,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAdminAsync($"New client **13324dfwer223423434** has been added");
+                .SendAdminAsync($"New client {MessageFormatSignal.BeginBold}13324dfwer223423434{MessageFormatSignal.EndBold} has been added");
         }
 
         [Fact]

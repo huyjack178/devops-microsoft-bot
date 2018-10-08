@@ -50,6 +50,10 @@
             var returnMessage = message
                     .Replace("\r", string.Empty)
                     .Replace("\t", string.Empty)
+                    .Replace("\n", MessageFormatSignal.NewLine)
+                    .Replace(MessageFormatSignal.NewLine + MessageFormatSignal.NewLine, MessageFormatSignal.NewLine)
+                    .Replace(MessageFormatSignal.NewLine + MessageFormatSignal.NewLine, MessageFormatSignal.NewLine)
+                    .Replace(MessageFormatSignal.NewLine + " " + MessageFormatSignal.NewLine, MessageFormatSignal.NewLine)
                     .Replace("Timestamp", $"{MessageFormatSignal.BeginBold}Timestamp{MessageFormatSignal.EndBold}")
                     .Replace("Message", $"{MessageFormatSignal.BeginBold}Message{MessageFormatSignal.EndBold}");
 

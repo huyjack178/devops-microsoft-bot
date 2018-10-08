@@ -44,7 +44,7 @@
                 new Uri($"{botServiceUrl}/Log/List"),
                 new GetLogFormData
                 {
-                    From = (fromDate ?? DateTime.UtcNow.AddSeconds(-65)).ToString(CultureInfo.InvariantCulture),
+                    From = (fromDate ?? DateTime.UtcNow.AddSeconds(-60)).ToString(CultureInfo.InvariantCulture),
                     To = (toDate ?? DateTime.UtcNow).ToString(CultureInfo.InvariantCulture),
                     Severity = "Error",
                     Size = 5,

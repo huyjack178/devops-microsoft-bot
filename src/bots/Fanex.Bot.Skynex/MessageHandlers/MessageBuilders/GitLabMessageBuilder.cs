@@ -32,7 +32,7 @@
                     .Append(MessageFormatSignal.NewLine);
             }
 
-            commitMessageBuilder.Append($"{MessageFormatSignal.BreakLine}{MessageFormatSignal.NewLine}");
+            commitMessageBuilder.Append(MessageFormatSignal.BreakLine + MessageFormatSignal.NewLine);
 
             message += commitMessageBuilder;
 

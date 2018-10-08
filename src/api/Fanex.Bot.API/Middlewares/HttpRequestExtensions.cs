@@ -1,9 +1,6 @@
 ﻿namespace Fanex.Bot.API.Middlewares
 {
-    using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -18,12 +15,7 @@
         /// <returns></returns>
         public static async Task<string> GetRawBodyStringAsync(this HttpRequest request, Encoding encoding = null)
         {
-            if (encoding == null)
-            {
-                encoding = Encoding.UTF8;
-            }
-
-            using (StreamReader reader = new StreamReader(request.Body, encoding))
+            using (StreamReader reader = new StreamReader(request.Body, encoding ?? Encoding.UTF8))
             {
                 return await reader.ReadToEndAsync();
             }

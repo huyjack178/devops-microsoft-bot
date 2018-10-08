@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
@@ -16,27 +17,27 @@
 
     public class UMDialogTests : IClassFixture<BotConversationFixture>
     {
-        private readonly BotConversationFixture _conversationFixture;
-        private readonly IUnderMaintenanceDialog _dialog;
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IUnderMaintenanceService _umService;
-        private readonly IMemoryCache _memoryCache;
+        private readonly BotConversationFixture conversationFixture;
+        private readonly IUnderMaintenanceDialog dialog;
+        private readonly IRecurringJobManager recurringJobManager;
+        private readonly IUnderMaintenanceService umService;
+        private readonly IMemoryCache memoryCache;
 
         public UMDialogTests(BotConversationFixture conversationFixture)
         {
-            _conversationFixture = conversationFixture;
-            _recurringJobManager = Substitute.For<IRecurringJobManager>();
-            _umService = Substitute.For<IUnderMaintenanceService>();
-            _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _conversationFixture.Configuration.GetSection("UMInfo").GetSection("UMGMT")?.Value.Returns("8");
-            _conversationFixture.Configuration.GetSection("UMInfo").GetSection("UserGMT")?.Value.Returns("7");
-            _dialog = new UnderMaintenanceDialog(
-                _conversationFixture.BotDbContext,
+            this.conversationFixture = conversationFixture;
+            recurringJobManager = Substitute.For<IRecurringJobManager>();
+            umService = Substitute.For<IUnderMaintenanceService>();
+            memoryCache = new MemoryCache(new MemoryCacheOptions());
+            this.conversationFixture.Configuration.GetSection("UMInfo").GetSection("UMGMT")?.Value.Returns("8");
+            this.conversationFixture.Configuration.GetSection("UMInfo").GetSection("UserGMT")?.Value.Returns("7");
+            dialog = new UnderMaintenanceDialog(
+                this.conversationFixture.BotDbContext,
                 conversationFixture.Conversation,
-                _recurringJobManager,
-                _umService,
-                _memoryCache,
-                _conversationFixture.Configuration);
+                recurringJobManager,
+                umService,
+                memoryCache,
+                this.conversationFixture.Configuration);
         }
 
         [Fact]
@@ -44,71 +45,27 @@
         {
             // Arrange
             var message = "um start";
-            _conversationFixture.Activity.Conversation.Id = "1243452df13qqer";
+            conversationFixture.Activity.Conversation.Id = "1243452df13qqer";
 
             // Act
-            await _dialog.HandleMessage(_conversationFixture.Activity, message);
+            await dialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            Assert.True(_conversationFixture
-              .BotDbContext
-              .UMInfo
-              .FirstOrDefault(info => info.ConversationId == "1243452df13qqer")
-              .IsActive);
+            Assert.True(conversationFixture
+                .BotDbContext
+                .UMInfo
+                .FirstOrDefault(info => info.ConversationId == "1243452df13qqer")
+                .IsActive);
 
-            _recurringJobManager.Received()
-              .AddOrUpdate(
-                  Arg.Is("CheckUMPeriodically"),
-                  Arg.Any<Job>(),
-                  Cron.Minutely(),
-                  Arg.Any<RecurringJobOptions>());
+            recurringJobManager.Received()
+                .AddOrUpdate(
+                    Arg.Is("CheckUnderMaintenance"),
+                    Arg.Any<Job>(),
+                    Cron.Minutely(),
+                    Arg.Any<RecurringJobOptions>());
 
-            await _conversationFixture.Conversation.Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), "UM notification has been started!");
-        }
-
-        [Fact]
-        public async Task HandleMessageAsync_AddUMPage_PageIsNotValid_ShowErrorMessage()
-        {
-            // Arrange
-            var message = "um addpage";
-
-            // Act
-            await _dialog.HandleMessage(_conversationFixture.Activity, message);
-
-            // Assert
-            await _conversationFixture.Conversation.Received()
-               .ReplyAsync(
-                    Arg.Is(_conversationFixture.Activity),
-                   "You need to input Page Url");
-        }
-
-        [Fact]
-        public async Task HandleMessageAsync_AddUMPage_SaveUMPage_And_ReplyMessage()
-        {
-            // Arrange
-            var message = "um addpage www.google.com;www.gmail.com";
-
-            // Act
-            await _dialog.HandleMessage(_conversationFixture.Activity, message);
-
-            // Assert
-            Assert.True(_conversationFixture
-             .BotDbContext
-             .UMPage
-             .Any(page => page.SiteUrl == "www.google.com" && page.IsActive));
-
-            Assert.True(_conversationFixture
-             .BotDbContext
-             .UMPage
-             .Any(page => page.SiteUrl == "www.gmail.com" && page.IsActive));
-
-            await _conversationFixture.Conversation.Received()
-               .ReplyAsync(
-                    Arg.Is(_conversationFixture.Activity),
-                   "Pages will be checked in UM Time\n\n" +
-                   "**www.google.com**\n\n" +
-                   "**www.gmail.com**\n\n");
+            await conversationFixture.Conversation.Received()
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), "Under maintenance notification is enabled!");
         }
 
         [Fact]
@@ -116,118 +73,163 @@
         {
             // Arrange
             var message = "um notify";
-            var umInfo = new UM { From = DateTime.Now, To = DateTime.Now };
-            //_umService.GetActualInfo().Returns(umInfo);
-            var dbContext = _conversationFixture.MockDbContext();
+            var scheduleUnderMaintenanceInfo = new Dictionary<int, UM> { { 1, new UM { From = DateTime.Now, To = DateTime.Now } } };
+            umService.GetScheduledInfo().Returns(scheduleUnderMaintenanceInfo);
+            var dbContext = conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i324223423342323749823748923" });
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i324223423342323749823748923" });
             dbContext.SaveChanges();
 
             // Act
-            await _dialog.HandleMessage(_conversationFixture.Activity, message);
+            await dialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            //await _conversationFixture.Conversation.Received(1)
-            // .SendAsync("374i324223423342323749823748923", $"System will be **under maintenance** from **{umInfo.StartTime}** to **{umInfo.EndTime}** **(GMT+8)**");
-        }
-
-        [Fact]
-        public async Task CheckUMAsync_IsBeforeUM30Mins_InformUMInfo()
-        {
-            // Arrange
-            var dbContext = _conversationFixture.MockDbContext();
-            dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i3242342323749823748923" });
-            dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i3242342323749823748923" });
-            dbContext.SaveChanges();
-            _umService.CheckPageShowUM(Arg.Any<Uri>()).Returns(true);
-            //var umInfo = new UM
-            //{
-            //    IsUM = false,
-            //    StartTime = DateTime.UtcNow.AddHours(8).AddMinutes(30),
-            //    EndTime = new DateTime(2018, 01, 01, 13, 00, 00)
-            //};
-            //_umService.GetUMInformation().Returns(umInfo);
-
-            // Act
-            await _dialog.CheckUnderMaintenance();
-
-            // Assert
-            //await _conversationFixture.Conversation.Received(1)
-            //  .SendAsync("374i3242342323749823748923", $"System will be **under maintenance** from **{umInfo.StartTime}** to **{umInfo.EndTime}** **(GMT+8)**");
+            await conversationFixture.Conversation
+                    .Received(1)
+                    .SendAsync(
+                        "374i324223423342323749823748923",
+                        $"System will be under maintenance with the following information " +
+                        $"(GMT +8){MessageFormatSignal.NewLine}" +
+                        $"{MessageFormatSignal.BeginBold}SiteId: 1{MessageFormatSignal.EndBold} - " +
+                        $"From {MessageFormatSignal.BeginBold}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.EndBold} " +
+                        $"To {MessageFormatSignal.BeginBold}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.EndBold} {MessageFormatSignal.NewLine}");
         }
 
         [Fact]
         public async Task CheckUMAsync_IsUM_IsNotInformedUM_InformUM()
         {
             // Arrange
-            var dbContext = _conversationFixture.MockDbContext();
+            var dbContext = conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i23749823748923" });
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i23749823748923" });
             dbContext.SaveChanges();
-            _umService.CheckPageShowUM(Arg.Any<Uri>()).Returns(true);
-            //_umService.GetUMInformation().Returns(new UM { IsUM = true, StartTime = DateTime.Now, EndTime = DateTime.Now });
+            umService.CheckPageShowUM(Arg.Any<Uri>()).Returns(true);
+            var underMaintenanceInfo = new Dictionary<int, UM> {
+                {
+                    1,
+                    new UM {
+                        IsUnderMaintenanceTime = true,
+                        From = DateTime.Now,
+                        To = DateTime.Now.AddMinutes(90),
+                        ConnectionResult = new ConnectionResult { IsOk = true }
+                    }
+                }
+            };
+            umService.GetActualInfo().Returns(underMaintenanceInfo);
+            umService.GetScheduledInfo().Returns(underMaintenanceInfo);
 
             // Act
-            await _dialog.CheckUnderMaintenance();
+            await dialog.CheckUnderMaintenance();
 
             // Assert
-            await _conversationFixture.Conversation.Received(1)
-              .SendAsync("374i23749823748923", "UM is started now!");
+            await conversationFixture.Conversation.Received(1)
+              .SendAsync(
+                "374i23749823748923",
+                $"SiteId {MessageFormatSignal.BeginBold}1{MessageFormatSignal.EndBold} is under maintenance now!");
 
-            Assert.True(_memoryCache.Get<bool>("InformedUM"));
+            Assert.True(memoryCache.Get<bool>("InformedUM1"));
         }
 
         [Fact]
         public async Task CheckUMAsync_IsUM_IsNotInformedUM_ScanPageUM_PageNotShowUM_SendMessage()
         {
             // Arrange
-            var dbContext = _conversationFixture.MockDbContext();
+            var dbContext = conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i2374982dfas343748923" });
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i2374982dfas343748923" });
-            dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong88.com", Name = "google" });
-            dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong888888.com", Name = "alpha" });
-            dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong8888342388.com", Name = "alpha" });
+            dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong88.com", Name = "google", SiteId = "1" });
+            dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong888888.com", Name = "alpha", SiteId = "2" });
+            dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong8888342388.com", Name = "alpha", SiteId = "2" });
             await dbContext.SaveChangesAsync();
 
-            //_umService.GetUMInformation().Returns(new UM { IsUM = true, StartTime = DateTime.Now, EndTime = DateTime.Now });
-            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong88.com"))).Returns(true);
-            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong888888.com"))).Returns(false);
-            _umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong8888342388.com"))).Returns(true);
+            var underMaintenanceInfo = new Dictionary<int, UM> {
+                {
+                    1,
+                    new UM {
+                        IsUnderMaintenanceTime = true,
+                        From = DateTime.Now,
+                        To = DateTime.Now.AddMinutes(90),
+                        ConnectionResult = new ConnectionResult { IsOk = true }
+                    }
+                },
+                {
+                    2,
+                    new UM {
+                        IsUnderMaintenanceTime = true,
+                        From = DateTime.Now,
+                        To = DateTime.Now.AddMinutes(90),
+                        ConnectionResult = new ConnectionResult { IsOk = true }
+                    }
+                },
+                 {
+                    3,
+                    new UM {
+                        IsUnderMaintenanceTime = true,
+                        From = DateTime.Now,
+                        To = DateTime.Now.AddMinutes(90),
+                        ConnectionResult = new ConnectionResult { IsOk = true }
+                    }
+                }
+            };
+            umService.GetActualInfo().Returns(underMaintenanceInfo);
+            umService.GetScheduledInfo().Returns(underMaintenanceInfo);
+            umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong88.com"))).Returns(true);
+            umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong888888.com"))).Returns(false);
+            umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong8888342388.com"))).Returns(true);
 
             // Act
-            await _dialog.CheckUnderMaintenance();
+            await dialog.CheckUnderMaintenance();
 
             // Assert
-            await _conversationFixture.Conversation.Received()
-             .SendAsync("374i2374982dfas343748923", "UM Scanning started!");
-            await _conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", "**google** PASSED! \n\n");
-            await _conversationFixture.Conversation.Received()
-               .SendAsync("374i2374982dfas343748923", "**alpha**\n\n**http://www.agbong888888.com does not show UM**");
-            await _conversationFixture.Conversation.DidNotReceive()
-              .SendAsync("374i2374982dfas343748923", "**alpha** PASSED!");
-            await _conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", "UM Scanning completed!");
+            await conversationFixture.Conversation.Received()
+             .SendAsync("374i2374982dfas343748923", "Scanning started!");
+            await conversationFixture.Conversation.Received()
+                .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BeginBold}google{MessageFormatSignal.EndBold} PASSED! {MessageFormatSignal.NewLine}");
+            await conversationFixture.Conversation.Received()
+               .SendAsync(
+                    "374i2374982dfas343748923",
+                    $"{MessageFormatSignal.BeginBold}alpha{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" +
+                    $"http://www.agbong888888.com does not show UM");
+            await conversationFixture.Conversation.DidNotReceive()
+              .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BeginBold}alpha{MessageFormatSignal.EndBold} PASSED! {MessageFormatSignal.NewLine}");
+            await conversationFixture.Conversation.Received(1)
+                .SendAsync("374i2374982dfas343748923", "No site to be scanned!");
+            await conversationFixture.Conversation.Received()
+                .SendAsync("374i2374982dfas343748923", $"Scanning completed!{MessageFormatSignal.NewLine}{MessageFormatSignal.BreakLine}");
         }
 
         [Fact]
         public async Task CheckUMAsync_IsNotUM_IsInformedUM_SendFinishUMMessage()
         {
             // Arrange
-            var dbContext = _conversationFixture.MockDbContext();
+            var dbContext = conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i2372342344982dfas343748923" });
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i2372342344982dfas343748923" });
             await dbContext.SaveChangesAsync();
-            //_umService.GetUMInformation().Returns(new UM { IsUM = false, StartTime = DateTime.Now, EndTime = DateTime.Now });
-            _memoryCache.Set("InformedUM", true);
+            var underMaintenanceInfo = new Dictionary<int, UM> {
+                {
+                    1,
+                    new UM {
+                        IsUnderMaintenanceTime = false,
+                        From = DateTime.Now,
+                        To = DateTime.Now.AddMinutes(90),
+                        ConnectionResult = new ConnectionResult { IsOk = true }
+                    }
+                }
+            };
+            umService.GetActualInfo().Returns(underMaintenanceInfo);
+            umService.GetScheduledInfo().Returns(underMaintenanceInfo);
+            memoryCache.Set("InformedUM1", true);
 
             // Act
-            await _dialog.CheckUnderMaintenance();
+            await dialog.CheckUnderMaintenance();
 
             // Assert
-            await _conversationFixture.Conversation.Received(1)
-             .SendAsync("374i2372342344982dfas343748923", "UM is finished!");
-            Assert.False(_memoryCache.Get<bool>("InformedUM"));
+            await conversationFixture.Conversation.Received(1)
+             .SendAsync(
+                "374i2372342344982dfas343748923",
+                $"SiteId {MessageFormatSignal.BeginBold}1{MessageFormatSignal.EndBold} is back to normal now!");
+            Assert.False(memoryCache.Get<bool>("InformedUM1"));
         }
     }
 }

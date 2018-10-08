@@ -30,25 +30,33 @@
         public IMessageActivity Activity { get; }
 
         public string CommandMessage { get; }
-            = $"Skynex's available commands:{Constants.NewLine} " +
-                $"------------- {Constants.NewLine}" +
-                $"**group** ==> Get your group ID {Constants.NewLine}" +
-                $"------------- {Constants.NewLine}" +
-                $"**log add [Contains-LogCategory]** " +
-                    $"==> Register to get log which has category name **contains [Contains-LogCategory]**. " +
-                    $"Example: log add Alpha;NAP {Constants.NewLine}" +
-                $"**log remove [LogCategory]**{Constants.NewLine}" +
-                $"**log start** ==> Start receiving logs{Constants.NewLine}" +
-                $"**log stop [TimeSpan(Optional)]** ==> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
-                    $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){Constants.NewLine}" +
-                $"**log detail [LogId] (BETA)** ==> Get log detail{Constants.NewLine}" +
-                $"**log status** ==> Get your current subscribing Log Categories and Receiving Logs status{Constants.NewLine}" +
-                $"------------- {Constants.NewLine}" +
-                $"**gitlab addProject [GitlabProjectUrl]** => Register to get notification of Gitlab's project{Constants.NewLine}" +
-                $"**gitlab removeProject [GitlabProjectUrl]** => Disable getting notification of Gitlab's project{Constants.NewLine}" +
-                $"------------- {Constants.NewLine}" +
-                $"**um start** ==> Start get notification when UM starts {Constants.NewLine}" +
-                $"**um addPage [PageUrl]** ==> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
+            = $"Skynex's available commands:{MessageFormatSignal.NewLine} " +
+                $"{MessageFormatSignal.BeginBold}group{MessageFormatSignal.EndBold} " +
+                    $"=> Get your group ID {MessageFormatSignal.NewLine}" + MessageFormatSignal.BreakLine + MessageFormatSignal.NewLine +
+                $"{MessageFormatSignal.BeginBold}log add [Contains-LogCategory]{MessageFormatSignal.EndBold} " +
+                    $"==> Register to get log which has category name " +
+                    $"{MessageFormatSignal.BeginBold}contains [Contains-LogCategory]{MessageFormatSignal.EndBold}. " +
+                    $"Example: log add Alpha;NAP {MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log remove [LogCategory]{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log start{MessageFormatSignal.EndBold} " +
+                    $"=> Start receiving logs{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log stop [TimeSpan(Optional)]{MessageFormatSignal.EndBold} " +
+                    $"=> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
+                    $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}log status{MessageFormatSignal.EndBold} " +
+                    $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BreakLine}{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}gitlab addProject [GitlabProjectUrl]{MessageFormatSignal.EndBold} " +
+                    $"=> Register to get notification of Gitlab's project{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}gitlab removeProject [GitlabProjectUrl]{MessageFormatSignal.EndBold} " +
+                    $"=> Disable getting notification of Gitlab's project{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BreakLine}{MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}um start{MessageFormatSignal.EndBold} " +
+                    $"=> Start getting notification when UM starts {MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}um stop{MessageFormatSignal.EndBold} " +
+                    $"=> Stop getting UM information {MessageFormatSignal.NewLine}" +
+                $"{MessageFormatSignal.BeginBold}um addPage [PageUrl]{MessageFormatSignal.EndBold} " +
+                    $"=> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
 
         public void Dispose()
         {

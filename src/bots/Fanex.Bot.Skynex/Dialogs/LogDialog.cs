@@ -216,7 +216,7 @@
         {
             var logInfo = await GetOrCreateLogInfoAsync(activity);
 
-            var message = $"Your log status \n\n" +
+            var message = $"Your log status {MessageFormatSignal.NewLine}" +
                 $"{MessageFormatSignal.BeginBold}Log Categories:{MessageFormatSignal.EndBold} [{logInfo.LogCategories}]{MessageFormatSignal.NewLine}";
 
             message += logInfo.IsActive ?

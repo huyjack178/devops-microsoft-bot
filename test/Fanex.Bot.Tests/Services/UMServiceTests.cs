@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Skynex.Tests.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
     using Fanex.Bot.Models.UM;
@@ -24,17 +25,37 @@
         }
 
         [Fact]
-        public async Task GetUMInformation_Always_GetFromAPI()
+        public async Task GetScheduledInfo_Always_GetFromAPI()
         {
-            // Arrange
-            //var umInfo = new UM { IsUM = true };
-            //webClient.GetJsonAsync<UM>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UM/Information"))).Returns(umInfo);
+            //  Arrange
+            var umInfo = new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } };
 
-            // Act
-            //var actualUmInfo = await umService.GetUMInformation();
+            webClient
+                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UnderMaintenance/ScheduledInfo")))
+                .Returns(umInfo);
+
+            //  Act
+            var scheduleInfo = await umService.GetScheduledInfo();
 
             // Assert
-            //Assert.Equal(umInfo, actualUmInfo);
+            Assert.Equal(umInfo, scheduleInfo);
+        }
+
+        [Fact]
+        public async Task GetActualInfo_Always_GetFromAPI()
+        {
+            //  Arrange
+            var umInfo = new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } };
+
+            webClient
+                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UnderMaintenance/ActualInfo")))
+                .Returns(umInfo);
+
+            //  Act
+            var actualInfo = await umService.GetActualInfo();
+
+            // Assert
+            Assert.Equal(umInfo, actualInfo);
         }
 
         [Fact]

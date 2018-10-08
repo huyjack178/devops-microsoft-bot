@@ -1,9 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <Description>Read this document for integration
-https://gitlab.nexcel.vn/NEXOPS/Fanex.Bot/blob/master/src/clients/Fanex.Bot.Client/README.md</Description>
+    <Description>
+      Read this document for integration
+      https://gitlab.nexcel.vn/NEXOPS/Fanex.Bot/blob/master/src/clients/Fanex.Bot.Client/README.md
+    </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>1.0.4.4</AssemblyVersion>
     <FileVersion>1.0.4.4</FileVersion>

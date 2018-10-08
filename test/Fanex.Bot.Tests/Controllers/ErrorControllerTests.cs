@@ -46,8 +46,8 @@
 
             // Assert
             await _conversation.Received().SendAdminAsync(
-                $"**Exception occured in Skynex** {Constants.NewLine}" +
-                    $"Exception of type 'System.Exception' was thrown. {Constants.NewLine}");
+                    $"**Exception occured in Skynex** {MessageFormatSignal.NewLine}" +
+                    $"Exception of type 'System.Exception' was thrown. {MessageFormatSignal.NewLine}");
             Assert.IsType<ForbidResult>(result);
         }
 

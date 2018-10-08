@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Fanex.Bot.Controllers;
+    using Fanex.Bot.Models;
     using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Skynex.Tests.Fixtures;
     using Microsoft.AspNetCore.Mvc;
@@ -207,19 +208,6 @@
         }
 
         [Fact]
-        public async Task Post_ActivityOthers_ReturnOk()
-        {
-            // Arrange
-            var activity = new Activity { Type = ActivityTypes.Ping };
-
-            // Act
-            var result = await _messagesController.Post(activity);
-
-            // Asserts
-            Assert.IsType<OkResult>(result);
-        }
-
-        [Fact]
         public async Task Post_MessageActivity_HandleForLINE()
         {
             // Arrange
@@ -245,7 +233,8 @@
             // Arrange
             var conversationId = "@#423424";
             var message = "hello";
-            //_conversationFixture.Conversation.SendAsync(conversationId, message).Returns("success");
+            var expectedResult = Result.CreateSuccessfulResult();
+            _conversationFixture.Conversation.SendAsync(conversationId, message).Returns(expectedResult);
 
             // Act
             var result = await _messagesController.Forward(message, conversationId);
@@ -253,7 +242,7 @@
             // Assert
             await _conversationFixture.Conversation.Received(1).SendAsync(conversationId, message);
             Assert.Equal(200, result.StatusCode);
-            Assert.Equal("success", result.Value);
+            Assert.Equal(expectedResult, result.Value);
         }
     }
 }

@@ -11,19 +11,20 @@
     using NSubstitute;
     using Xunit;
     using Fanex.Bot.Skynex.Tests.Fixtures;
+    using Fanex.Bot.Skynex.MessageHandlers.MessageBuilders;
 
     public class GitLabDialogTests : IClassFixture<BotConversationFixture>
     {
-        private readonly BotConversationFixture _conversationFixture;
-        private readonly IGitLabDialog _gitLabDialog;
+        private readonly BotConversationFixture conversationFixture;
+        private readonly IGitLabDialog gitLabDialog;
 
         public GitLabDialogTests(BotConversationFixture conversationFixture)
         {
-            _conversationFixture = conversationFixture;
-            _gitLabDialog = new GitLabDialog(
-                _conversationFixture.MockDbContext(),
-                _conversationFixture.Conversation,
-                null);
+            this.conversationFixture = conversationFixture;
+            gitLabDialog = new GitLabDialog(
+                this.conversationFixture.MockDbContext(),
+                this.conversationFixture.Conversation,
+                new GitLabMessageBuilder());
         }
 
         [Fact]
@@ -31,16 +32,16 @@
         {
             // Arrange
             var message = "gitlab addproject";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please input project url"));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Please input project url"));
         }
 
         [Theory]
@@ -51,33 +52,35 @@
         {
             // Arrange
             var message = $"gitlab addproject {projectUrl}";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "1332433" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "1332433" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will receive notification of project **gitlab.nexdev.vn**"));
+                .ReplyAsync(
+                    Arg.Is(conversationFixture.Activity),
+                    Arg.Is($"You will receive notification of project {MessageFormatSignal.BeginBold}gitlab.nexdev.vn{MessageFormatSignal.EndBold}"));
         }
 
         [Fact]
         public async Task HandleMessageAsync_AddProject_RegisterMessageInfo_ExistDb_NotSendAdminMessage()
         {
             // Arrange
-            var botDbContext = _conversationFixture.MockDbContext();
+            var botDbContext = conversationFixture.MockDbContext();
             botDbContext.MessageInfo.Add(new MessageInfo { ConversationId = "3333" });
             await botDbContext.SaveChangesAsync();
             var message = "gitlab addproject http://gitlab.nexdev.vn";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "3333" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "3333" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            Assert.True(_conversationFixture.BotDbContext.MessageInfo.AsNoTracking()
+            Assert.True(conversationFixture.BotDbContext.MessageInfo.AsNoTracking()
                 .Any(info => info.ConversationId == "3333"));
         }
 
@@ -86,18 +89,20 @@
         {
             // Arrange
             var message = "gitlab addproject http://gitlab.nexdev.vn";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will receive notification of project **gitlab.nexdev.vn**"));
+                .ReplyAsync(
+                    Arg.Is(conversationFixture.Activity),
+                    Arg.Is($"You will receive notification of project {MessageFormatSignal.BeginBold}gitlab.nexdev.vn{MessageFormatSignal.EndBold}"));
 
-            Assert.True(_conversationFixture.BotDbContext.GitLabInfo.AsNoTracking()
+            Assert.True(conversationFixture.BotDbContext.GitLabInfo.AsNoTracking()
                 .Any(info => info.ConversationId == "5" && info.ProjectUrl == "gitlab.nexdev.vn"));
         }
 
@@ -106,16 +111,16 @@
         {
             // Arrange
             var message = "gitlab removeproject";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "6" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "6" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Please input project url"));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Please input project url"));
         }
 
         [Fact]
@@ -123,44 +128,46 @@
         {
             // Arrange
             var message = "gitlab removeproject http://gitlab.nexdev.vn";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "7" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "7" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Project not found"));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Project not found"));
         }
 
         [Fact]
         public async Task HandleMessageAsync_RemoveProject_ExistProject_SendMessage()
         {
             // Arrange
-            var botDbContext = _conversationFixture.MockDbContext();
+            var botDbContext = conversationFixture.MockDbContext();
             botDbContext.GitLabInfo.Add(new GitLabInfo { ConversationId = "33", ProjectUrl = "gitlab.nexdev.vn/Bot" });
             await botDbContext.SaveChangesAsync();
 
             var message = "gitlab removeproject http://gitlab.nexdev.vn/Bot";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "33" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "33" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("You will not receive notification of project **gitlab.nexdev.vn/Bot**"));
+                .ReplyAsync(
+                    Arg.Is(conversationFixture.Activity),
+                    Arg.Is($"You will not receive notification of project {MessageFormatSignal.BeginBold}gitlab.nexdev.vn/Bot{MessageFormatSignal.EndBold}"));
         }
 
         [Fact]
         public async Task HandlePushEventAsync_MasterBranch_HasGitLabInfo_SendPushMessageMessage()
         {
             // Arrange
-            var botDbContext = _conversationFixture.MockDbContext();
+            var botDbContext = conversationFixture.MockDbContext();
             botDbContext.GitLabInfo.Add(
                 new GitLabInfo
                 {
@@ -182,16 +189,18 @@
             };
 
             // Act
-            await _gitLabDialog.HandlePushEventAsync(pushEvent);
+            await gitLabDialog.HandlePushEventAsync(pushEvent);
 
             // Assert
-            var expectedMessage = "**GitLab Master Branch Change** (bell)\n\n" +
-                "**Repository:** http://gitlab.nexdev.vn/Bot\n\n" +
-                "**Commits:**\n\n" +
-                "**[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910)** Push Master (Harrison)\n\n" +
-                "=================\n\n";
+            var expectedMessage =
+                    $"{MessageFormatSignal.BeginBold}GitLab Master Branch Change{MessageFormatSignal.EndBold} (bell){MessageFormatSignal.NewLine}" +
+                    $"{MessageFormatSignal.BeginBold}Repository:{MessageFormatSignal.EndBold} http://gitlab.nexdev.vn/Bot" + MessageFormatSignal.NewLine +
+                    $"{MessageFormatSignal.BeginBold}Commits:{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" +
+                    $"{MessageFormatSignal.BeginBold}[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910){MessageFormatSignal.EndBold} " +
+                    $"Push Master (Harrison){MessageFormatSignal.NewLine}" +
+                    MessageFormatSignal.BreakLine + MessageFormatSignal.NewLine;
 
-            await _conversationFixture.Conversation.Received().SendAsync("33", Arg.Is(expectedMessage));
+            await conversationFixture.Conversation.Received().SendAsync("33", Arg.Is(expectedMessage));
         }
 
         [Fact]
@@ -199,16 +208,16 @@
         {
             // Arrange
             var message = "gitlab";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "34" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "34" });
 
             // Act
-            await _gitLabDialog.HandleMessage(_conversationFixture.Activity, message);
+            await gitLabDialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is(conversationFixture.CommandMessage));
         }
     }
 }

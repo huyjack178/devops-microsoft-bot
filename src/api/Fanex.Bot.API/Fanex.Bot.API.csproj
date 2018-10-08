@@ -14,11 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="App_Data\LOCAL\SPNames.xml" />
-    <None Remove="App_Data\UAT\SPNames.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="App_Data\LOCAL\SPNames.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

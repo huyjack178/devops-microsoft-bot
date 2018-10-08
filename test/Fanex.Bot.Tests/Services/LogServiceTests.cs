@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Net;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Web;
+    using Fanex.Bot.Models;
     using Fanex.Bot.Models.Log;
     using Fanex.Bot.Services;
     using Microsoft.Extensions.Configuration;
@@ -91,6 +93,60 @@
 
             // Assert
             Assert.Equal(expectedLog, actualLog);
+        }
+
+        [Fact]
+        public async Task GetDBLogAsync_HasErrorLog_ReturnErrorLogList()
+        {
+            // Arrange
+            var expectedLogList = new List<DBLog>{
+                new DBLog { NotificationId = 1 },
+                new DBLog { NotificationId = 2 }
+            };
+
+            webClient
+                .PostJsonAsync<string, IEnumerable<DBLog>>(new Uri("http://log.com/DbLog/List"), string.Empty)
+                .Returns(expectedLogList);
+
+            // Act
+            var actualLogList = await logService.GetDBLogs();
+
+            // Assert
+            Assert.Equal(expectedLogList, actualLogList);
+        }
+
+        [Fact]
+        public async Task AckDBLogAsync_StatusIsOk_ReturnSuccessfulResult()
+        {
+            // Arrange
+            var notificationIds = new[] { 1, 2, 3 };
+
+            webClient
+                .PostJsonAsync(new Uri("http://log.com/DbLog/Ack"), notificationIds)
+                .Returns(HttpStatusCode.OK);
+
+            // Act
+            var result = await logService.AckDBLog(notificationIds);
+
+            // Assert
+            Assert.True(result.IsOk);
+        }
+
+        [Fact]
+        public async Task AckDBLogAsync_StatusIsNotOk_ReturnFailedResult()
+        {
+            // Arrange
+            var notificationIds = new[] { 1, 2, 3 };
+
+            webClient
+                .PostJsonAsync(new Uri("http://log.com/DbLog/Ack"), notificationIds)
+                .Returns(HttpStatusCode.InternalServerError);
+
+            // Act
+            var result = await logService.AckDBLog(notificationIds);
+
+            // Assert
+            Assert.False(result.IsOk);
         }
     }
 }
