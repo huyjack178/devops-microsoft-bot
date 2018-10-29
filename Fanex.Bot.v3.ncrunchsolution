@@ -3,6 +3,8 @@
     <AllowParallelTestExecution>True</AllowParallelTestExecution>
     <MetricsExclusionList>
       <Value>src\Fanex.Bot\Fanex.Bot.csproj:netcoreapp2.0</Value>
+      <Value>src\clients\Fanex.Bot.Client\Fanex.Bot.Client.csproj:net461</Value>
+      <Value>src\api\Fanex.Bot.API\Fanex.Bot.API.csproj</Value>
     </MetricsExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
