@@ -2,6 +2,7 @@
 {
     using Fanex.Bot.Models.GitLab;
     using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Models.Sentry;
     using Fanex.Bot.Models.UM;
     using Fanex.Bot.Models.Zabbix;
     using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,9 @@
 
             modelBuilder.Entity<LogIgnoreMessage>()
                 .HasKey(c => new { c.Category, c.IgnoreMessage });
+
+            modelBuilder.Entity<SentryInfo>()
+               .HasKey(c => new { c.ConversationId, c.Project });
         }
 
         public virtual DbSet<MessageInfo> MessageInfo { get; set; }
@@ -41,6 +45,7 @@
         public virtual DbSet<UMPage> UMPage { get; set; }
 
         public virtual DbSet<UMSite> UMSite { get; set; }
+        public virtual DbSet<SentryInfo> SentryInfo { get; set; }
 
         public virtual DbSet<ZabbixInfo> ZabbixInfo { get; set; }
     }

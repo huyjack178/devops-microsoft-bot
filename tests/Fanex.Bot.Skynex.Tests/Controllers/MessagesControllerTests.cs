@@ -21,6 +21,7 @@
         private readonly IUnderMaintenanceDialog _umDialog;
         private readonly IDBLogDialog dbLogDialog;
         private readonly IZabbixDialog zabbixDialog;
+        private readonly ISentryDialog sentryDialog;
         private readonly MessagesController _messagesController;
 
         public MessagesControllerTests(BotConversationFixture conversationFixture)
@@ -33,6 +34,7 @@
             _umDialog = Substitute.For<IUnderMaintenanceDialog>();
             dbLogDialog = Substitute.For<IDBLogDialog>();
             zabbixDialog = Substitute.For<IZabbixDialog>();
+            sentryDialog = Substitute.For<ISentryDialog>();
             _messagesController = new MessagesController(
                 _commonDialog,
                 _logDialog,
@@ -43,6 +45,7 @@
                 _conversationFixture.Configuration,
                 dbLogDialog,
                 zabbixDialog);
+                sentryDialog);
         }
 
         [Fact]

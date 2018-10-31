@@ -23,6 +23,7 @@
         private readonly IConfiguration configuration;
         private readonly IDBLogDialog dbLogDialog;
         private readonly IZabbixDialog zabbixDialog;
+        private readonly ISentryDialog sentryDialog;
 
 #pragma warning disable S107 // Methods should not have too many parameters
 
@@ -35,6 +36,7 @@
             IConversation conversation,
             IConfiguration configuration,
             IDBLogDialog dbLogDialog,
+            ISentryDialog sentryDialog)
             IZabbixDialog zabbixDialog)
         {
             this.commonDialog = commonDialog;
@@ -46,6 +48,7 @@
             this.configuration = configuration;
             this.dbLogDialog = dbLogDialog;
             this.zabbixDialog = zabbixDialog;
+            this.sentryDialog = sentryDialog;
         }
 
 #pragma warning restore S107 // Methods should not have too many parameters
@@ -120,6 +123,10 @@
             else if (message.StartsWith("dblog"))
             {
                 await dbLogDialog.HandleMessage(activity, message);
+            }
+            else if (message.StartsWith(MessageCommand.SENTRY_LOG))
+            {
+                await sentryDialog.HandleMessage(activity, message);
             }
             else if (message.StartsWith(MessageCommand.ZABBIX))
             {

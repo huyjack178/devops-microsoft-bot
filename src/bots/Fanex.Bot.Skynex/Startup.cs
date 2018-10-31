@@ -112,6 +112,7 @@ namespace Fanex.Bot
             services.AddScoped<IUnderMaintenanceDialog, UnderMaintenanceDialog>();
             services.AddScoped<IDBLogDialog, DBLogDialog>();
             services.AddScoped<IZabbixDialog, ZabbixDialog>();
+            services.AddScoped<ISentryDialog, SentryDialog>();
         }
 
         private static void ConfigureBotMessageHandlers(IServiceCollection services)
