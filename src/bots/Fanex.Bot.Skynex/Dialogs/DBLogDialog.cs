@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading;
+    using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
@@ -73,7 +74,7 @@
             {
                 var dbLogs = await logService.GetDBLogs();
 
-                if (dbLogs == null)
+            if (dbLogs == null || !dbLogs.Any())
                 {
                     return;
                 }
