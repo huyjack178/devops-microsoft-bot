@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Microsoft.Bot.Connector;
