@@ -1,4 +1,6 @@
-﻿namespace Fanex.Bot.Skynex.MessageHandlers.MessengerFormatters
+﻿using System.Net;
+
+namespace Fanex.Bot.Skynex.MessageHandlers.MessengerFormatters
 {
     public interface IMessengerFormatter
     {

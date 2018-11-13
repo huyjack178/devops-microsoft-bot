@@ -26,7 +26,7 @@
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.0-beta1" />
     <PackageReference Include="Line.Messaging" Version="1.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Bot.Connector" Version="3.16.1.38846" />
+    <PackageReference Include="Microsoft.Bot.Connector" Version="3.17.0.42969" />
     <PackageReference Include="Microsoft.Bot.Connector.AspNetCore" Version="2.0.1.38846" />
     <PackageReference Include="Microsoft.Bot.Connector.DirectLine" Version="3.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.4" />
