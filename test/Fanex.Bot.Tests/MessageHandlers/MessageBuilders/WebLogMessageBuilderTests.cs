@@ -85,7 +85,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Assert
             var expecteRequestInfo =
                 $"{MessageFormatSignal.BeginBold}Request:{MessageFormatSignal.EndBold}" +
-                $" http://alpha.site/site-reports/Statement/";
+                $"  http://alpha.site:8072/site-reports/Statement/";
             Assert.Contains(expecteRequestInfo, actualMessage);
         }
 

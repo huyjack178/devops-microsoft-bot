@@ -283,7 +283,9 @@
                         .Split(';')
                         .Where(category => !string.IsNullOrEmpty(category));
 
-            var groupErrorLogs = errorLogs.GroupBy(log => new { log.CategoryName, log.MachineIP, log.FormattedMessage });
+            var groupErrorLogs = errorLogs
+                    .OrderBy(log => log.LogId)
+                    .GroupBy(log => new { log.CategoryName, log.MachineIP, log.FormattedMessage });
 
             foreach (var groupErrorLog in groupErrorLogs)
             {

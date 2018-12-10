@@ -1,4 +1,6 @@
-﻿namespace Fanex.Bot.Models.Log
+﻿using System;
+
+namespace Fanex.Bot.Models.Log
 {
     public class Log
     {
@@ -15,5 +17,7 @@
         public string MachineName { get; set; }
 
         public string MachineIP { get; set; }
+
+        public DateTime TimeStamp { get; set; }
     }
 }

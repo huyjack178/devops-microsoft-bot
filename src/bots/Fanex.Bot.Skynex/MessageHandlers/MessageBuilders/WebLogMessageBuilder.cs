@@ -212,7 +212,7 @@
 
                 if (requestUri.Host.IndexOf("staging", StringComparison.InvariantCultureIgnoreCase) < 0)
                 {
-                    hideDomainRequest = $"http://alpha.site{requestUri.AbsolutePath}";
+                    hideDomainRequest = request.Replace(requestUri.Host, "alpha.site");
                 }
             }
 
