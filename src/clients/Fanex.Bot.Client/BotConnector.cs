@@ -3,7 +3,6 @@
     using System;
     using System.Net;
     using System.Text;
-    using Fanex.Bot.Client.Configuration;
     using Fanex.Caching;
     using RestSharp;
 
