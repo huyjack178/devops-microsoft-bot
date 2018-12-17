@@ -45,7 +45,7 @@
                     data.From == fromDate.ToString(CultureInfo.InvariantCulture) &&
                     data.To == toDate.ToString(CultureInfo.InvariantCulture) &&
                     data.Severity == "Error" &&
-                    data.Size == 5 &&
+                    data.Size == 100 &&
                     data.Page == 0 &&
                     data.ToGMT == 7 &&
                     data.CategoryId == 0 &&
