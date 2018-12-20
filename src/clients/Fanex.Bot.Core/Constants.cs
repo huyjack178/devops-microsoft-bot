@@ -22,6 +22,8 @@
         public const string Stop = "stop";
         public const string UM_AddPage = "addpage";
         public const string UM_Notify = "notify";
+        public const string UM_StartScan = "scanstart";
+        public const string UM_StopScan = "scanstop";
         public const string DBLOG = "dblog";
     }
 }

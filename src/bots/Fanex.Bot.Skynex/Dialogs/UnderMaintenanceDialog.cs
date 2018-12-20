@@ -19,7 +19,7 @@
 
     public interface IUnderMaintenanceDialog : IDialog
     {
-        Task CheckUnderMaintenance();
+        Task CheckUnderMaintenanceJob();
     }
 
     public class UnderMaintenanceDialog : BaseDialog, IUnderMaintenanceDialog
@@ -61,13 +61,25 @@
                 return;
             }
 
+            if (command.StartsWith(MessageCommand.UM_StartScan))
+            {
+                await EnableScanUnderMaintenancePage(activity, true);
+                return;
+            }
+
+            if (command.StartsWith(MessageCommand.UM_StopScan))
+            {
+                await EnableScanUnderMaintenancePage(activity, false);
+                return;
+            }
+
             if (command.StartsWith(MessageCommand.UM_Notify))
             {
                 await NotifyUnderMaintenance();
             }
         }
 
-        public async Task CheckUnderMaintenance()
+        public async Task CheckUnderMaintenanceJob()
         {
             var scheduledInfo = await underMaintenanceService.GetScheduledInfo();
             var validScheduledInfo = scheduledInfo.Where(item =>
@@ -105,12 +117,17 @@
             await Conversation.ReplyAsync(activity, "Under maintenance notification is enabled!");
         }
 
-        private void StartCheckUnderMaintenanceJob()
+        protected async Task EnableScanUnderMaintenancePage(IMessageActivity activity, bool isEnabled)
         {
-            recurringJobManager.AddOrUpdate(
-                "CheckUnderMaintenance",
-                Job.FromExpression(() => CheckUnderMaintenance()),
-                Cron.Minutely());
+            var umInfo = await GetOrCreateUnderMaintenanceInfo(activity);
+            umInfo.EnableScanPage = isEnabled;
+
+            await SaveUnderMaintenanceInfo(umInfo);
+
+            StartCheckUnderMaintenanceJob();
+
+            var message = isEnabled ? "enabled" : "disable";
+            await Conversation.ReplyAsync(activity, $"Scan under maintenance page is {message}!");
         }
 
         protected async Task DisableUnderMaintenanceNotification(IMessageActivity activity)
@@ -132,6 +149,14 @@
         }
 
         #region Private Methods
+
+        private void StartCheckUnderMaintenanceJob()
+        {
+            recurringJobManager.AddOrUpdate(
+                "CheckUnderMaintenance",
+                Job.FromExpression(() => CheckUnderMaintenanceJob()),
+                Cron.Minutely());
+        }
 
 #pragma warning disable S1541 // Methods and properties should not be too complex
 
@@ -180,9 +205,7 @@
 
         private async Task StartUnderMaintenanceProcess(Dictionary<int, UM> actualInfo)
         {
-            var underMaintenanceInfo = actualInfo.Where(info => info.Value.IsUnderMaintenanceTime);
-
-            foreach (var info in underMaintenanceInfo)
+            foreach (var info in actualInfo.Where(info => info.Value.IsUnderMaintenanceTime))
             {
                 var siteInformedCacheKey = InformedCacheKey + info.Key;
                 bool hasInformedUnderMaintenanceInfo = Convert.ToBoolean(memoryCache.Get(siteInformedCacheKey) ?? false);
@@ -206,18 +229,18 @@
 
             if (!umPageGroup.Any())
             {
-                await SendMessage($"No site to be scanned!");
+                await SendMessage($"No site to be scanned!", isScanPageMessage: true);
                 return;
             }
 
-            await SendMessage($"Scanning started!");
+            await SendMessage($"Scanning started!", isScanPageMessage: true);
 
             foreach (var group in umPageGroup)
             {
                 await ScanPageInGroup(group);
             }
 
-            await SendMessage($"Scanning completed!{MessageFormatSignal.NewLine}{MessageFormatSignal.BreakLine}");
+            await SendMessage($"Scanning completed!{MessageFormatSignal.NewLine}{MessageFormatSignal.BreakLine}", isScanPageMessage: true);
         }
 
         private async Task ScanPageInGroup(IGrouping<string, UMPage> groupPage)
@@ -248,7 +271,7 @@
                 message.Append($" PASSED! {MessageFormatSignal.NewLine}");
             }
 
-            await SendMessage(message.ToString());
+            await SendMessage(message.ToString(), isScanPageMessage: true);
         }
 
         private async Task EndUnderMaintenanceProcess(Dictionary<int, UM> actualInfo)
@@ -266,11 +289,19 @@
             }
         }
 
-        private async Task SendMessage(string message)
+        private async Task SendMessage(string message, bool isScanPageMessage = false)
         {
             foreach (var info in DbContext.UMInfo.Where(info => info.IsActive))
             {
-                await Conversation.SendAsync(info.ConversationId, message).ConfigureAwait(false);
+                if (!isScanPageMessage)
+                {
+                    await Conversation.SendAsync(info.ConversationId, message).ConfigureAwait(false);
+                }
+
+                if (isScanPageMessage && info.EnableScanPage)
+                {
+                    await Conversation.SendAsync(info.ConversationId, message).ConfigureAwait(false);
+                }
             }
         }
 

@@ -2,5 +2,6 @@
 {
     public class UMInfo : BaseInfo
     {
+        public bool EnableScanPage { get; set; }
     }
 }

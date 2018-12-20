@@ -119,7 +119,7 @@
             umService.GetScheduledInfo().Returns(underMaintenanceInfo);
 
             // Act
-            await dialog.CheckUnderMaintenance();
+            await dialog.CheckUnderMaintenanceJob();
 
             // Assert
             await conversationFixture.Conversation.Received(1)
@@ -136,7 +136,7 @@
             // Arrange
             var dbContext = conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i2374982dfas343748923" });
-            dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i2374982dfas343748923" });
+            dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i2374982dfas343748923", EnableScanPage = true });
             dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong88.com", Name = "google", SiteId = "1" });
             dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong888888.com", Name = "alpha", SiteId = "2" });
             dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong8888342388.com", Name = "alpha", SiteId = "2" });
@@ -178,7 +178,7 @@
             umService.CheckPageShowUM(Arg.Is(new Uri("http://www.agbong8888342388.com"))).Returns(true);
 
             // Act
-            await dialog.CheckUnderMaintenance();
+            await dialog.CheckUnderMaintenanceJob();
 
             // Assert
             await conversationFixture.Conversation.Received()
@@ -222,7 +222,7 @@
             memoryCache.Set("InformedUM1", true);
 
             // Act
-            await dialog.CheckUnderMaintenance();
+            await dialog.CheckUnderMaintenanceJob();
 
             // Assert
             await conversationFixture.Conversation.Received(1)
