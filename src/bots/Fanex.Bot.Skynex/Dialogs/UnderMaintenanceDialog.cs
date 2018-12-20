@@ -230,6 +230,12 @@
                 Uri.TryCreate(page.SiteUrl, UriKind.Absolute, out Uri pageUri);
                 var isShowUM = await underMaintenanceService.CheckPageShowUM(pageUri);
 
+                // Rescan
+                if (!isShowUM)
+                {
+                    isShowUM = await underMaintenanceService.CheckPageShowUM(pageUri);
+                }
+
                 if (!isShowUM)
                 {
                     message.Append($"{MessageFormatSignal.NewLine}{page.SiteUrl} does not show UM");
