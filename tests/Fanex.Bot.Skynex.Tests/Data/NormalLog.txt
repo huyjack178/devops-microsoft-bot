@@ -1,0 +1,45 @@
+﻿Timestamp: 1/8/2019 9:37:55 AM (GMT+7) 
+Message: Collection was modified; enumeration operation may not execute. 
+URL: http://mb.agbong88.com:8071/ex-main/_MemberInfo/SearchAndCopy/MasterPage.aspx?lv=2 
+REFERRER: http://mb.agbong88.com:8071/site-main 
+FORM: 
+SOURCE: mscorlib 
+TARGETSITE: Void ThrowInvalidOperationException(System.ExceptionResource) 
+DETAIL: System.InvalidOperationException: Collection was modified; enumeration operation may not execute. 
+at System.ThrowHelper.ThrowInvalidOperationException(ExceptionResource resource) 
+at System.Collections.Generic.List`1.Enumerator.MoveNextRare() 
+at Fanex.Security.SpamFilter.RuleProcessor.MatchRules(HttpRequest request) 
+STACKTRACE: at System.ThrowHelper.ThrowInvalidOperationException(ExceptionResource resource) 
+at System.Collections.Generic.List`1.Enumerator.MoveNextRare() 
+at Fanex.Security.SpamFilter.RuleProcessor.MatchRules(HttpRequest request) 
+CULTURE: en-US 
+BROWSER CAPABILITIES:Type: Chrome65 
+Name: Safari 
+Version: 65.0 
+Major Version: 537 
+Minor Version: 0 
+Platform: Unknown 
+Is Beta: False 
+Is Crawler: False 
+Is AOL: False 
+Is Win16: False 
+Is Win32: True 
+Supports Frames: True 
+Supports Tables: True 
+Supports Cookies: True
+System.InvalidOperationException: Collection was modified; enumeration operation may not execute. 
+at System.ThrowHelper.ThrowInvalidOperationException(ExceptionResource resource) 
+at System.Collections.Generic.List`1.Enumerator.MoveNextRare() 
+at Fanex.Security.SpamFilter.RuleProcessor.MatchRules(HttpRequest request) 
+Category: Alpha-789y-AF 
+Priority: -1 
+EventId: 0 
+Severity: Error 
+Title:Alpha-789y-AF 
+Machine: L66_15 
+App Domain: /LM/W3SVC/7/ROOT/ex-main-4-131913886675306856 
+ProcessId: 5368 
+Process Name: c:\windows\system32\inetsrv\w3wp.exe 
+Thread Name: 
+Win32 ThreadId:2888 
+Extended Properties:

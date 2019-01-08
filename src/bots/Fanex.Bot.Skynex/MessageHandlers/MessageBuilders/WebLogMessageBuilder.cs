@@ -29,6 +29,8 @@
 
             if (isNotNewLogType)
             {
+                log.FormattedMessage = FormatRequestOfNormalMessage(log.FormattedMessage, log.CategoryName);
+
                 return log.FormattedMessage.Length > 400 ?
                     FinalizeMessage(log.FormattedMessage.Substring(0, 400), log) :
                     FinalizeMessage(log.FormattedMessage, log);
@@ -64,7 +66,7 @@
                     $"{log.NumMessage}{MessageFormatSignal.DoubleNewLine}{MessageFormatSignal.BreakLine}";
         }
 
-        public static string FormatRequestInfo(string rawMessage, string categoryName)
+        private static string FormatRequestInfo(string rawMessage, string categoryName)
         {
             var requestInfoIndex = rawMessage.IndexOf("REQUEST INFO", StringComparison.InvariantCultureIgnoreCase);
             var returnMessage = string.Empty;
@@ -91,7 +93,7 @@
             return returnMessage;
         }
 
-        public static string FormatBrowserInfo(string rawMessage)
+        private static string FormatBrowserInfo(string rawMessage)
         {
             var browserInfoIndex = rawMessage.IndexOf("BROWSER INFO", StringComparison.InvariantCultureIgnoreCase);
             var returnMessage = string.Empty;
@@ -124,7 +126,7 @@
             return returnMessage;
         }
 
-        public static string FormatServerAndDatabaseInfo(string rawMessage, string machineName, string machineIP)
+        private static string FormatServerAndDatabaseInfo(string rawMessage, string machineName, string machineIP)
         {
             var returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Server:{MessageFormatSignal.EndBold} {machineName} ({machineIP})";
 
@@ -156,7 +158,7 @@
             return returnMessage;
         }
 
-        public static string FormatCustomInfo(string rawMessage)
+        private static string FormatCustomInfo(string rawMessage)
         {
             var customInfoIndex = rawMessage.IndexOf("CUSTOM INFO", StringComparison.InvariantCultureIgnoreCase);
             var returnMessage = string.Empty;
@@ -177,7 +179,7 @@
             return returnMessage;
         }
 
-        public static string FormatExceptionInfo(string rawMessage)
+        private static string FormatExceptionInfo(string rawMessage)
         {
             var exceptionInfoIndex = rawMessage.IndexOf("EXCEPTION INFO", StringComparison.InvariantCultureIgnoreCase);
             var returnMessage = string.Empty;
@@ -202,24 +204,7 @@
             return returnMessage;
         }
 
-        public static string CheckAndHideAlphaDomain(string request, string categoryName)
-        {
-            var hideDomainRequest = request;
-
-            if (categoryName.IndexOf("alpha", StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                var requestUri = new Uri(request);
-
-                if (requestUri.Host.IndexOf("staging", StringComparison.InvariantCultureIgnoreCase) < 0)
-                {
-                    hideDomainRequest = request.Replace(requestUri.Host, "alpha.site");
-                }
-            }
-
-            return hideDomainRequest;
-        }
-
-        public static string FormatSessionInfo(string rawMessage)
+        private static string FormatSessionInfo(string rawMessage)
         {
             var sessionInfoIndex = rawMessage.IndexOf(
                     SessionInfo,
@@ -253,6 +238,57 @@
             }
 
             return returnMessage.ToString();
+        }
+
+        private static string FormatRequestOfNormalMessage(string rawMessage, string categoryName)
+        {
+            var formatedMessage = rawMessage;
+            const string urlTag = "URL:";
+            var urlIndex = rawMessage.IndexOf(urlTag, StringComparison.InvariantCultureIgnoreCase);
+
+            if (urlIndex > 0)
+            {
+                var endLineIndex = rawMessage.IndexOf("\n", urlIndex, StringComparison.InvariantCultureIgnoreCase);
+                var requestUrl = rawMessage
+                    .Substring(urlIndex, endLineIndex - urlIndex)
+                    .Replace(urlTag, string.Empty);
+
+                var hideDomainRequestUrl = CheckAndHideAlphaDomain(requestUrl, categoryName);
+                formatedMessage = formatedMessage.Replace(requestUrl, hideDomainRequestUrl);
+            }
+
+            const string referrerTag = "REFERRER:";
+            var referrerIndex = rawMessage.IndexOf(referrerTag, StringComparison.InvariantCultureIgnoreCase);
+
+            if (referrerIndex > 0)
+            {
+                var endLineIndex = rawMessage.IndexOf("\n", referrerIndex, StringComparison.InvariantCultureIgnoreCase);
+                var requestUrl = rawMessage
+                    .Substring(referrerIndex, endLineIndex - referrerIndex)
+                    .Replace(referrerTag, string.Empty);
+
+                var hideDomainRequestUrl = CheckAndHideAlphaDomain(requestUrl, categoryName);
+                formatedMessage = formatedMessage.Replace(requestUrl, hideDomainRequestUrl);
+            }
+
+            return formatedMessage;
+        }
+
+        private static string CheckAndHideAlphaDomain(string request, string categoryName)
+        {
+            var hideDomainRequest = request;
+
+            if (categoryName.IndexOf("alpha", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            {
+                var requestUri = new Uri(request);
+
+                if (requestUri.Host.IndexOf("staging", StringComparison.InvariantCultureIgnoreCase) < 0)
+                {
+                    hideDomainRequest = request.Replace(requestUri.Host, "alpha.site");
+                }
+            }
+
+            return hideDomainRequest;
         }
     }
 }

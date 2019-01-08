@@ -53,12 +53,31 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         }
 
         [Fact]
+        public void BuildMessage_IsNotNewLogType_HasAlphaDomain_HideAlphaDomain()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var log = fixture.Create<Log>();
+            log.CategoryName = "alpha";
+            log.FormattedMessage = GetNormalLogDataTest();
+
+            // Act
+            var actualMessage = webLogMessageBuilder.BuildMessage(log);
+
+            // Assert
+            var expecteRequestInfo =
+                $"URL: http://alpha.site:8071/ex-main/_MemberInfo/SearchAndCopy/MasterPage.aspx?lv=2 {MessageFormatSignal.NewLine}" +
+                "REFERRER: http://alpha.site:8071/site-main";
+            Assert.Contains(expecteRequestInfo, actualMessage);
+        }
+
+        [Fact]
         public void BuildMessage_IsNewLogType_IsNotAlpha_GetRequestInfo()
         {
             // Arrange
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
-            log.FormattedMessage = GetLogDataTest();
+            log.FormattedMessage = GetNewLogDataTest();
 
             // Act
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
@@ -77,7 +96,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
             log.CategoryName = "alpha";
-            log.FormattedMessage = GetLogDataTest();
+            log.FormattedMessage = GetNewLogDataTest();
 
             // Act
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
@@ -95,7 +114,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Arrange
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
-            log.FormattedMessage = GetLogDataTest();
+            log.FormattedMessage = GetNewLogDataTest();
 
             // Act
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
@@ -113,7 +132,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Arrange
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
-            log.FormattedMessage = GetLogDataTest();
+            log.FormattedMessage = GetNewLogDataTest();
 
             // Act
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
@@ -138,7 +157,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Arrange
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
-            log.FormattedMessage = GetLogDataTest();
+            log.FormattedMessage = GetNewLogDataTest();
 
             // Act
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
@@ -159,7 +178,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Arrange
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
-            log.FormattedMessage = GetLogDataTest();
+            log.FormattedMessage = GetNewLogDataTest();
 
             // Act
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
@@ -178,7 +197,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Arrange
             var fixture = new Fixture();
             var log = fixture.Create<Log>();
-            log.FormattedMessage = GetLogDataTest();
+            log.FormattedMessage = GetNewLogDataTest();
 
             // Act
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
@@ -220,7 +239,10 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
                     $"{log.NumMessage}{MessageFormatSignal.DoubleNewLine}{MessageFormatSignal.BreakLine}";
         }
 
-        private string GetLogDataTest()
+        private string GetNewLogDataTest()
             => File.ReadAllText($"{AppDomain.CurrentDomain.BaseDirectory}/../../../Data/Log.txt");
+
+        private string GetNormalLogDataTest()
+            => File.ReadAllText($"{AppDomain.CurrentDomain.BaseDirectory}/../../../Data/NormalLog.txt");
     }
 }
