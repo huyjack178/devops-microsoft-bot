@@ -3,6 +3,7 @@
     using Fanex.Bot.Models.GitLab;
     using Fanex.Bot.Models.Log;
     using Fanex.Bot.Models.UM;
+    using Fanex.Bot.Models.Zabbix;
     using Microsoft.EntityFrameworkCore;
 
     public class BotDbContext : DbContext
@@ -38,5 +39,7 @@
         public virtual DbSet<UMInfo> UMInfo { get; set; }
 
         public virtual DbSet<UMPage> UMPage { get; set; }
+
+        public virtual DbSet<ZabbixInfo> ZabbixInfo { get; set; }
     }
 }

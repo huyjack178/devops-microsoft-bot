@@ -8,10 +8,10 @@
     {
         public override string Format(string message)
             => Clean(message)
-                .Replace(MessageFormatSignal.NewLine, NewLine)
-                .Replace(MessageFormatSignal.DoubleNewLine, DoubleNewLine)
-                .Replace(MessageFormatSignal.BeginBold, string.Empty)
-                .Replace(MessageFormatSignal.EndBold, string.Empty)
-                .Replace(MessageFormatSignal.BreakLine, BreakLine);
+                .Replace(MessageFormatSignal.NEWLINE, NewLine)
+                .Replace(MessageFormatSignal.DOUBLE_NEWLINE, DoubleNewLine)
+                .Replace(MessageFormatSignal.BOLD_START, string.Empty)
+                .Replace(MessageFormatSignal.BOLD_END, string.Empty)
+                .Replace(MessageFormatSignal.DIVIDER, BreakLine);
     }
 }

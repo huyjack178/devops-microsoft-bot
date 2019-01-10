@@ -40,7 +40,7 @@
         {
             var command = message.Replace(MessageCommand.DBLOG, string.Empty).Trim();
 
-            if (command.StartsWith(MessageCommand.Start))
+            if (command.StartsWith(MessageCommand.START))
             {
                 await StartNotifyingDbLogAsync(activity);
                 return;

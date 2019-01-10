@@ -16,7 +16,7 @@ namespace Fanex.Bot.Core.Utilities.Web
         {
             this.restClient = restClient;
             this.restClient.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-            this.restClient.AddDefaultHeader("Cache-Control", "no-cache");
+            //this.restClient.AddDefaultHeader("Cache-Control", "no-cache");
             this.restClient.Timeout = 10000;
         }
 

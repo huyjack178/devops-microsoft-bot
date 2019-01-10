@@ -70,7 +70,7 @@
                 .Received()
                 .ReplyAsync(
                     Arg.Is(_conversationFixture.Activity),
-                    Arg.Is($"Please send {MessageFormatSignal.BeginBold}help{MessageFormatSignal.EndBold} to get my commands"));
+                    Arg.Is($"Please send {MessageFormatSignal.BOLD_START}help{MessageFormatSignal.BOLD_END} to get my commands"));
         }
 
         [Fact]
@@ -92,7 +92,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAdminAsync($"New client {MessageFormatSignal.BeginBold}13324dfwer234{MessageFormatSignal.EndBold} has been added");
+                .SendAdminAsync($"New client {MessageFormatSignal.BOLD_START}13324dfwer234{MessageFormatSignal.BOLD_END} has been added");
         }
 
         [Fact]
@@ -131,7 +131,7 @@
             await _conversationFixture
                 .Conversation
                 .Received()
-                .SendAdminAsync($"Client {MessageFormatSignal.BeginBold}13324d234234fwer234{MessageFormatSignal.EndBold} has been removed");
+                .SendAdminAsync($"Client {MessageFormatSignal.BOLD_START}13324d234234fwer234{MessageFormatSignal.BOLD_END} has been removed");
         }
     }
 }

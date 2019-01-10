@@ -130,7 +130,7 @@
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will receive log with categories contain {MessageFormatSignal.BeginBold}[alpha]{MessageFormatSignal.EndBold}"));
+                    Arg.Is($"You will receive log with categories contain {MessageFormatSignal.BOLD_START}[alpha]{MessageFormatSignal.BOLD_END}"));
         }
 
         [Fact]
@@ -160,7 +160,7 @@
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will receive log with categories contain {MessageFormatSignal.BeginBold}[alpha]{MessageFormatSignal.EndBold}"));
+                    Arg.Is($"You will receive log with categories contain {MessageFormatSignal.BOLD_START}[alpha]{MessageFormatSignal.BOLD_END}"));
         }
 
         #endregion AddCategory
@@ -228,7 +228,7 @@
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will not receive log with categories contain {MessageFormatSignal.BeginBold}[nap]{MessageFormatSignal.EndBold}"));
+                    Arg.Is($"You will not receive log with categories contain {MessageFormatSignal.BOLD_START}[nap]{MessageFormatSignal.BOLD_END}"));
         }
 
         #endregion Remove Category
@@ -447,11 +447,11 @@
 
             // Assert
             var expectedAlphaMessage =
-                $"{MessageFormatSignal.BeginBold}Category{MessageFormatSignal.EndBold}: alpha{MessageFormatSignal.NewLine}" +
-                $"log{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}#Log Id{MessageFormatSignal.EndBold}: 0 " +
-                $"{MessageFormatSignal.BeginBold}Count{MessageFormatSignal.EndBold}: 0" +
-                $"{MessageFormatSignal.DoubleNewLine}{MessageFormatSignal.BreakLine}";
+                $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: alpha{MessageFormatSignal.NEWLINE}" +
+                $"log{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: 0 " +
+                $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: 0" +
+                $"{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
 
             await conversationFixture.Conversation
                  .Received()
@@ -490,11 +490,11 @@
 
             // Assert
             var expectedAlphaMessage =
-                    $"{MessageFormatSignal.BeginBold}Category{MessageFormatSignal.EndBold}: alpha{MessageFormatSignal.NewLine}" +
-                    $"log{MessageFormatSignal.NewLine}" +
-                    $"{MessageFormatSignal.BeginBold}#Log Id{MessageFormatSignal.EndBold}: 0 " +
-                    $"{MessageFormatSignal.BeginBold}Count{MessageFormatSignal.EndBold}: 0" +
-                    $"{MessageFormatSignal.DoubleNewLine}{MessageFormatSignal.BreakLine}";
+                    $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: alpha{MessageFormatSignal.NEWLINE}" +
+                    $"log{MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: 0 " +
+                    $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: 0" +
+                    $"{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
             await conversationFixture.Conversation
                  .Received(1)
                  .SendAsync(Arg.Is("1"), Arg.Is(expectedAlphaMessage));
@@ -588,11 +588,11 @@
 
             // Assert
             var expectedAlphaMessage =
-                    $"{MessageFormatSignal.BeginBold}Category{MessageFormatSignal.EndBold}: nap{MessageFormatSignal.NewLine}" +
-                    $"thread was not being aborted{MessageFormatSignal.NewLine}" +
-                    $"{MessageFormatSignal.BeginBold}#Log Id{MessageFormatSignal.EndBold}: 0 " +
-                    $"{MessageFormatSignal.BeginBold}Count{MessageFormatSignal.EndBold}: 0" +
-                    $"{MessageFormatSignal.DoubleNewLine}{MessageFormatSignal.BreakLine}";
+                    $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: nap{MessageFormatSignal.NEWLINE}" +
+                    $"thread was not being aborted{MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: 0 " +
+                    $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: 0" +
+                    $"{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
             await conversationFixture.Conversation
                  .Received(1)
                  .SendAsync(Arg.Is("234234231"), Arg.Is(expectedAlphaMessage));
@@ -620,11 +620,11 @@
               .ReplyAsync(
                   Arg.Is(conversationFixture.Activity),
                   Arg.Is(
-                    $"Your log status {MessageFormatSignal.NewLine}" +
-                    $"{MessageFormatSignal.BeginBold}Log Categories:{MessageFormatSignal.EndBold} " +
-                    $"[alpha;nap]{MessageFormatSignal.NewLine}" +
-                    MessageFormatSignal.BeginBold + expectedActiveResult + MessageFormatSignal.EndBold +
-                    MessageFormatSignal.NewLine));
+                    $"Your log status {MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSignal.BOLD_START}Log Categories:{MessageFormatSignal.BOLD_END} " +
+                    $"[alpha;nap]{MessageFormatSignal.NEWLINE}" +
+                    MessageFormatSignal.BOLD_START + expectedActiveResult + MessageFormatSignal.BOLD_END +
+                    MessageFormatSignal.NEWLINE));
         }
 
         [Fact]

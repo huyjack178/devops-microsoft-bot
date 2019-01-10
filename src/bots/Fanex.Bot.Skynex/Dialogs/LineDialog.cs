@@ -29,7 +29,7 @@
                 messageInfo = InitMessageInfo(activity);
                 await SaveMessageInfo(messageInfo);
                 await Conversation.SendAdminAsync(
-                    $"New client {MessageFormatSignal.BeginBold}{activity.From.Id}{MessageFormatSignal.EndBold} has been added");
+                    $"New client {MessageFormatSignal.BOLD_START}{activity.From.Id}{MessageFormatSignal.BOLD_END} has been added");
             }
         }
 

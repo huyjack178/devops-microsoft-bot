@@ -52,18 +52,18 @@
             var returnMessage = message
                     .Replace("\r", string.Empty)
                     .Replace("\t", string.Empty)
-                    .Replace("\n", MessageFormatSignal.NewLine)
-                    .Replace(MessageFormatSignal.NewLine + MessageFormatSignal.NewLine, MessageFormatSignal.NewLine)
-                    .Replace(MessageFormatSignal.NewLine + MessageFormatSignal.NewLine, MessageFormatSignal.NewLine)
-                    .Replace(MessageFormatSignal.NewLine + " " + MessageFormatSignal.NewLine, MessageFormatSignal.NewLine)
-                    .Replace("Timestamp", $"{MessageFormatSignal.BeginBold}Timestamp{MessageFormatSignal.EndBold}")
-                    .Replace("Message", $"{MessageFormatSignal.BeginBold}Message{MessageFormatSignal.EndBold}");
+                    .Replace("\n", MessageFormatSignal.NEWLINE)
+                    .Replace(MessageFormatSignal.NEWLINE + MessageFormatSignal.NEWLINE, MessageFormatSignal.NEWLINE)
+                    .Replace(MessageFormatSignal.NEWLINE + MessageFormatSignal.NEWLINE, MessageFormatSignal.NEWLINE)
+                    .Replace(MessageFormatSignal.NEWLINE + " " + MessageFormatSignal.NEWLINE, MessageFormatSignal.NEWLINE)
+                    .Replace("Timestamp", $"{MessageFormatSignal.BOLD_START}Timestamp{MessageFormatSignal.BOLD_END}")
+                    .Replace("Message", $"{MessageFormatSignal.BOLD_START}Message{MessageFormatSignal.BOLD_END}");
 
-            return $"{MessageFormatSignal.BeginBold}Category{MessageFormatSignal.EndBold}: {log.CategoryName}{MessageFormatSignal.NewLine}" +
-                    $"{WebUtility.HtmlDecode(returnMessage)}{MessageFormatSignal.NewLine}" +
-                    $"{MessageFormatSignal.BeginBold}#Log Id{MessageFormatSignal.EndBold}: {log.LogId} " +
-                    $"{MessageFormatSignal.BeginBold}Count{MessageFormatSignal.EndBold}: " +
-                    $"{log.NumMessage}{MessageFormatSignal.DoubleNewLine}{MessageFormatSignal.BreakLine}";
+            return $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: {log.CategoryName}{MessageFormatSignal.NEWLINE}" +
+                    $"{WebUtility.HtmlDecode(returnMessage)}{MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: {log.LogId} " +
+                    $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: " +
+                    $"{log.NumMessage}{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
         }
 
         private static string FormatRequestInfo(string rawMessage, string categoryName)
@@ -86,7 +86,7 @@
                 returnMessage = rawMessage.Remove(requestInfoIndex);
                 returnMessage = returnMessage.Trim('\n', ' ');
                 returnMessage +=
-                    $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Request:{MessageFormatSignal.EndBold} " +
+                    $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Request:{MessageFormatSignal.BOLD_END} " +
                     CheckAndHideAlphaDomain(requestUrl, categoryName);
             }
 
@@ -119,7 +119,7 @@
                     mobileDeviceModel = rawMessage.Substring(mobileDeviceModelIndex, serverInfoIndex - mobileDeviceModelIndex);
                 }
 
-                returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Browser:{MessageFormatSignal.EndBold}" +
+                returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Browser:{MessageFormatSignal.BOLD_END}" +
                     $" {browser} {mobileDeviceModel.Trim('\n', ' ')}";
             }
 
@@ -128,7 +128,7 @@
 
         private static string FormatServerAndDatabaseInfo(string rawMessage, string machineName, string machineIP)
         {
-            var returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Server:{MessageFormatSignal.EndBold} {machineName} ({machineIP})";
+            var returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Server:{MessageFormatSignal.BOLD_END} {machineName} ({machineIP})";
 
             var databaseInfoIndex = rawMessage.IndexOf("DATABASE INFO", StringComparison.InvariantCultureIgnoreCase);
 
@@ -151,8 +151,8 @@
                     }
                 }
 
-                returnMessage += $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Database:{MessageFormatSignal.EndBold}" +
-                    $"{MessageFormatSignal.NewLine}{databaseInfo}";
+                returnMessage += $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Database:{MessageFormatSignal.BOLD_END}" +
+                    $"{MessageFormatSignal.NEWLINE}{databaseInfo}";
             }
 
             return returnMessage;
@@ -172,8 +172,8 @@
                     "No information";
 
                 customInfo = customInfo.Replace("CUSTOM INFO", string.Empty);
-                returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Custom Info:{MessageFormatSignal.EndBold}" +
-                    $" {MessageFormatSignal.NewLine}{customInfo}";
+                returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Custom Info:{MessageFormatSignal.BOLD_END}" +
+                    $" {MessageFormatSignal.NEWLINE}{customInfo}";
             }
 
             return returnMessage;
@@ -197,8 +197,8 @@
                 exceptionInfo = exceptionInfo.Replace(
                     "EXCEPTION INFO", string.Empty);
 
-                returnMessage = $"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Exception:{MessageFormatSignal.EndBold}" +
-                    $" {MessageFormatSignal.NewLine}{exceptionInfo.Trim('\n', ' ')}";
+                returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Exception:{MessageFormatSignal.BOLD_END}" +
+                    $" {MessageFormatSignal.NEWLINE}{exceptionInfo.Trim('\n', ' ')}";
             }
 
             return returnMessage;
@@ -213,7 +213,7 @@
 
             if (sessionInfoIndex > 0)
             {
-                returnMessage.Append($"{MessageFormatSignal.NewLine}{MessageFormatSignal.BeginBold}Session Info:{MessageFormatSignal.EndBold}");
+                returnMessage.Append($"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Session Info:{MessageFormatSignal.BOLD_END}");
 
                 foreach (var key in SessionInfoKeys)
                 {
@@ -232,7 +232,7 @@
                     {
                         var value = rawMessage.Substring(keyIndex, firstNewLineCharIndex - keyIndex);
 
-                        returnMessage.Append(MessageFormatSignal.NewLine + value);
+                        returnMessage.Append(MessageFormatSignal.NEWLINE + value);
                     }
                 }
             }

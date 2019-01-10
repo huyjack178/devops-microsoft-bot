@@ -62,7 +62,7 @@
             gitLabInfo.IsActive = true;
 
             await SaveGitLabInfoAsync(gitLabInfo);
-            await Conversation.ReplyAsync(activity, $"You will receive notification of project {MessageFormatSignal.BeginBold}{projectUrl}{MessageFormatSignal.EndBold}");
+            await Conversation.ReplyAsync(activity, $"You will receive notification of project {MessageFormatSignal.BOLD_START}{projectUrl}{MessageFormatSignal.BOLD_END}");
         }
 
         private async Task DisableProjectAsync(IMessageActivity activity, string message)
@@ -85,7 +85,7 @@
 
             gitLabInfo.IsActive = false;
             await SaveGitLabInfoAsync(gitLabInfo);
-            await Conversation.ReplyAsync(activity, $"You will not receive notification of project {MessageFormatSignal.BeginBold}{projectUrl}{MessageFormatSignal.EndBold}");
+            await Conversation.ReplyAsync(activity, $"You will not receive notification of project {MessageFormatSignal.BOLD_START}{projectUrl}{MessageFormatSignal.BOLD_END}");
         }
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)

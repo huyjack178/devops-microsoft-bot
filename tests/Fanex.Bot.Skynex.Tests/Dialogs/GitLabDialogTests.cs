@@ -63,7 +63,7 @@
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will receive notification of project {MessageFormatSignal.BeginBold}gitlab.nexdev.vn{MessageFormatSignal.EndBold}"));
+                    Arg.Is($"You will receive notification of project {MessageFormatSignal.BOLD_START}gitlab.nexdev.vn{MessageFormatSignal.BOLD_END}"));
         }
 
         [Fact]
@@ -100,7 +100,7 @@
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will receive notification of project {MessageFormatSignal.BeginBold}gitlab.nexdev.vn{MessageFormatSignal.EndBold}"));
+                    Arg.Is($"You will receive notification of project {MessageFormatSignal.BOLD_START}gitlab.nexdev.vn{MessageFormatSignal.BOLD_END}"));
 
             Assert.True(conversationFixture.BotDbContext.GitLabInfo.AsNoTracking()
                 .Any(info => info.ConversationId == "5" && info.ProjectUrl == "gitlab.nexdev.vn"));
@@ -160,7 +160,7 @@
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will not receive notification of project {MessageFormatSignal.BeginBold}gitlab.nexdev.vn/Bot{MessageFormatSignal.EndBold}"));
+                    Arg.Is($"You will not receive notification of project {MessageFormatSignal.BOLD_START}gitlab.nexdev.vn/Bot{MessageFormatSignal.BOLD_END}"));
         }
 
         [Fact]
@@ -193,12 +193,12 @@
 
             // Assert
             var expectedMessage =
-                    $"{MessageFormatSignal.BeginBold}GitLab Master Branch Change{MessageFormatSignal.EndBold} (bell){MessageFormatSignal.NewLine}" +
-                    $"{MessageFormatSignal.BeginBold}Repository:{MessageFormatSignal.EndBold} http://gitlab.nexdev.vn/Bot" + MessageFormatSignal.NewLine +
-                    $"{MessageFormatSignal.BeginBold}Commits:{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" +
-                    $"{MessageFormatSignal.BeginBold}[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910){MessageFormatSignal.EndBold} " +
-                    $"Push Master (Harrison){MessageFormatSignal.NewLine}" +
-                    MessageFormatSignal.BreakLine + MessageFormatSignal.NewLine;
+                    $"{MessageFormatSignal.BOLD_START}GitLab Master Branch Change{MessageFormatSignal.BOLD_END} (bell){MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSignal.BOLD_START}Repository:{MessageFormatSignal.BOLD_END} http://gitlab.nexdev.vn/Bot" + MessageFormatSignal.NEWLINE +
+                    $"{MessageFormatSignal.BOLD_START}Commits:{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSignal.BOLD_START}[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910){MessageFormatSignal.BOLD_END} " +
+                    $"Push Master (Harrison){MessageFormatSignal.NEWLINE}" +
+                    MessageFormatSignal.DIVIDER + MessageFormatSignal.NEWLINE;
 
             await conversationFixture.Conversation.Received().SendAsync("33", Arg.Is(expectedMessage));
         }

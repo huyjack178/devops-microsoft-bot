@@ -4,6 +4,7 @@
     using System.Linq;
     using Fanex.Bot.API.Middlewares;
     using Fanex.Bot.API.Services;
+    using Fanex.Bot.Core.Utilities.Web;
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.Logging;
@@ -36,11 +37,14 @@
                 .SetDefaultLogCategory(Configuration["Fanex.Logging:DefaultCategory"])
                 .Use(new RabbitMQLogging(Configuration["Fanex.Logging:RabbitMQConnectionStrings"]));
             services.AddSingleton(Logger.Log);
+            services.AddSingleton<RestSharp.IRestClient, RestSharp.RestClient>();
+            services.AddSingleton<IWebClient, RestSharpWebClient>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IMaintenanceService, MaintenanceService>();
             services.AddSingleton<IDynamicRepository, DynamicRepository>();
             services.AddSingleton<ILogService, Services.LogService>();
             services.AddSingleton<IDBLogService, DBLogService>();
+            services.AddSingleton<IZabbixService, ZabbixService>();
             services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

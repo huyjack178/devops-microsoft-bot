@@ -100,6 +100,7 @@ namespace Fanex.Bot
             services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<IUnderMaintenanceService, UnderMaintenanceService>();
             services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<IZabbixService, ZabbixService>();
         }
 
         private static void ConfigureBotDialog(IServiceCollection services)
@@ -110,6 +111,7 @@ namespace Fanex.Bot
             services.AddScoped<ILineDialog, LineDialog>();
             services.AddScoped<IUnderMaintenanceDialog, UnderMaintenanceDialog>();
             services.AddScoped<IDBLogDialog, DBLogDialog>();
+            services.AddScoped<IZabbixDialog, ZabbixDialog>();
         }
 
         private static void ConfigureBotMessageHandlers(IServiceCollection services)
@@ -117,6 +119,7 @@ namespace Fanex.Bot
             services.AddSingleton<IGitLabMessageBuilder, GitLabMessageBuilder>();
             services.AddSingleton<IWebLogMessageBuilder, WebLogMessageBuilder>();
             services.AddSingleton<IDBLogMessageBuilder, DBLogMessageBuilder>();
+            services.AddSingleton<IZabbixMessageBuilder, ZabbixMessageBuilder>();
             services.AddSingleton<IMessengerFormatter, DefaultFormatter>();
             services.AddSingleton<ILineFormatter, LineFormatter>();
             services.AddScoped<ILineConversation, LineConversation>();

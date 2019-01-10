@@ -21,6 +21,7 @@
         private readonly IConversation conversation;
         private readonly IConfiguration configuration;
         private readonly IDBLogDialog dbLogDialog;
+        private readonly IZabbixDialog zabbixDialog;
 
 #pragma warning disable S107 // Methods should not have too many parameters
 
@@ -32,7 +33,8 @@
             IUnderMaintenanceDialog umDialog,
             IConversation conversation,
             IConfiguration configuration,
-            IDBLogDialog dbLogDialog)
+            IDBLogDialog dbLogDialog,
+            IZabbixDialog zabbixDialog)
         {
             this.commonDialog = commonDialog;
             this.logDialog = logDialog;
@@ -42,6 +44,7 @@
             this.conversation = conversation;
             this.configuration = configuration;
             this.dbLogDialog = dbLogDialog;
+            this.zabbixDialog = zabbixDialog;
         }
 
 #pragma warning restore S107 // Methods should not have too many parameters
@@ -117,6 +120,10 @@
             {
                 await dbLogDialog.HandleMessage(activity, message);
             }
+            else if (message.StartsWith(MessageCommand.ZABBIX))
+            {
+                await zabbixDialog.HandleMessage(activity, message);
+            }
             else
             {
                 await commonDialog.HandleMessage(activity, message);
@@ -159,10 +166,10 @@
 
         private async Task<Activity> HandleForChannels(Activity activity)
         {
-            if (activity.From?.Name?.ToLowerInvariant() == Channel.Line)
+            if (activity.From?.Name?.ToLowerInvariant() == Channel.LINE)
             {
                 activity.Conversation.Id = activity.From.Id;
-                activity.ChannelId = Channel.Line;
+                activity.ChannelId = Channel.LINE;
                 await lineDialog.RegisterMessageInfo(activity);
             }
 

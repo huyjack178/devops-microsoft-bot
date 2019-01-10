@@ -16,7 +16,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessengerFormatters
         public void Format_Always_GetFormatedText()
         {
             // Arrange
-            var text = $"{MessageFormatSignal.NewLine}Hello: {MessageFormatSignal.BeginBold}{MessageFormatSignal.EndBold}";
+            var text = $"{MessageFormatSignal.NEWLINE}Hello: {MessageFormatSignal.BOLD_START}{MessageFormatSignal.BOLD_END}";
 
             // Act
             var formatedText = lineFormatter.Format(text);

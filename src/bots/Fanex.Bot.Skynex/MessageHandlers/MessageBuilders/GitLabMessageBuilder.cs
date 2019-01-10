@@ -16,23 +16,23 @@
             var project = gitlabPushEvent.Project;
             var commits = gitlabPushEvent.Commits;
 
-            var message = $"{MessageFormatSignal.BeginBold}GitLab Master Branch Change{MessageFormatSignal.EndBold} (bell){MessageFormatSignal.NewLine}" +
-                            $"{MessageFormatSignal.BeginBold}Repository:{MessageFormatSignal.EndBold} {project.WebUrl}{MessageFormatSignal.NewLine}";
+            var message = $"{MessageFormatSignal.BOLD_START}GitLab Master Branch Change{MessageFormatSignal.BOLD_END} (bell){MessageFormatSignal.NEWLINE}" +
+                            $"{MessageFormatSignal.BOLD_START}Repository:{MessageFormatSignal.BOLD_END} {project.WebUrl}{MessageFormatSignal.NEWLINE}";
 
             var commitMessageBuilder = new StringBuilder();
-            commitMessageBuilder.Append($"{MessageFormatSignal.BeginBold}Commits:{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}");
+            commitMessageBuilder.Append($"{MessageFormatSignal.BOLD_START}Commits:{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}");
 
             foreach (var commit in commits)
             {
                 var commitUrl = $"{project.WebUrl}/commit/{commit.Id}";
 
                 commitMessageBuilder
-                    .Append($"{MessageFormatSignal.BeginBold}[{commit.Id.Substring(0, 8)}]({commitUrl}){MessageFormatSignal.EndBold}")
+                    .Append($"{MessageFormatSignal.BOLD_START}[{commit.Id.Substring(0, 8)}]({commitUrl}){MessageFormatSignal.BOLD_END}")
                     .Append($" {commit.Message} ({commit.Author.Name})")
-                    .Append(MessageFormatSignal.NewLine);
+                    .Append(MessageFormatSignal.NEWLINE);
             }
 
-            commitMessageBuilder.Append(MessageFormatSignal.BreakLine + MessageFormatSignal.NewLine);
+            commitMessageBuilder.Append(MessageFormatSignal.DIVIDER + MessageFormatSignal.NEWLINE);
 
             message += commitMessageBuilder;
 

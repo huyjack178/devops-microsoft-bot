@@ -26,15 +26,22 @@
     {
         private const string InformedCacheKey = "InformedUM";
         private readonly IRecurringJobManager recurringJobManager;
+        private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IUnderMaintenanceService underMaintenanceService;
         private readonly IMemoryCache memoryCache;
-        private readonly IConfiguration configuration;
+        private readonly IZabbixDialog zabbixDialog;
+        private readonly int underMaintenanceGMT;
+        private readonly int clientGMT;
+
+#pragma warning disable S107 // Methods should not have too many parameters
 
         public UnderMaintenanceDialog(
             BotDbContext dbContext,
             IConversation conversation,
             IRecurringJobManager recurringJobManager,
+            IBackgroundJobClient backgroundJobClient,
             IUnderMaintenanceService umService,
+            IZabbixDialog zabbixDialog,
             IMemoryCache memoryCache,
             IConfiguration configuration)
             : base(dbContext, conversation)
@@ -42,38 +49,44 @@
             this.recurringJobManager = recurringJobManager;
             this.underMaintenanceService = umService;
             this.memoryCache = memoryCache;
-            this.configuration = configuration;
+            this.backgroundJobClient = backgroundJobClient;
+            this.zabbixDialog = zabbixDialog;
+
+            underMaintenanceGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
+            clientGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
         }
+
+#pragma warning restore S107 // Methods should not have too many parameters
 
         public async Task HandleMessage(IMessageActivity activity, string message)
         {
             var command = message.Replace(MessageCommand.UM, string.Empty).Trim();
 
-            if (command.StartsWith(MessageCommand.Start))
+            if (command.StartsWith(MessageCommand.START))
             {
                 await EnableUnderMaintenanceNotification(activity);
                 return;
             }
 
-            if (command.StartsWith(MessageCommand.Stop))
+            if (command.StartsWith(MessageCommand.STOP))
             {
                 await DisableUnderMaintenanceNotification(activity);
                 return;
             }
 
-            if (command.StartsWith(MessageCommand.UM_StartScan))
+            if (command.StartsWith(MessageCommand.UM_START_SCAN))
             {
                 await EnableScanUnderMaintenancePage(activity, true);
                 return;
             }
 
-            if (command.StartsWith(MessageCommand.UM_StopScan))
+            if (command.StartsWith(MessageCommand.UM_STOP_SCAN))
             {
                 await EnableScanUnderMaintenancePage(activity, false);
                 return;
             }
 
-            if (command.StartsWith(MessageCommand.UM_Notify))
+            if (command.StartsWith(MessageCommand.UM_NOTIFY))
             {
                 await NotifyUnderMaintenance();
             }
@@ -99,11 +112,14 @@
             if (actualInfo.Any(item => item.Value.IsUnderMaintenanceTime))
             {
                 recurringJobManager.RemoveIfExists("CheckUnderMaintenance");
+                CreateScanServiceJob(actualInfo);
                 await StartUnderMaintenanceProcess(actualInfo);
             }
 
             await EndUnderMaintenanceProcess(actualInfo);
         }
+
+        public async Task ScanServiceJob() => await zabbixDialog.ScanService().ConfigureAwait(false);
 
         protected async Task EnableUnderMaintenanceNotification(IMessageActivity activity)
         {
@@ -164,13 +180,11 @@
         {
             try
             {
-                var underMaintenanceGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UMGMT").Value ?? "8");
-                var clientGMT = Convert.ToInt32(configuration.GetSection("UMInfo").GetSection("UserGMT").Value ?? "7");
                 var now = DateTime.UtcNow.AddHours(clientGMT);
                 var underMaintenanceMessage = new StringBuilder(
                         "System will be under maintenance with the following information " +
                         $"(GMT {DateTimeExtention.GenerateGMTText(underMaintenanceGMT)})" +
-                        MessageFormatSignal.NewLine);
+                        MessageFormatSignal.NEWLINE);
                 var hasValidUnderMaintenanceInfo = false;
 
                 foreach (var item in underMaintenanceInfos)
@@ -186,10 +200,10 @@
                     {
                         hasValidUnderMaintenanceInfo = true;
                         underMaintenanceMessage
-                            .Append($"{MessageFormatSignal.BeginBold}SiteId: {item.Key}{MessageFormatSignal.EndBold} - ")
+                            .Append($"{MessageFormatSignal.BOLD_START}SiteId: {item.Key}{MessageFormatSignal.BOLD_END} - ")
                             .Append(
-                                $"From {MessageFormatSignal.BeginBold}{item.Value.From}{MessageFormatSignal.EndBold} " +
-                                $"To {MessageFormatSignal.BeginBold}{item.Value.To}{MessageFormatSignal.EndBold} {MessageFormatSignal.NewLine}");
+                                $"From {MessageFormatSignal.BOLD_START}{item.Value.From}{MessageFormatSignal.BOLD_END} " +
+                                $"To {MessageFormatSignal.BOLD_START}{item.Value.To}{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}");
                     }
                 }
 
@@ -213,7 +227,7 @@
                 if (!hasInformedUnderMaintenanceInfo)
                 {
                     memoryCache.Set(InformedCacheKey + info.Key, true, TimeSpan.FromHours(5));
-                    await SendMessage($"SiteId {MessageFormatSignal.BeginBold}{info.Key}{MessageFormatSignal.EndBold} is under maintenance now!");
+                    await SendMessage($"SiteId {MessageFormatSignal.BOLD_START}{info.Key}{MessageFormatSignal.BOLD_END} is under maintenance now!");
                     await ScanPages(info.Key);
                 }
             }
@@ -240,13 +254,13 @@
                 await ScanPageInGroup(group);
             }
 
-            await SendMessage($"Scanning completed!{MessageFormatSignal.NewLine}{MessageFormatSignal.BreakLine}", isScanPageMessage: true);
+            await SendMessage($"Scanning completed!{MessageFormatSignal.NEWLINE}{MessageFormatSignal.DIVIDER}", isScanPageMessage: true);
         }
 
         private async Task ScanPageInGroup(IGrouping<string, UMPage> groupPage)
         {
             var allPagesShowUM = true;
-            var message = new StringBuilder($"{MessageFormatSignal.BeginBold}{groupPage.Key}{MessageFormatSignal.EndBold}");
+            var message = new StringBuilder($"{MessageFormatSignal.BOLD_START}{groupPage.Key}{MessageFormatSignal.BOLD_END}");
 
             foreach (var page in groupPage)
             {
@@ -261,14 +275,14 @@
 
                 if (!isShowUM)
                 {
-                    message.Append($"{MessageFormatSignal.NewLine}{page.SiteUrl} does not show UM");
+                    message.Append($"{MessageFormatSignal.NEWLINE}{page.SiteUrl} does not show UM");
                     allPagesShowUM = false;
                 }
             }
 
             if (allPagesShowUM)
             {
-                message.Append($" PASSED! {MessageFormatSignal.NewLine}");
+                message.Append($" PASSED! {MessageFormatSignal.NEWLINE}");
             }
 
             await SendMessage(message.ToString(), isScanPageMessage: true);
@@ -283,9 +297,22 @@
 
                 if (hasInformedUnderMaintenanceInfo && !info.Value.IsUnderMaintenanceTime)
                 {
-                    await SendMessage($"SiteId {MessageFormatSignal.BeginBold}{info.Key}{MessageFormatSignal.EndBold} is back to normal now!");
+                    await SendMessage($"SiteId {MessageFormatSignal.BOLD_START}{info.Key}{MessageFormatSignal.BOLD_END} is back to normal now!");
                     memoryCache.Remove(siteInformedCacheKey);
                 }
+            }
+        }
+
+        private void CreateScanServiceJob(Dictionary<int, UM> actualInfo)
+        {
+            var jobId = memoryCache.Get<string>("ScanServiceJobId");
+
+            if (string.IsNullOrEmpty(jobId))
+            {
+                var endUMTime = actualInfo.FirstOrDefault().Value.To.ConvertFromSourceGMTToEndGMT(underMaintenanceGMT, clientGMT);
+                var scanServiceTime = endUMTime.AddMinutes(-30);
+                jobId = backgroundJobClient.Schedule(() => ScanServiceJob(), scanServiceTime);
+                memoryCache.Set("ScanServiceJobId", jobId, endUMTime);
             }
         }
 

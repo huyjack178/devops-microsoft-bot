@@ -89,10 +89,10 @@
                     .SendAsync(
                         "374i324223423342323749823748923",
                         $"System will be under maintenance with the following information " +
-                        $"(GMT +8){MessageFormatSignal.NewLine}" +
-                        $"{MessageFormatSignal.BeginBold}SiteId: 1{MessageFormatSignal.EndBold} - " +
-                        $"From {MessageFormatSignal.BeginBold}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.EndBold} " +
-                        $"To {MessageFormatSignal.BeginBold}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.EndBold} {MessageFormatSignal.NewLine}");
+                        $"(GMT +8){MessageFormatSignal.NEWLINE}" +
+                        $"{MessageFormatSignal.BOLD_START}SiteId: 1{MessageFormatSignal.BOLD_END} - " +
+                        $"From {MessageFormatSignal.BOLD_START}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.BOLD_END} " +
+                        $"To {MessageFormatSignal.BOLD_START}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}");
         }
 
         [Fact]
@@ -125,7 +125,7 @@
             await conversationFixture.Conversation.Received(1)
               .SendAsync(
                 "374i23749823748923",
-                $"SiteId {MessageFormatSignal.BeginBold}1{MessageFormatSignal.EndBold} is under maintenance now!");
+                $"SiteId {MessageFormatSignal.BOLD_START}1{MessageFormatSignal.BOLD_END} is under maintenance now!");
 
             Assert.True(memoryCache.Get<bool>("InformedUM1"));
         }
@@ -184,18 +184,18 @@
             await conversationFixture.Conversation.Received()
              .SendAsync("374i2374982dfas343748923", "Scanning started!");
             await conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BeginBold}google{MessageFormatSignal.EndBold} PASSED! {MessageFormatSignal.NewLine}");
+                .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BOLD_START}google{MessageFormatSignal.BOLD_END} PASSED! {MessageFormatSignal.NEWLINE}");
             await conversationFixture.Conversation.Received()
                .SendAsync(
                     "374i2374982dfas343748923",
-                    $"{MessageFormatSignal.BeginBold}alpha{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" +
+                    $"{MessageFormatSignal.BOLD_START}alpha{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" +
                     $"http://www.agbong888888.com does not show UM");
             await conversationFixture.Conversation.DidNotReceive()
-              .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BeginBold}alpha{MessageFormatSignal.EndBold} PASSED! {MessageFormatSignal.NewLine}");
+              .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BOLD_START}alpha{MessageFormatSignal.BOLD_END} PASSED! {MessageFormatSignal.NEWLINE}");
             await conversationFixture.Conversation.Received(1)
                 .SendAsync("374i2374982dfas343748923", "No site to be scanned!");
             await conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", $"Scanning completed!{MessageFormatSignal.NewLine}{MessageFormatSignal.BreakLine}");
+                .SendAsync("374i2374982dfas343748923", $"Scanning completed!{MessageFormatSignal.NEWLINE}{MessageFormatSignal.DIVIDER}");
         }
 
         [Fact]
@@ -228,7 +228,7 @@
             await conversationFixture.Conversation.Received(1)
              .SendAsync(
                 "374i2372342344982dfas343748923",
-                $"SiteId {MessageFormatSignal.BeginBold}1{MessageFormatSignal.EndBold} is back to normal now!");
+                $"SiteId {MessageFormatSignal.BOLD_START}1{MessageFormatSignal.BOLD_END} is back to normal now!");
             Assert.False(memoryCache.Get<bool>("InformedUM1"));
         }
     }

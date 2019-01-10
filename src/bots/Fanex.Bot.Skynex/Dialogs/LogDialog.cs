@@ -111,7 +111,7 @@
             await SaveLogInfoAsync(logInfo);
 
             await Conversation.ReplyAsync(activity,
-                $"You will receive log with categories contain {MessageFormatSignal.BeginBold}[{logCategories}]{MessageFormatSignal.EndBold}");
+                $"You will receive log with categories contain {MessageFormatSignal.BOLD_START}[{logCategories}]{MessageFormatSignal.BOLD_END}");
         }
 
         public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd)
@@ -140,7 +140,7 @@
 
             await SaveLogInfoAsync(logInfo);
             await Conversation.ReplyAsync(activity,
-                $"You will not receive log with categories contain {MessageFormatSignal.BeginBold}[{logCategories}]{MessageFormatSignal.EndBold}");
+                $"You will not receive log with categories contain {MessageFormatSignal.BOLD_START}[{logCategories}]{MessageFormatSignal.BOLD_END}");
         }
 
         public async Task StartNotifyingLogAsync(IMessageActivity activity)
@@ -216,12 +216,12 @@
         {
             var logInfo = await GetOrCreateLogInfoAsync(activity);
 
-            var message = $"Your log status {MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}Log Categories:{MessageFormatSignal.EndBold} [{logInfo.LogCategories}]{MessageFormatSignal.NewLine}";
+            var message = $"Your log status {MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}Log Categories:{MessageFormatSignal.BOLD_END} [{logInfo.LogCategories}]{MessageFormatSignal.NEWLINE}";
 
             message += logInfo.IsActive ?
-                $"{MessageFormatSignal.BeginBold}Running{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" :
-                $"{MessageFormatSignal.BeginBold}Stopped{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}";
+                $"{MessageFormatSignal.BOLD_START}Running{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" :
+                $"{MessageFormatSignal.BOLD_START}Stopped{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}";
 
             await Conversation.ReplyAsync(activity, message);
         }

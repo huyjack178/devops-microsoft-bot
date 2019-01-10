@@ -38,7 +38,7 @@
 
             await Conversation.ReplyAsync(
                 activity,
-                $"Please send {MessageFormatSignal.BeginBold}help{MessageFormatSignal.EndBold} to get my commands");
+                $"Please send {MessageFormatSignal.BOLD_START}help{MessageFormatSignal.BOLD_END} to get my commands");
         }
 
         public virtual async Task RegisterMessageInfo(Connector.IMessageActivity activity)
@@ -51,7 +51,7 @@
                 messageInfo = InitMessageInfo(activity);
                 await SaveMessageInfo(messageInfo);
                 await Conversation.SendAdminAsync(
-                    $"New client {MessageFormatSignal.BeginBold}{activity.Conversation.Id}{MessageFormatSignal.EndBold} has been added");
+                    $"New client {MessageFormatSignal.BOLD_START}{activity.Conversation.Id}{MessageFormatSignal.BOLD_END} has been added");
             }
         }
 
@@ -83,7 +83,7 @@
 
             await DbContext.SaveChangesAsync();
             await Conversation.SendAdminAsync(
-                $"Client {MessageFormatSignal.BeginBold}{activity.Conversation.Id}{MessageFormatSignal.EndBold} has been removed");
+                $"Client {MessageFormatSignal.BOLD_START}{activity.Conversation.Id}{MessageFormatSignal.BOLD_END} has been removed");
         }
 
         private static MessageInfo InitMessageInfo(Connector.IMessageActivity activity)

@@ -21,18 +21,18 @@
 
             if (dbLog.IsSimple)
             {
-                return dbLog.MsgInfo + MessageFormatSignal.NewLine + MessageFormatSignal.BreakLine;
+                return dbLog.MsgInfo + MessageFormatSignal.NEWLINE + MessageFormatSignal.DIVIDER;
             }
 
             var builder = new StringBuilder();
 
-            builder.Append(MessageFormatSignal.BeginBold).Append("Server:").Append(MessageFormatSignal.EndBold).Append(" ")
-                .Append(dbLog.ServerName).Append(MessageFormatSignal.NewLine);
-            builder.Append(MessageFormatSignal.BeginBold).Append("Title:").Append(MessageFormatSignal.EndBold).Append(" ")
-                .Append(dbLog.Title).Append(MessageFormatSignal.NewLine);
-            builder.Append(MessageFormatSignal.BeginBold).Append("DateTime:").Append(MessageFormatSignal.EndBold).Append(" ")
-                .Append(dbLog.LogDate).Append(MessageFormatSignal.DoubleNewLine);
-            builder.Append(dbLog.MsgInfo).Append(MessageFormatSignal.NewLine).Append(MessageFormatSignal.BreakLine);
+            builder.Append(MessageFormatSignal.BOLD_START).Append("Server:").Append(MessageFormatSignal.BOLD_END).Append(" ")
+                .Append(dbLog.ServerName).Append(MessageFormatSignal.NEWLINE);
+            builder.Append(MessageFormatSignal.BOLD_START).Append("Title:").Append(MessageFormatSignal.BOLD_END).Append(" ")
+                .Append(dbLog.Title).Append(MessageFormatSignal.NEWLINE);
+            builder.Append(MessageFormatSignal.BOLD_START).Append("DateTime:").Append(MessageFormatSignal.BOLD_END).Append(" ")
+                .Append(dbLog.LogDate).Append(MessageFormatSignal.DOUBLE_NEWLINE);
+            builder.Append(dbLog.MsgInfo).Append(MessageFormatSignal.NEWLINE).Append(MessageFormatSignal.DIVIDER);
 
             return builder.ToString();
         }

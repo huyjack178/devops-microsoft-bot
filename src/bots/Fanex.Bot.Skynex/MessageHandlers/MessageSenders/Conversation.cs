@@ -47,7 +47,7 @@
         {
             switch (activity.ChannelId)
             {
-                case Channel.Line:
+                case Channel.LINE:
                     await lineConversation.ReplyAsync(activity, message);
                     break;
 
@@ -83,10 +83,10 @@
                 logger.LogError($"{ex.Message}\n{ex.StackTrace}");
 
                 await SendAdminAsync(
-                    $"Can not send message to {MessageFormatSignal.BeginBold}{messageInfo?.ConversationId}{MessageFormatSignal.EndBold} {MessageFormatSignal.NewLine}" +
-                    $"{MessageFormatSignal.BeginBold}Exception:{MessageFormatSignal.EndBold} {ex.Message} {MessageFormatSignal.NewLine}" +
+                    $"Can not send message to {MessageFormatSignal.BOLD_START}{messageInfo?.ConversationId}{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSignal.BOLD_START}Exception:{MessageFormatSignal.BOLD_END} {ex.Message} {MessageFormatSignal.NEWLINE}" +
                     $"Message: {messageInfo?.Text}" +
-                    $"{MessageFormatSignal.BreakLine}").ConfigureAwait(false);
+                    $"{MessageFormatSignal.DIVIDER}").ConfigureAwait(false);
             }
         }
 
@@ -105,7 +105,7 @@
             }
             else
             {
-                var errorMessage = $"Error: {MessageFormatSignal.BeginBold}{conversationId}{MessageFormatSignal.EndBold} not found";
+                var errorMessage = $"Error: {MessageFormatSignal.BOLD_START}{conversationId}{MessageFormatSignal.BOLD_END} not found";
                 await SendAdminAsync(errorMessage);
 
                 return Result.CreateFailedResult(errorMessage);
@@ -116,7 +116,7 @@
         {
             switch (message.ChannelId)
             {
-                case Channel.Line:
+                case Channel.LINE:
                     await lineConversation.SendAsync(message);
                     break;
 

@@ -26,32 +26,32 @@
         public BotDbContext DbContext { get; }
 
         public static string GetCommandMessages()
-            => $"Skynex's available commands:{MessageFormatSignal.NewLine} " +
-                $"{MessageFormatSignal.BeginBold}group{MessageFormatSignal.EndBold} " +
-                    $"=> Get your group ID {MessageFormatSignal.NewLine}" + MessageFormatSignal.BreakLine + MessageFormatSignal.NewLine +
-                $"{MessageFormatSignal.BeginBold}log add [Contains-LogCategory]{MessageFormatSignal.EndBold} " +
+            => $"Skynex's available commands:{MessageFormatSignal.NEWLINE} " +
+                $"{MessageFormatSignal.BOLD_START}group{MessageFormatSignal.BOLD_END} " +
+                    $"=> Get your group ID {MessageFormatSignal.NEWLINE}" + MessageFormatSignal.DIVIDER + MessageFormatSignal.NEWLINE +
+                $"{MessageFormatSignal.BOLD_START}log add [Contains-LogCategory]{MessageFormatSignal.BOLD_END} " +
                     $"==> Register to get log which has category name " +
-                    $"{MessageFormatSignal.BeginBold}contains [Contains-LogCategory]{MessageFormatSignal.EndBold}. " +
-                    $"Example: log add Alpha;NAP {MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}log remove [LogCategory]{MessageFormatSignal.EndBold}{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}log start{MessageFormatSignal.EndBold} " +
-                    $"=> Start receiving logs{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}log stop [TimeSpan(Optional)]{MessageFormatSignal.EndBold} " +
+                    $"{MessageFormatSignal.BOLD_START}contains [Contains-LogCategory]{MessageFormatSignal.BOLD_END}. " +
+                    $"Example: log add Alpha;NAP {MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}log remove [LogCategory]{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}log start{MessageFormatSignal.BOLD_END} " +
+                    $"=> Start receiving logs{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}log stop [TimeSpan(Optional)]{MessageFormatSignal.BOLD_END} " +
                     $"=> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
-                    $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}log status{MessageFormatSignal.EndBold} " +
-                    $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BreakLine}{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}gitlab addProject [GitlabProjectUrl]{MessageFormatSignal.EndBold} " +
-                    $"=> Register to get notification of Gitlab's project{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}gitlab removeProject [GitlabProjectUrl]{MessageFormatSignal.EndBold} " +
-                    $"=> Disable getting notification of Gitlab's project{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BreakLine}{MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}um start{MessageFormatSignal.EndBold} " +
-                    $"=> Start getting notification when UM starts {MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}um stop{MessageFormatSignal.EndBold} " +
-                    $"=> Stop getting UM information {MessageFormatSignal.NewLine}" +
-                $"{MessageFormatSignal.BeginBold}um addPage [PageUrl]{MessageFormatSignal.EndBold} " +
+                    $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}log status{MessageFormatSignal.BOLD_END} " +
+                    $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.DIVIDER}{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}gitlab addProject [GitlabProjectUrl]{MessageFormatSignal.BOLD_END} " +
+                    $"=> Register to get notification of Gitlab's project{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}gitlab removeProject [GitlabProjectUrl]{MessageFormatSignal.BOLD_END} " +
+                    $"=> Disable getting notification of Gitlab's project{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.DIVIDER}{MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}um start{MessageFormatSignal.BOLD_END} " +
+                    $"=> Start getting notification when UM starts {MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}um stop{MessageFormatSignal.BOLD_END} " +
+                    $"=> Stop getting UM information {MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSignal.BOLD_START}um addPage [PageUrl]{MessageFormatSignal.BOLD_END} " +
                     $"=> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
 
         protected async Task SaveMessageInfo(MessageInfo messageInfo)
