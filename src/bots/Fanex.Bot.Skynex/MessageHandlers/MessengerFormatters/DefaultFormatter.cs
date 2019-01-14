@@ -43,6 +43,7 @@ namespace Fanex.Bot.Skynex.MessageHandlers.MessengerFormatters
                 .Replace("\n\n\n\n", NewLine)
                 .Replace("\n\n\n", NewLine)
                 .Replace("\n\n", NewLine)
-                .Replace("\n \n", NewLine);
+                .Replace("\n \n", NewLine)
+                .Replace("<br>", NewLine);
     }
 }

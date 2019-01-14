@@ -46,7 +46,7 @@
                 return;
             }
 
-            if (command.StartsWith(MessageCommand.Stop))
+            if (command.StartsWith(MessageCommand.STOP))
             {
                 await StopNotifyingDbLogAsync(activity);
             }

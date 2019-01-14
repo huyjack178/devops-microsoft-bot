@@ -20,22 +20,28 @@
         private readonly BotConversationFixture conversationFixture;
         private readonly IUnderMaintenanceDialog dialog;
         private readonly IRecurringJobManager recurringJobManager;
+        private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IUnderMaintenanceService umService;
         private readonly IMemoryCache memoryCache;
+        private readonly IZabbixDialog zabbixDialog;
 
         public UMDialogTests(BotConversationFixture conversationFixture)
         {
             this.conversationFixture = conversationFixture;
             recurringJobManager = Substitute.For<IRecurringJobManager>();
+            backgroundJobClient = Substitute.For<IBackgroundJobClient>();
             umService = Substitute.For<IUnderMaintenanceService>();
             memoryCache = new MemoryCache(new MemoryCacheOptions());
+            zabbixDialog = Substitute.For<IZabbixDialog>();
             this.conversationFixture.Configuration.GetSection("UMInfo").GetSection("UMGMT")?.Value.Returns("8");
             this.conversationFixture.Configuration.GetSection("UMInfo").GetSection("UserGMT")?.Value.Returns("7");
             dialog = new UnderMaintenanceDialog(
                 this.conversationFixture.BotDbContext,
                 conversationFixture.Conversation,
                 recurringJobManager,
+                backgroundJobClient,
                 umService,
+                zabbixDialog,
                 memoryCache,
                 this.conversationFixture.Configuration);
         }

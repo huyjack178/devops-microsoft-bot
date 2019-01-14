@@ -5,6 +5,11 @@
       <Value>src\Fanex.Bot\Fanex.Bot.csproj:netcoreapp2.0</Value>
       <Value>src\clients\Fanex.Bot.Client\Fanex.Bot.Client.csproj:net461</Value>
       <Value>src\api\Fanex.Bot.API\Fanex.Bot.API.csproj</Value>
+      <Value>Program.cs:src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj</Value>
+      <Value>Startup.cs:src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj</Value>
+      <Value>MessageHandlers\MessageSenders\BotDelegatingHandler.cs:src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj</Value>
+      <Value>MessageHandlers\MessageSenders\LineConversation.cs:src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj</Value>
+      <Value>MessageHandlers\MessageSenders\SkypeConversation.cs:src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj</Value>
     </MetricsExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
