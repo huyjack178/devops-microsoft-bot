@@ -18,6 +18,7 @@
 
     public class DBLogDialog : BaseDialog, IDBLogDialog
     {
+        private const string NotifyDBLogJobId = "NotifyDbLogPeriodically";
         private readonly ILogService logService;
         private readonly IRecurringJobManager recurringJobManager;
         private readonly IDBLogMessageBuilder messageBuilder;
@@ -42,20 +43,33 @@
             if (command.StartsWith(MessageCommand.Start))
             {
                 await StartNotifyingDbLogAsync(activity);
+                return;
+            }
+
+            if (command.StartsWith(MessageCommand.Stop))
+            {
+                await StopNotifyingDbLogAsync(activity);
             }
         }
 
         public async Task StartNotifyingDbLogAsync(IMessageActivity activity)
         {
             recurringJobManager.AddOrUpdate(
-                "NotifyDbLogPeriodically", Job.FromExpression(() => GetAndSendLogAsync()), Cron.Minutely());
+                NotifyDBLogJobId, Job.FromExpression(() => GetAndSendLogAsync()), Cron.Minutely());
 
-            await Conversation.ReplyAsync(activity, "DBLog has been started!");
+            await Conversation.ReplyAsync(activity, "Database Log has been started!");
+        }
+
+        public async Task StopNotifyingDbLogAsync(IMessageActivity activity)
+        {
+            recurringJobManager.RemoveIfExists(NotifyDBLogJobId);
+
+            await Conversation.ReplyAsync(activity, "Database Log has been stopped!");
         }
 
         public async Task GetAndSendLogAsync()
         {
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 11; i++)
             {
                 var dbLogs = await logService.GetDBLogs();
 
