@@ -1,7 +1,7 @@
 ﻿namespace Fanex.Bot.Skynex.Dialogs
 {
-    using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Fanex.Bot.Models;
     using Fanex.Bot.Services;
@@ -10,7 +10,6 @@
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Bot.Connector;
-    using Microsoft.Extensions.Configuration;
 
     public interface IDBLogDialog : IDialog
     {
@@ -56,29 +55,34 @@
 
         public async Task GetAndSendLogAsync()
         {
-            var dbLogs = await logService.GetDBLogs();
-
-            if (dbLogs == null)
+            for (int i = 0; i < 12; i++)
             {
-                return;
-            }
+                var dbLogs = await logService.GetDBLogs();
 
-            var successfulSentLogNotificationIds = new List<int>();
-
-            foreach (var log in dbLogs)
-            {
-                var message = messageBuilder.BuildMessage(log);
-                var result = await Conversation.SendAsync(log.SkypeGroupId, message);
-
-                if (result.IsOk)
+                if (dbLogs == null)
                 {
-                    successfulSentLogNotificationIds.Add(log.NotificationId);
+                    return;
                 }
-            }
 
-            if (successfulSentLogNotificationIds.Count > 0)
-            {
-                await logService.AckDBLog(successfulSentLogNotificationIds.ToArray());
+                var successfulSentLogNotificationIds = new List<int>();
+
+                foreach (var log in dbLogs)
+                {
+                    var message = messageBuilder.BuildMessage(log);
+                    var result = await Conversation.SendAsync(log.SkypeGroupId, message);
+
+                    if (result.IsOk)
+                    {
+                        successfulSentLogNotificationIds.Add(log.NotificationId);
+                    }
+                }
+
+                if (successfulSentLogNotificationIds.Count > 0)
+                {
+                    await logService.AckDBLog(successfulSentLogNotificationIds.ToArray());
+                }
+
+                Thread.Sleep(5000);
             }
         }
     }

@@ -53,6 +53,7 @@ namespace Fanex.Bot
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseExceptionHandler("/api/Error/");
+
             app.UseHangfireServer();
             app.UseHangfireDashboard(options: new DashboardOptions
             {
