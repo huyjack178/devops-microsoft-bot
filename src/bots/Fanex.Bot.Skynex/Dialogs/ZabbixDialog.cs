@@ -21,22 +21,16 @@
     public class ZabbixDialog : BaseDialog, IZabbixDialog
     {
         private readonly IZabbixService zabbixService;
-        private readonly IUnderMaintenanceService umService;
-        private readonly IRecurringJobManager recurringJobManager;
         private readonly IZabbixMessageBuilder messageBuilder;
 
         public ZabbixDialog(
             BotDbContext dbContext,
             IConversation conversation,
             IZabbixService zabbixService,
-            IUnderMaintenanceService umService,
-            IRecurringJobManager recurringJobManager,
             IZabbixMessageBuilder messageBuilder) :
                 base(dbContext, conversation)
         {
             this.zabbixService = zabbixService;
-            this.umService = umService;
-            this.recurringJobManager = recurringJobManager;
             this.messageBuilder = messageBuilder;
         }
 
@@ -44,22 +38,32 @@
         {
             var command = message.Replace(MessageCommand.ZABBIX, string.Empty).Trim();
 
-            if (command.StartsWith(MessageCommand.ZABBIX_START_SCAN_SERVICE))
+            if (command.StartsWith(MessageCommand.ZABBIX_ENABLE_SCAN_SERVICE))
             {
-                await StartScanService(activity);
+                await EnableScanService(activity);
+                return;
+            }
+
+            if (command.StartsWith(MessageCommand.ZABBIX_DISABLE_SCAN_SERVICE))
+            {
+                await EnableScanService(activity, isEnable: false);
+                return;
+            }
+
+            if (command.StartsWith(MessageCommand.ZABBIX_SCAN_SERVICE))
+            {
+                await ScanService();
             }
         }
 
-        public async Task StartScanService(IMessageActivity activity)
+        public async Task EnableScanService(IMessageActivity activity, bool isEnable = true)
         {
-            recurringJobManager.AddOrUpdate(
-                HangfireJob.ZABBIX_SCAN_SERVICE, Job.FromExpression(() => ScanService()), Cron.MinuteInterval(15));
-
             var zabbixInfo = await GetZabbixInfo(activity);
-            zabbixInfo.EnableScanService = true;
+            zabbixInfo.EnableScanService = isEnable;
             await SaveZabbixInfo(zabbixInfo);
 
-            await Conversation.ReplyAsync(activity, "Zabbix scan service after UM has been started!");
+            var enableText = isEnable ? "enabled" : "disabled";
+            await Conversation.ReplyAsync(activity, $"Zabbix scan service after UM has been {enableText}!");
         }
 
         public async Task ScanService()

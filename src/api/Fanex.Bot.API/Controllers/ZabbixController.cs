@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Fanex.Bot.API.Services;
+    using Fanex.Bot.Models.Zabbix;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]
@@ -19,9 +20,9 @@
 
         [HttpPost]
         [Route("services")]
-        public async Task<IActionResult> GetServices([FromBody]string[] serviceKeys)
+        public async Task<IActionResult> GetServices([FromBody]RequestGetServices requestData)
         {
-            var services = await zabbixService.GetServices(serviceKeys);
+            var services = await zabbixService.GetServices(requestData.ServiceKeys, requestData.Hosts);
 
             return new JsonResult(services);
         }

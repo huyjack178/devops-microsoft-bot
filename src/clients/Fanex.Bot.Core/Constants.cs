@@ -26,8 +26,9 @@
         public const string UM_STOP_SCAN = "scanstop";
         public const string DBLOG = "dblog";
         public const string ZABBIX = "zabbix";
-        public const string ZABBIX_START_SCAN_SERVICE = "startscanservice";
-        public const string ZABBIX_STOP_SCAN_SERVICE = "stopscanservice";
+        public const string ZABBIX_ENABLE_SCAN_SERVICE = "enablescanservice";
+        public const string ZABBIX_DISABLE_SCAN_SERVICE = "disablescanservice";
+        public const string ZABBIX_SCAN_SERVICE = "scanservice";
     }
 
     public static class HangfireJob

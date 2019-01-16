@@ -16,7 +16,7 @@
     {
         private readonly IWebClient webClient;
         private readonly string botServiceUrl;
-        private readonly string[] zabbixSearchServiceKeys;
+        private readonly IConfiguration configuration;
 
         public ZabbixService(
            IWebClient webClient,
@@ -24,14 +24,21 @@
         {
             this.webClient = webClient;
             botServiceUrl = configuration.GetSection("BotServiceUrl")?.Value;
-            zabbixSearchServiceKeys = configuration.GetSection("Zabbix:SearchServiceKeys")?.Get<string[]>();
+            this.configuration = configuration;
         }
 
         public async Task<IList<Service>> GetServices()
         {
-            var services = await webClient.PostJsonAsync<string[], IList<Service>>(
+            var zabbixSearchServiceKeys = configuration.GetSection("Zabbix:SearchServiceKeys")?.Get<string[]>();
+            var hosts = configuration.GetSection("Zabbix:Hosts")?.Get<string[]>();
+
+            var services = await webClient.PostJsonAsync<RequestGetServices, IList<Service>>(
                     new Uri($"{botServiceUrl}/Zabbix/Services"),
-                    zabbixSearchServiceKeys).ConfigureAwait(false);
+                    new RequestGetServices
+                    {
+                        ServiceKeys = zabbixSearchServiceKeys,
+                        Hosts = hosts
+                    }).ConfigureAwait(false);
 
             return services;
         }

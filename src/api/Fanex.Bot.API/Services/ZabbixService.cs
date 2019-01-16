@@ -12,7 +12,7 @@
     {
         Task<string> Login();
 
-        Task<IList<Service>> GetServices(string[] serviceKeys);
+        Task<IList<Service>> GetServices(string[] serviceKeys, string[] hosts);
     }
 
     public class ZabbixService : IZabbixService
@@ -26,7 +26,7 @@
             this.webClient = webClient;
         }
 
-        public async Task<IList<Service>> GetServices(string[] serviceKeys)
+        public async Task<IList<Service>> GetServices(string[] serviceKeys, string[] hosts)
         {
             var url = new Uri(configuration.GetSection("Zabbix:ServiceUri").Value);
             var token = await Login();
@@ -48,7 +48,11 @@
                 Auth = token
             });
 
-            return services.Content.Where(service => service.Interfaces.Count > 0 && service.Status == "0").ToList();
+            return services.Content
+                .Where(service =>
+                    service.Interfaces.Count > 0 &&
+                    service.Status == "0" &&
+                    service.Interfaces.Any(i => hosts == null || hosts.Length == 0 || hosts.Contains(i.IP))).ToList();
         }
 
         public async Task<string> Login()
