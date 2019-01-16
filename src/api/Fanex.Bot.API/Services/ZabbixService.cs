@@ -36,7 +36,7 @@
                 Method = "item.get",
                 Params = new
                 {
-                    output = new[] { "itemid", "type", "name", "key_", "status" },
+                    output = new[] { "itemid", "type", "name", "key_", "status", "lastvalue" },
                     search = new
                     {
                         key_ = serviceKeys
@@ -48,7 +48,7 @@
                 Auth = token
             });
 
-            return services.Content.Where(service => service.Interfaces.Count > 0).ToList();
+            return services.Content.Where(service => service.Interfaces.Count > 0 && service.Status == "0").ToList();
         }
 
         public async Task<string> Login()

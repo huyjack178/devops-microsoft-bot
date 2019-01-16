@@ -20,9 +20,9 @@
 
             message.Append($"{MessageFormatSignal.BOLD_END}[{serviceGroup.Key}]{MessageFormatSignal.BOLD_START}{MessageFormatSignal.NEWLINE}");
 
-            foreach (var service in serviceGroup)
+            foreach (var service in serviceGroup.OrderByDescending(s => s.LastValue))
             {
-                Enum.TryParse(service.Status, out ZabbixServiceStatus status);
+                Enum.TryParse(service.LastValue, out ZabbixServiceStatus status);
                 var statusMessage = status.ToString();
 
                 if (status != ZabbixServiceStatus.Running)
@@ -30,7 +30,7 @@
                     statusMessage = MessageFormatSignal.BOLD_START + status.ToString() + MessageFormatSignal.BOLD_END;
                 }
 
-                message.Append($"{MessageFormatSignal.BOLD_START}{service.Name}{MessageFormatSignal.BOLD_END} is {statusMessage}{MessageFormatSignal.NEWLINE}");
+                message.Append($"{service.Name} is {statusMessage}{MessageFormatSignal.NEWLINE}");
             }
 
             message.Append(MessageFormatSignal.DIVIDER + MessageFormatSignal.NEWLINE);

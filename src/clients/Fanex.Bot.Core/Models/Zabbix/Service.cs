@@ -20,6 +20,9 @@
         [JsonProperty("status")]
         public string Status { get; set; }
 
+        [JsonProperty("lastvalue")]
+        public string LastValue { get; set; }
+
         [JsonProperty("hosts")]
         public IList<Host> Hosts { get; set; }
 
