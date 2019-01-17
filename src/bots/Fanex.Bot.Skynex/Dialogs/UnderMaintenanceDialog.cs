@@ -200,7 +200,7 @@
                     {
                         hasValidUnderMaintenanceInfo = true;
                         underMaintenanceMessage
-                            .Append($"{MessageFormatSignal.BOLD_START}SiteId: {item.Key}{MessageFormatSignal.BOLD_END} - ")
+                            .Append($"{MessageFormatSignal.BOLD_START}Site {GetUMSiteName(item.Key).Result} ({item.Key}){MessageFormatSignal.BOLD_END} - ")
                             .Append(
                                 $"From {MessageFormatSignal.BOLD_START}{item.Value.From}{MessageFormatSignal.BOLD_END} " +
                                 $"To {MessageFormatSignal.BOLD_START}{item.Value.To}{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}");
@@ -227,7 +227,7 @@
                 if (!hasInformedUnderMaintenanceInfo)
                 {
                     memoryCache.Set(InformedCacheKey + info.Key, true, TimeSpan.FromHours(5));
-                    await SendMessage($"SiteId {MessageFormatSignal.BOLD_START}{info.Key}{MessageFormatSignal.BOLD_END} is under maintenance now!");
+                    await SendMessage($"Site {MessageFormatSignal.BOLD_START}{await GetUMSiteName(info.Key)} ({info.Key}){MessageFormatSignal.BOLD_END} is under maintenance now!");
                     await ScanPages(info.Key);
                 }
             }
@@ -297,7 +297,7 @@
 
                 if (hasInformedUnderMaintenanceInfo && !info.Value.IsUnderMaintenanceTime)
                 {
-                    await SendMessage($"SiteId {MessageFormatSignal.BOLD_START}{info.Key}{MessageFormatSignal.BOLD_END} is back to normal now!");
+                    await SendMessage($"Site {MessageFormatSignal.BOLD_START}{await GetUMSiteName(info.Key)} ({info.Key}){MessageFormatSignal.BOLD_END} is back to normal now!");
                     memoryCache.Remove(siteInformedCacheKey);
                 }
             }
@@ -315,6 +315,9 @@
                 memoryCache.Set("ScanServiceJobId", jobId, endUMTime);
             }
         }
+
+        private async Task<string> GetUMSiteName(int siteId)
+            => (await DbContext.UMSite.FirstOrDefaultAsync(site => site.SiteId == siteId.ToString()))?.SiteName;
 
         private async Task SendMessage(string message, bool isScanPageMessage = false)
         {

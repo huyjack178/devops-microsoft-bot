@@ -5,6 +5,7 @@
     using System.Linq;
     using Fanex.Bot.Models;
     using Fanex.Bot.Models.Log;
+    using Fanex.Bot.Models.UM;
     using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
@@ -101,23 +102,43 @@
 
         public void InitDbContextData()
         {
-            var dbContext = MockDbContext();
-            var mesageInfo = CreateMessageInfo();
-
-            foreach (var info in mesageInfo)
+            try
             {
-                var existMessageInfo = dbContext.MessageInfo.Any(e => e.ConversationId == info.ConversationId);
-                dbContext.Entry(info).State = existMessageInfo ? EntityState.Modified : EntityState.Added;
-                dbContext.SaveChanges();
+                var dbContext = MockDbContext();
+                var mesageInfo = CreateMessageInfo();
+
+                foreach (var info in mesageInfo)
+                {
+                    var existMessageInfo = dbContext.MessageInfo.Any(e => e.ConversationId == info.ConversationId);
+
+                    if (!existMessageInfo)
+                    {
+                        dbContext.Entry(info).State = EntityState.Added;
+                        dbContext.SaveChanges();
+                    }
+                }
+
+                var logInfo = CreateLogInfo();
+
+                foreach (var info in logInfo)
+                {
+                    var existLogInfo = dbContext.LogInfo.Any(e => e.ConversationId == info.ConversationId);
+                    dbContext.Entry(info).State = existLogInfo ? EntityState.Modified : EntityState.Added;
+                    dbContext.SaveChanges();
+                }
+
+                var umSites = CreateUMSite();
+
+                foreach (var umSite in umSites)
+                {
+                    var existLogInfo = dbContext.UMSite.Any(e => e.SiteId == umSite.SiteId);
+                    dbContext.Entry(umSite).State = existLogInfo ? EntityState.Modified : EntityState.Added;
+                    dbContext.SaveChanges();
+                }
             }
-
-            var logInfo = CreateLogInfo();
-
-            foreach (var info in logInfo)
+            catch
             {
-                var existLogInfo = dbContext.LogInfo.Any(e => e.ConversationId == info.ConversationId);
-                dbContext.Entry(info).State = existLogInfo ? EntityState.Modified : EntityState.Added;
-                dbContext.SaveChanges();
+                // Do nothing
             }
         }
 
@@ -150,6 +171,23 @@
                 {
                     ConversationId = "10",
                     LogCategories = "nap;alpha"
+                }
+            };
+        }
+
+        private static List<UMSite> CreateUMSite()
+        {
+            return new List<UMSite>
+            {
+                new UMSite
+                {
+                    SiteId = "8",
+                    SiteName = "Agency"
+                },
+                 new UMSite
+                {
+                    SiteId = "2000000",
+                    SiteName = "Accounting"
                 }
             };
         }

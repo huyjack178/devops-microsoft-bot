@@ -106,13 +106,13 @@
         public async Task HandleMessageAsync_AddCategory_IsDisableAddButAdmin_SendSuccessMessage()
         {
             // Arrange
+            conversationFixture.InitDbContextData();
             var message = "log add alpha";
 
             conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("DisableAddCategories").Value
                 .Returns("true");
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "2" });
-            conversationFixture.InitDbContextData();
 
             // Act
             await logDialog.HandleMessage(conversationFixture.Activity, message);

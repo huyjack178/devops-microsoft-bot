@@ -40,6 +40,8 @@
 
         public virtual DbSet<UMPage> UMPage { get; set; }
 
+        public virtual DbSet<UMSite> UMSite { get; set; }
+
         public virtual DbSet<ZabbixInfo> ZabbixInfo { get; set; }
     }
 }
