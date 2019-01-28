@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Functions>
+  <Function Name="Log">
+    <Setting Key="Logging_SelMessage" SpName="IS_SelAppLog_ById" DbName="DBLOG.bodb_CustomerLog.bodbAdminNet" />
+    <Setting Key="Logging_Sel_Padding" SpName="IS_SelLogPadding_All" DbName="DBLOG.bodb_CustomerLog.bodbAdminNet" />
+  </Function>
+  <Function Name="DBLog">
+    <Setting Key="Get_DBLog" SpName="DBA_Skype_Notify" DbName="DBLOG.StarixDB.bodbAdminNet" />
+    <Setting Key="Ack_DBLog" SpName="DBA_Skype_Notify_Ack" DbName="DBLOG.StarixDB.bodbAdminNet" />
+  </Function>
+</Functions>

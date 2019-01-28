@@ -7,6 +7,7 @@ namespace Fanex.Bot.Skynex.MessageHandlers.MessageSenders
     using Fanex.Bot.Skynex.MessageHandlers.MessengerFormatters;
     using Microsoft.Bot.Connector;
     using Microsoft.Extensions.Configuration;
+    using Fanex.Bot.Enums;
 
     public interface ISkypeConversation
     {
@@ -41,6 +42,13 @@ namespace Fanex.Bot.Skynex.MessageHandlers.MessageSenders
 
             if (!string.IsNullOrEmpty(messageInfo.Text))
             {
+                var messageType = messageInfo.Type.ToDescriptionString();
+
+                if (!string.IsNullOrEmpty(messageType))
+                {
+                    message.TextFormat = messageType;
+                }
+
                 message.Text = messengerFormatter.Format(messageInfo.Text);
                 await connector.Conversations.SendToConversationAsync((Activity)message);
             }

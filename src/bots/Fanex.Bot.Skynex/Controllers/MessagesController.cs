@@ -3,6 +3,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Fanex.Bot.Core.Utilities.Bot;
+    using Fanex.Bot.Enums;
     using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.AspNetCore.Authorization;
@@ -77,22 +78,22 @@
         [Authorize(Roles = "Bot")]
         [HttpPost]
         [Route("Forward")]
-        public async Task<OkObjectResult> Forward(string message, string conversationId)
+        public async Task<OkObjectResult> Forward(string message, string conversationId, MessageType messageType = MessageType.Markdown)
         {
-            var result = await conversation.SendAsync(conversationId, message);
+            var result = await conversation.SendAsync(conversationId, message, messageType);
 
             return Ok(result);
         }
 
         [HttpPost]
         [Route("ForwardWithToken")]
-        public async Task<IActionResult> ForwardWithToken(string token, string message, string conversationId)
+        public async Task<IActionResult> ForwardWithToken(string token, string message, string conversationId, MessageType messageType = MessageType.Markdown)
         {
             var validToken = configuration.GetSection("BotSecretToken")?.Value;
 
             if (validToken == token)
             {
-                var result = await conversation.SendAsync(conversationId, message);
+                var result = await conversation.SendAsync(conversationId, message, messageType);
                 return Ok(result);
             }
 

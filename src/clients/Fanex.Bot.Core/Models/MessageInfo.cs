@@ -1,6 +1,7 @@
 ﻿namespace Fanex.Bot.Models
 {
     using System.ComponentModel.DataAnnotations.Schema;
+    using Fanex.Bot.Enums;
 
     public class MessageInfo : BaseInfo
     {
@@ -22,5 +23,8 @@
 
         [NotMapped]
         public string Text { get; set; }
+
+        [NotMapped]
+        public MessageType Type { get; set; }
     }
 }

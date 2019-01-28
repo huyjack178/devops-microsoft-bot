@@ -17,16 +17,15 @@ namespace Fanex.Bot.Client.Console
 
             var botConnector = new BotConnector();
 
-            var message =
-                "Missing revision \n Lrf_CustomerSel \n+ 20181031@Patrick: DB052 indexes revolution[RedmineID: #103572]";
+            var message = "<img src=\"http://aka.ms/Fo983c\" alt=\"Duck on a rock\"></img>";
 
             var result = botConnector.Send(message
-                , "29:1VztMrVULRUlh1J7uBBFEWXZqHz41ZRQ6F-avnd5-874");
+                , "29:1CrTamk06NfEFPFPTCv6jnB86xX-fUEdB3Ifwoz6O3iI", Enums.MessageType.XML);
 
             System.Console.WriteLine(result);
 
-            botConnector.Send(
-              "test message from Bot Client Test 2", "29:1VztMrVULRUlh1J7uBBFEWXZqHz41ZRQ6F-avnd5-874");
+            //botConnector.Send(
+            //  "test message from Bot Client Test 2", "29:1VztMrVULRUlh1J7uBBFEWXZqHz41ZRQ6F-avnd5-874");
 
             System.Console.ReadLine();
         }

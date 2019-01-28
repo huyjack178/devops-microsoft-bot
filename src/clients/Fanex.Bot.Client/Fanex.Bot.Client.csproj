@@ -7,10 +7,10 @@
       https://gitlab.nexcel.vn/NEXOPS/Fanex.Bot/blob/master/src/clients/Fanex.Bot.Client/README.md
     </Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.4.4</AssemblyVersion>
-    <FileVersion>1.0.4.4</FileVersion>
-    <Version>1.0.4.4</Version>
-    <PackageReleaseNotes>- Remove configuration dependencies</PackageReleaseNotes>
+    <AssemblyVersion>1.0.4.5</AssemblyVersion>
+    <FileVersion>1.0.4.5</FileVersion>
+    <Version>1.0.4.5</Version>
+    <PackageReleaseNotes>- Add MessageType, default is MarkDown</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet>Fanex.Bot.Client.ruleset</CodeAnalysisRuleSet>

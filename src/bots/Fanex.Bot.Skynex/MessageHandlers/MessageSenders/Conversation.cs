@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Fanex.Bot.Enums;
     using Fanex.Bot.Models;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@
 
         Task SendAsync(MessageInfo messageInfo);
 
-        Task<Result> SendAsync(string conversationId, string message);
+        Task<Result> SendAsync(string conversationId, string message, MessageType messageType = MessageType.Markdown);
 
         Task SendAdminAsync(string message);
     }
@@ -63,6 +64,7 @@
             foreach (var adminMessageInfo in adminMessageInfos)
             {
                 adminMessageInfo.Text = message;
+                adminMessageInfo.Type = MessageType.Markdown;
 
                 await ForwardMessage(adminMessageInfo);
             }
@@ -89,7 +91,7 @@
             }
         }
 
-        public async Task<Result> SendAsync(string conversationId, string message)
+        public async Task<Result> SendAsync(string conversationId, string message, MessageType messageType = MessageType.Markdown)
         {
             var messageInfo = await dbContext
                 .MessageInfo
@@ -98,6 +100,7 @@
             if (messageInfo != null)
             {
                 messageInfo.Text = message;
+                messageInfo.Type = messageType;
                 await SendAsync(messageInfo);
 
                 return Result.CreateSuccessfulResult();

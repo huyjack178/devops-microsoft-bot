@@ -3,12 +3,13 @@
     using System;
     using System.Net;
     using System.Text;
+    using Fanex.Bot.Client.Enums;
     using Fanex.Caching;
     using RestSharp;
 
     public interface IBotConnector
     {
-        string Send(string message, string conversationId);
+        string Send(string message, string conversationId, MessageType messageType = MessageType.Markdown);
     }
 
     public class BotConnector : IBotConnector
@@ -27,22 +28,22 @@
             this.cacheService = cacheService ?? new CacheService();
         }
 
-        public string Send(string message, string conversationId)
+        public string Send(string message, string conversationId, MessageType messageType = MessageType.Markdown)
         {
             var token = GetToken();
 
-            var result = ForwardToBot(message, conversationId, token);
+            var result = ForwardToBot(message, conversationId, token, messageType);
 
             if (result == (int)HttpStatusCode.Unauthorized)
             {
                 token = GetToken();
-                result = ForwardToBot(message, conversationId, token);
+                result = ForwardToBot(message, conversationId, token, messageType);
             }
 
             return result.ToString();
         }
 
-        internal int ForwardToBot(string message, string conversationId, string token)
+        internal int ForwardToBot(string message, string conversationId, string token, MessageType messageType)
         {
             restClient.BaseUrl = BotClientManager.BotSettings.BotServiceUrl;
 
@@ -51,6 +52,7 @@
             request.AddHeader("content-type", "application/x-www-form-urlencoded");
             request.AddParameter("message", message);
             request.AddParameter("conversationId", conversationId);
+            request.AddParameter("messageType", messageType);
 
             var response = restClient.Execute(request);
             TimeoutCheck(response);
