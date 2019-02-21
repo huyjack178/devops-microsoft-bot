@@ -21,8 +21,9 @@
 
         public LogServiceTests()
         {
-            configuration = Substitute.For<IConfiguration>();
-            configuration.GetSection("BotServiceUrl").Value.Returns("http://log.com");
+            configuration = new ConfigurationBuilder()
+              .AddJsonFile($"{AppDomain.CurrentDomain.BaseDirectory}/../../../appsettings.json")
+              .Build();
             webClient = Substitute.For<IWebClient>();
             logService = new LogService(webClient, configuration);
         }
@@ -45,7 +46,7 @@
                     data.From == fromDate.ToString(CultureInfo.InvariantCulture) &&
                     data.To == toDate.ToString(CultureInfo.InvariantCulture) &&
                     data.Severity == "Error" &&
-                    data.Size == 100 &&
+                    data.Size == 10 &&
                     data.Page == 0 &&
                     data.ToGMT == 7 &&
                     data.CategoryId == 0 &&

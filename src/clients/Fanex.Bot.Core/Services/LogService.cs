@@ -26,6 +26,7 @@
     {
         private readonly IWebClient webClient;
         private readonly string botServiceUrl;
+        private readonly int logSize;
 
         public LogService(
             IWebClient webClient,
@@ -33,6 +34,7 @@
         {
             this.webClient = webClient;
             botServiceUrl = configuration.GetSection("BotServiceUrl")?.Value;
+            logSize = configuration.GetValue<int>("LogInfo:Size");
         }
 
         public async Task<IEnumerable<Log>> GetErrorLogs(
@@ -47,7 +49,7 @@
                     From = (fromDate ?? DateTime.UtcNow.AddSeconds(-70)).ToString(CultureInfo.InvariantCulture),
                     To = (toDate ?? DateTime.UtcNow).ToString(CultureInfo.InvariantCulture),
                     Severity = "Error",
-                    Size = 100,
+                    Size = logSize,
                     Page = 0,
                     ToGMT = 7,
                     CategoryId = 0,
