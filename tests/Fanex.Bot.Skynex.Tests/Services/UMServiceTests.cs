@@ -31,7 +31,7 @@
             var umInfo = new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } };
 
             webClient
-                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UnderMaintenance/ScheduledInfo")))
+                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://log.com/UnderMaintenance/ScheduledInfo")))
                 .Returns(umInfo);
 
             //  Act
@@ -48,7 +48,7 @@
             var umInfo = new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } };
 
             webClient
-                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://msite.starific.net/V1/api/UnderMaintenance/ActualInfo")))
+                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://log.com/UnderMaintenance/ActualInfo")))
                 .Returns(umInfo);
 
             //  Act

@@ -88,7 +88,7 @@ namespace Fanex.Bot.Client.Tests
             var botConnector = new BotConnector(restClient, cacheService);
 
             // Act
-            var result = botConnector.ForwardToBot("message", ConversationId, Token);
+            var result = botConnector.ForwardToBot("message", ConversationId, Token, Enums.MessageType.Markdown);
 
             // Assert
             Assert.Equal(200, result);
@@ -107,7 +107,7 @@ namespace Fanex.Bot.Client.Tests
             var botConnector = new BotConnector(restClient, cacheService);
 
             // Act & Assert
-            Assert.Throws<TimeoutException>(() => botConnector.ForwardToBot("message", "132123", "1231231"));
+            Assert.Throws<TimeoutException>(() => botConnector.ForwardToBot("message", "132123", "1231231", Enums.MessageType.Markdown));
         }
 
         [Fact]
