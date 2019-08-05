@@ -29,11 +29,11 @@
         {
             var command = message.Replace(MessageCommand.SENTRY_LOG, string.Empty).Trim();
 
-            if (command.StartsWith(MessageCommand.Start))
+            if (command.StartsWith(MessageCommand.START))
             {
                 await EnableLog(activity);
             }
-            else if (command.StartsWith(MessageCommand.Stop))
+            else if (command.StartsWith(MessageCommand.STOP))
             {
                 await DisableLog(activity, message);
             }
@@ -74,21 +74,21 @@
             var messageBuilder = new StringBuilder();
 
             messageBuilder.Append(
-                $"{MessageFormatSignal.BeginBold}Project:{MessageFormatSignal.EndBold} " +
-                $"{pushEvent.ProjectName}{MessageFormatSignal.NewLine}");
+                $"{MessageFormatSignal.BOLD_START}Project:{MessageFormatSignal.BOLD_END} " +
+                $"{pushEvent.ProjectName}{MessageFormatSignal.NEWLINE}");
             messageBuilder.Append(
-                $"{MessageFormatSignal.BeginBold}Timestamp:{MessageFormatSignal.EndBold} " +
-                $"{DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(Convert.ToDouble(pushEvent.Event.LogTime)))}{MessageFormatSignal.NewLine}");
+                $"{MessageFormatSignal.BOLD_START}Timestamp:{MessageFormatSignal.BOLD_END} " +
+                $"{DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(Convert.ToDouble(pushEvent.Event.LogTime)))}{MessageFormatSignal.NEWLINE}");
             messageBuilder.Append(
-                $"{MessageFormatSignal.BeginBold}Message:{MessageFormatSignal.EndBold} " +
-                $"{pushEvent.Event.Message.MessageInfo}{MessageFormatSignal.NewLine}");
+                $"{MessageFormatSignal.BOLD_START}Message:{MessageFormatSignal.BOLD_END} " +
+                $"{pushEvent.Event.Message}{MessageFormatSignal.NEWLINE}");
             messageBuilder.Append(
-                $"{MessageFormatSignal.BeginBold}User:{MessageFormatSignal.EndBold} " +
-                $"{pushEvent.Event.User.UserName} ({pushEvent.Event.User.Email}){MessageFormatSignal.NewLine}");
+                $"{MessageFormatSignal.BOLD_START}User:{MessageFormatSignal.BOLD_END} " +
+                $"{pushEvent.Event.User.UserName} ({pushEvent.Event.User.Email}){MessageFormatSignal.NEWLINE}");
             messageBuilder.Append(
-              $"{MessageFormatSignal.BeginBold}Url:{MessageFormatSignal.EndBold} " +
-              $"{pushEvent.Url}{MessageFormatSignal.NewLine}");
-            messageBuilder.Append($"{MessageFormatSignal.BreakLine}");
+              $"{MessageFormatSignal.BOLD_START}Url:{MessageFormatSignal.BOLD_END} " +
+              $"{pushEvent.Url}{MessageFormatSignal.NEWLINE}");
+            messageBuilder.Append($"{MessageFormatSignal.DIVIDER}");
 
             foreach (var sentryInfo in DbContext.SentryInfo)
             {

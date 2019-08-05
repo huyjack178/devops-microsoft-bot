@@ -44,8 +44,8 @@
                 _conversationFixture.Conversation,
                 _conversationFixture.Configuration,
                 dbLogDialog,
+                sentryDialog,
                 zabbixDialog);
-                sentryDialog);
         }
 
         [Fact]

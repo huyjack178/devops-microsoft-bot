@@ -4,13 +4,16 @@
 
     public class Event
     {
-        [JsonProperty("received")]
+        [JsonProperty("event_id")]
+        public string Id { get; set; }
+
+        [JsonProperty("timestamp")]
         public string LogTime { get; set; }
 
         [JsonProperty("sentry.interfaces.User")]
         public User User { get; set; }
 
-        [JsonProperty("sentry.interfaces.Message")]
-        public Message Message { get; set; }
+        [JsonProperty("title")]
+        public string Message { get; set; }
     }
 }

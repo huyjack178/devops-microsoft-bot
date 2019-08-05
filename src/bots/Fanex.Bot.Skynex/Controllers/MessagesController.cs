@@ -36,7 +36,7 @@
             IConversation conversation,
             IConfiguration configuration,
             IDBLogDialog dbLogDialog,
-            ISentryDialog sentryDialog)
+            ISentryDialog sentryDialog,
             IZabbixDialog zabbixDialog)
         {
             this.commonDialog = commonDialog;

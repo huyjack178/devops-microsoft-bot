@@ -16,6 +16,9 @@
         [JsonProperty("culprit")]
         public string Culprit { get; set; }
 
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
 #pragma warning disable S3996 // URI properties should not be strings
 
         [JsonProperty("url")]
