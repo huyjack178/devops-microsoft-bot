@@ -1,11 +1,11 @@
-﻿namespace Fanex.Bot.Skynex.Tests.Services
+﻿using Fanex.Bot.Core.UM.Services;
+
+namespace Fanex.Bot.Skynex.Tests.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Models.UM;
-    using Fanex.Bot.Services;
+    using Fanex.Bot.Common.Helpers.Web;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using Xunit;
@@ -28,10 +28,10 @@
         public async Task GetScheduledInfo_Always_GetFromAPI()
         {
             //  Arrange
-            var umInfo = new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } };
+            var umInfo = new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = true } } };
 
             webClient
-                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://log.com/UnderMaintenance/ScheduledInfo")))
+                .GetJsonAsync<Dictionary<int, Core.UM.Models.UM>>(Arg.Is(new Uri("http://log.com/UnderMaintenance/ScheduledInfo")))
                 .Returns(umInfo);
 
             //  Act
@@ -45,10 +45,10 @@
         public async Task GetActualInfo_Always_GetFromAPI()
         {
             //  Arrange
-            var umInfo = new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } };
+            var umInfo = new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = true } } };
 
             webClient
-                .GetJsonAsync<Dictionary<int, UM>>(Arg.Is(new Uri("http://log.com/UnderMaintenance/ActualInfo")))
+                .GetJsonAsync<Dictionary<int, Core.UM.Models.UM>>(Arg.Is(new Uri("http://log.com/UnderMaintenance/ActualInfo")))
                 .Returns(umInfo);
 
             //  Act

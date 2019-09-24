@@ -1,11 +1,12 @@
-﻿namespace Fanex.Bot.API.Services
+﻿using Fanex.Bot.Core.Zabbix.Models;
+
+namespace Fanex.Bot.API.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Models.Zabbix;
+    using Fanex.Bot.Common.Helpers.Web;
     using Microsoft.Extensions.Configuration;
 
     public interface IZabbixService

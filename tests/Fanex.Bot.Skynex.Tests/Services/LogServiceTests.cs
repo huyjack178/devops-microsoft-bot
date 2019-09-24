@@ -1,14 +1,14 @@
-﻿namespace Fanex.Bot.Tests.Services
+﻿using Fanex.Bot.Core.Log.Models;
+using Fanex.Bot.Core.Log.Services;
+
+namespace Fanex.Bot.Tests.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
     using System.Threading.Tasks;
-    using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Services;
+    using Fanex.Bot.Common.Helpers.Web;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using Xunit;

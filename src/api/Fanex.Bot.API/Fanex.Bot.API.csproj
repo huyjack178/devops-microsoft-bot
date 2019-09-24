@@ -15,6 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Logs\**" />
+    <Content Remove="Logs\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="App_Data\PRO\SPNames.xml" />
   </ItemGroup>
 
@@ -38,13 +45,13 @@
     <PackageReference Include="ONEbook.UM" Version="3.0.0-beta3" />
     <PackageReference Include="ONEbook.UM.AspNetCore" Version="3.0.0-beta" />
     <PackageReference Include="ONEbook.UM.Transport" Version="3.0.0-beta" />
-    <PackageReference Include="RestSharp" Version="106.6.5" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\clients\Fanex.Bot.Core\Fanex.Bot.csproj" />
+    <ProjectReference Include="..\..\clients\Fanex.Bot.Core\Fanex.Bot.Core.csproj" />
+    <ProjectReference Include="..\..\Fanex.Bot.Common\Fanex.Bot.Common.csproj" />
   </ItemGroup>
 </Project>

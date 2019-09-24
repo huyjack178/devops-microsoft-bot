@@ -1,14 +1,14 @@
-using AutoFixture;
-using Fanex.Bot.Models.Log;
-using Fanex.Bot.Skynex.MessageHandlers.MessageBuilders;
-using NSubstitute;
-using System;
-using System.IO;
-using System.Net;
-using Xunit;
+using Fanex.Bot.Core._Shared.Constants;
 
 namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
 {
+    using System;
+    using System.IO;
+    using System.Net;
+    using AutoFixture;
+    using Log;
+    using Xunit;
+
     public class WebLogMessageBuilderTests
     {
         private readonly IWebLogMessageBuilder webLogMessageBuilder;
@@ -24,7 +24,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Arrange
             var fixture = new Fixture();
             var logMessage = string.Join(string.Empty, fixture.CreateMany<string>(450));
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = logMessage;
 
             // Act
@@ -41,7 +41,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             // Arrange
             var fixture = new Fixture();
             var logMessage = "log";
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = logMessage;
 
             // Act
@@ -57,7 +57,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.CategoryName = "alpha";
             log.FormattedMessage = GetNormalLogDataTest();
 
@@ -76,7 +76,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = GetNewLogDataTest();
 
             // Act
@@ -94,7 +94,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.CategoryName = "alpha";
             log.FormattedMessage = GetNewLogDataTest();
 
@@ -113,7 +113,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = GetNewLogDataTest();
 
             // Act
@@ -131,7 +131,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = GetNewLogDataTest();
 
             // Act
@@ -156,7 +156,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = GetNewLogDataTest();
 
             // Act
@@ -177,7 +177,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = GetNewLogDataTest();
 
             // Act
@@ -196,7 +196,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
         {
             // Arrange
             var fixture = new Fixture();
-            var log = fixture.Create<Log>();
+            var log = fixture.Create<Core.Log.Models.Log>();
             log.FormattedMessage = GetNewLogDataTest();
 
             // Act
@@ -224,7 +224,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             Assert.Contains(expectedSessionInfo, actualMessage);
         }
 
-        private string FinalizeMessage(string message, Log log)
+        private string FinalizeMessage(string message, Core.Log.Models.Log log)
         {
             var returnMessage = message
                     .Replace("\r", string.Empty)

@@ -1,8 +1,9 @@
+using Fanex.Bot.Core.Bot.Services;
+using Fanex.Bot.Skynex.Bot;
+
 namespace Fanex.Bot.Service.Tests.Controllers
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Services;
-    using Fanex.Bot.Skynex.Controllers;
     using NSubstitute;
     using Xunit;
 

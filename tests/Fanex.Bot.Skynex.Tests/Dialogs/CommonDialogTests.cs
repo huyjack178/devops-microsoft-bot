@@ -1,11 +1,13 @@
-﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
+﻿using Fanex.Bot.Core._Shared.Constants;
+using Fanex.Bot.Core.Bot.Models;
+using Fanex.Bot.Core.GitLab.Models;
+using Fanex.Bot.Core.Log.Models;
+using Fanex.Bot.Skynex.Bot;
+
+namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.GitLab;
-    using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Skynex.Tests.Fixtures;
     using Microsoft.Bot.Connector;
     using NSubstitute;

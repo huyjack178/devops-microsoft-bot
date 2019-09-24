@@ -1,12 +1,16 @@
-﻿namespace Fanex.Bot.Skynex.Tests.Controllers
+﻿using Fanex.Bot.Core.Bot.Models;
+using Fanex.Bot.Skynex.Bot;
+using Fanex.Bot.Skynex.GitLab;
+using Fanex.Bot.Skynex.Log;
+using Fanex.Bot.Skynex.Sentry;
+using Fanex.Bot.Skynex.UM;
+using Fanex.Bot.Skynex.Zabbix;
+
+namespace Fanex.Bot.Skynex.Tests.Controllers
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Fanex.Bot.Controllers;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.Tests.Fixtures;
-    using Microsoft.AspNetCore.Mvc;
+    using Fixtures;
     using Microsoft.Bot.Connector;
     using NSubstitute;
     using Xunit;
@@ -17,7 +21,6 @@
         private readonly ICommonDialog _commonDialog;
         private readonly ILogDialog _logDialog;
         private readonly IGitLabDialog _gitLabDialog;
-        private readonly ILineDialog _lineDialog;
         private readonly IUnderMaintenanceDialog _umDialog;
         private readonly IDBLogDialog dbLogDialog;
         private readonly IZabbixDialog zabbixDialog;
@@ -30,7 +33,6 @@
             _commonDialog = Substitute.For<ICommonDialog>();
             _logDialog = Substitute.For<ILogDialog>();
             _gitLabDialog = Substitute.For<IGitLabDialog>();
-            _lineDialog = Substitute.For<ILineDialog>();
             _umDialog = Substitute.For<IUnderMaintenanceDialog>();
             dbLogDialog = Substitute.For<IDBLogDialog>();
             zabbixDialog = Substitute.For<IZabbixDialog>();
@@ -39,7 +41,6 @@
                 _commonDialog,
                 _logDialog,
                 _gitLabDialog,
-                _lineDialog,
                 _umDialog,
                 _conversationFixture.Conversation,
                 _conversationFixture.Configuration,
@@ -211,26 +212,6 @@
               .Conversation
               .Received()
               .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
-        }
-
-        [Fact]
-        public async Task Post_MessageActivity_HandleForLINE()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Message,
-                From = new ChannelAccount { Id = "234234", Name = "line" },
-                Conversation = new ConversationAccount(),
-                Text = "hello"
-            };
-
-            // Act
-            await _messagesController.Post(activity);
-
-            // Assert
-            await _lineDialog.Received().RegisterMessageInfo(
-                 Arg.Is<Activity>(a => a.Conversation.Id == "234234" && a.ChannelId == "line"));
         }
 
         [Fact]

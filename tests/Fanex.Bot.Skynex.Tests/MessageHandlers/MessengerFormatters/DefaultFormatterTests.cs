@@ -1,6 +1,8 @@
+using Fanex.Bot.Core._Shared.Constants;
+using Fanex.Bot.Skynex._Shared.MessengerFormatters;
+
 namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessengerFormatters
 {
-    using Fanex.Bot.Skynex.MessageHandlers.MessengerFormatters;
     using Xunit;
 
     public class DefaultFormatterTests

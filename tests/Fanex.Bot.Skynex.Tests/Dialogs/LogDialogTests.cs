@@ -1,14 +1,15 @@
-﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
+﻿using Fanex.Bot.Core._Shared.Constants;
+using Fanex.Bot.Core.Bot.Models;
+using Fanex.Bot.Core.Log.Models;
+using Fanex.Bot.Core.Log.Services;
+using Fanex.Bot.Core.UM.Services;
+using Fanex.Bot.Skynex.Log;
+
+namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Models.UM;
-    using Fanex.Bot.Services;
-    using Fanex.Bot.Skynex.Dialogs;
-    using Fanex.Bot.Skynex.MessageHandlers.MessageBuilders;
     using Fanex.Bot.Skynex.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
@@ -357,24 +358,24 @@
             var dbContext = conversationFixture.MockDbContext();
             dbContext.LogInfo.Add(new LogInfo { ConversationId = "9643534", LogCategories = "alpha;nap", IsActive = true });
             dbContext.SaveChanges();
-            logService.GetErrorLogs().Returns(new List<Log>(){
-                new Log {
+            logService.GetErrorLogs().Returns(new List<Core.Log.Models.Log>(){
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "log"
                 },
-                new Log {
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "log"
                 },
-                new Log {
+                new Core.Log.Models.Log {
                     CategoryName = "lrf",
                     MachineIP = "machine",
                     FormattedMessage = "log_lrf"
                 }
             });
-            umService.GetActualInfo().Returns(new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } });
+            umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = true } } });
 
             // Act
             await logDialog.GetAndSendLogAsync();
@@ -394,14 +395,14 @@
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "cd341234cdfa" });
             dbContext.LogInfo.Add(new LogInfo { ConversationId = "cd341234cdfa", LogCategories = "alpha;nap", IsActive = true });
             dbContext.SaveChanges();
-            logService.GetErrorLogs().Returns(new List<Log>(){
-                new Log {
+            logService.GetErrorLogs().Returns(new List<Core.Log.Models.Log>(){
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "log"
                 }
             });
-            umService.GetActualInfo().Returns(new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } });
+            umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = true } } });
             conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("SendLogInUM").Value
                 .Returns("false");
@@ -430,14 +431,14 @@
 
             dbContext.SaveChanges();
 
-            logService.GetErrorLogs().Returns(new List<Log>(){
-                new Log {
+            logService.GetErrorLogs().Returns(new List<Core.Log.Models.Log>(){
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "log"
                 }
             });
-            umService.GetActualInfo().Returns(new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } });
+            umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = true } } });
             conversationFixture.Configuration
                 .GetSection("LogInfo")?.GetSection("SendLogInUM")?.Value
                 .Returns("true");
@@ -466,24 +467,24 @@
             var dbContext = conversationFixture.MockDbContext();
             dbContext.LogInfo.Add(new LogInfo { ConversationId = "1", LogCategories = "alpha;nap", IsActive = true });
             dbContext.SaveChanges();
-            logService.GetErrorLogs().Returns(new List<Log>(){
-                new Log {
+            logService.GetErrorLogs().Returns(new List<Core.Log.Models.Log>(){
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "log"
                 },
-                new Log {
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "log"
                 },
-                new Log {
+                new Core.Log.Models.Log {
                     CategoryName = "lrf",
                     MachineIP = "machine",
                     FormattedMessage = "log_lrf"
                 }
             });
-            umService.GetActualInfo().Returns(new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = false } } });
+            umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = false } } });
 
             // Act
             await logDialog.GetAndSendLogAsync();
@@ -509,15 +510,15 @@
         public async Task GetAndSendLogAsync_IsUM_DontAllowSendLogInUM_NotSendLog()
         {
             // Arrange
-            umService.GetActualInfo().Returns(new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = true } } });
+            umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = true } } });
             conversationFixture.Configuration.GetSection("LogInfo").GetSection("SendLogInUM").Value.Returns("false");
 
             var dbContext = conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "234234223423342311cd1" });
             dbContext.LogInfo.Add(new LogInfo { ConversationId = "234234223423342311cd1", LogCategories = "alpha;nap", IsActive = true });
             dbContext.SaveChanges();
-            logService.GetErrorLogs().Returns(new List<Log>(){
-                new Log {
+            logService.GetErrorLogs().Returns(new List<Core.Log.Models.Log>(){
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "log"
@@ -543,14 +544,14 @@
             dbContext.LogInfo.Add(new LogInfo { ConversationId = "2342342342311cd1", LogCategories = "alpha;nap", IsActive = true });
             dbContext.LogIgnoreMessage.Add(new LogIgnoreMessage { Category = "alpha", IgnoreMessage = "Thread was being aborted" });
             dbContext.SaveChanges();
-            logService.GetErrorLogs().Returns(new List<Log>(){
-                new Log {
+            logService.GetErrorLogs().Returns(new List<Core.Log.Models.Log>(){
+                new Core.Log.Models.Log {
                     CategoryName = "alpha",
                     MachineIP = "machine",
                     FormattedMessage = "thread was being aborted"
                 },
             });
-            umService.GetActualInfo().Returns(new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = false } } });
+            umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = false } } });
 
             // Act
             await logDialog.GetAndSendLogAsync();
@@ -574,14 +575,14 @@
             dbContext.LogInfo.Add(new LogInfo { ConversationId = "234234231", LogCategories = "alpha;nap", IsActive = true });
             dbContext.LogIgnoreMessage.Add(new LogIgnoreMessage { Category = "nap", IgnoreMessage = "thread was being aborted" });
             dbContext.SaveChanges();
-            logService.GetErrorLogs().Returns(new List<Log>(){
-                new Log {
+            logService.GetErrorLogs().Returns(new List<Core.Log.Models.Log>(){
+                new Core.Log.Models.Log {
                     CategoryName = "nap",
                     MachineIP = "machine",
                     FormattedMessage = "thread was not being aborted"
                 },
             });
-            umService.GetActualInfo().Returns(new Dictionary<int, UM> { { 1, new UM { IsUnderMaintenanceTime = false } } });
+            umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = false } } });
 
             // Act
             await logDialog.GetAndSendLogAsync();

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{62C60DFA-597B-40CD-9AEF-9FF201853C4B}"
 EndProject
@@ -12,19 +12,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.build.props = Directory.build.props
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "clients", "clients", "{F989CE04-59F0-4CB7-A014-FCCA0A5C6E1A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BotClients", "BotClients", "{F989CE04-59F0-4CB7-A014-FCCA0A5C6E1A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bots", "bots", "{7DC794C0-BE92-4149-9545-FDB9D39A3C41}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BotServices", "BotServices", "{7DC794C0-BE92-4149-9545-FDB9D39A3C41}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{4837DC41-4C68-4F8A-9F82-C5A4D4695621}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BackendServices", "BackendServices", "{4837DC41-4C68-4F8A-9F82-C5A4D4695621}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.Skynex", "src\bots\Fanex.Bot.Skynex\Fanex.Bot.Skynex.csproj", "{D8CBDBDE-CF28-428B-AB74-F901A15D2AAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Bot.Skynex.Line", "src\bots\Fanex.Bot.Skynex.Line\Fanex.Bot.Skynex.Line.csproj", "{25A11656-932E-4420-88D9-A03584AD6731}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.Client", "src\clients\Fanex.Bot.Client\Fanex.Bot.Client.csproj", "{87690018-5553-4069-BA32-F0E0A26F4A1D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot", "src\clients\Fanex.Bot.Core\Fanex.Bot.csproj", "{F5416144-A49E-4E4A-90B7-73EFFFE9D559}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.Core", "src\clients\Fanex.Bot.Core\Fanex.Bot.Core.csproj", "{F5416144-A49E-4E4A-90B7-73EFFFE9D559}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.API", "src\api\Fanex.Bot.API\Fanex.Bot.API.csproj", "{791F25C7-D9F9-4ADF-8E3E-C1D33E84F1BC}"
 EndProject
@@ -33,6 +31,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.Client.Tests", "tests\Fanex.Bot.Client.Tests\Fanex.Bot.Client.Tests.csproj", "{829789A4-19FD-4B83-891D-5D3245044214}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Bot.Client.Integration.Tests", "tests\Fanex.Bot.Client.IntegrationTests\Fanex.Bot.Client.Integration.Tests.csproj", "{435BFDB6-3E3A-467F-894C-CE2F6840F263}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Bot.Common", "src\Fanex.Bot.Common\Fanex.Bot.Common.csproj", "{2CA93940-FB7C-4CF9-8E00-1F50B60188A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,10 +44,6 @@ Global
 		{D8CBDBDE-CF28-428B-AB74-F901A15D2AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8CBDBDE-CF28-428B-AB74-F901A15D2AAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8CBDBDE-CF28-428B-AB74-F901A15D2AAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25A11656-932E-4420-88D9-A03584AD6731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25A11656-932E-4420-88D9-A03584AD6731}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25A11656-932E-4420-88D9-A03584AD6731}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25A11656-932E-4420-88D9-A03584AD6731}.Release|Any CPU.Build.0 = Release|Any CPU
 		{87690018-5553-4069-BA32-F0E0A26F4A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{87690018-5553-4069-BA32-F0E0A26F4A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87690018-5553-4069-BA32-F0E0A26F4A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -72,6 +68,10 @@ Global
 		{435BFDB6-3E3A-467F-894C-CE2F6840F263}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{435BFDB6-3E3A-467F-894C-CE2F6840F263}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{435BFDB6-3E3A-467F-894C-CE2F6840F263}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CA93940-FB7C-4CF9-8E00-1F50B60188A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CA93940-FB7C-4CF9-8E00-1F50B60188A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CA93940-FB7C-4CF9-8E00-1F50B60188A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CA93940-FB7C-4CF9-8E00-1F50B60188A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,13 +81,13 @@ Global
 		{7DC794C0-BE92-4149-9545-FDB9D39A3C41} = {62C60DFA-597B-40CD-9AEF-9FF201853C4B}
 		{4837DC41-4C68-4F8A-9F82-C5A4D4695621} = {62C60DFA-597B-40CD-9AEF-9FF201853C4B}
 		{D8CBDBDE-CF28-428B-AB74-F901A15D2AAE} = {7DC794C0-BE92-4149-9545-FDB9D39A3C41}
-		{25A11656-932E-4420-88D9-A03584AD6731} = {7DC794C0-BE92-4149-9545-FDB9D39A3C41}
 		{87690018-5553-4069-BA32-F0E0A26F4A1D} = {F989CE04-59F0-4CB7-A014-FCCA0A5C6E1A}
 		{F5416144-A49E-4E4A-90B7-73EFFFE9D559} = {62C60DFA-597B-40CD-9AEF-9FF201853C4B}
 		{791F25C7-D9F9-4ADF-8E3E-C1D33E84F1BC} = {4837DC41-4C68-4F8A-9F82-C5A4D4695621}
 		{6C835DC1-495E-4EA1-A0B2-06084EBD6221} = {7C1FD0A2-919E-487F-A096-10C413639B9A}
 		{829789A4-19FD-4B83-891D-5D3245044214} = {7C1FD0A2-919E-487F-A096-10C413639B9A}
 		{435BFDB6-3E3A-467F-894C-CE2F6840F263} = {7C1FD0A2-919E-487F-A096-10C413639B9A}
+		{2CA93940-FB7C-4CF9-8E00-1F50B60188A3} = {62C60DFA-597B-40CD-9AEF-9FF201853C4B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E13B60B8-2253-498C-9232-54FB4EA7EEB6}

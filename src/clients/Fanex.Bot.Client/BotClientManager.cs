@@ -6,7 +6,7 @@
     public class BotClientManager
     {
         private BotSettings botSettings;
-        private static BotClientManager CurrentInstance = new BotClientManager();
+        private static readonly BotClientManager CurrentInstance = new BotClientManager();
 
         public static BotClientManager UseConfig(BotSettings botSettings)
         {

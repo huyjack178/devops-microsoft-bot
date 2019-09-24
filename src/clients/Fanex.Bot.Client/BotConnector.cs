@@ -3,8 +3,8 @@
     using System;
     using System.Net;
     using System.Text;
-    using Fanex.Bot.Client.Enums;
-    using Fanex.Caching;
+    using Caching;
+    using Enums;
     using RestSharp;
 
     public interface IBotConnector

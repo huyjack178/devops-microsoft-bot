@@ -1,13 +1,16 @@
-﻿namespace Fanex.Bot.Skynex.Tests.Dialogs
+﻿using Fanex.Bot.Core._Shared.Constants;
+using Fanex.Bot.Core.Bot.Models;
+using Fanex.Bot.Core.UM.Models;
+using Fanex.Bot.Core.UM.Services;
+using Fanex.Bot.Skynex.UM;
+using Fanex.Bot.Skynex.Zabbix;
+
+namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.UM;
-    using Fanex.Bot.Services;
-    using Fanex.Bot.Skynex.Dialogs;
     using Fanex.Bot.Skynex.Tests.Fixtures;
     using Hangfire;
     using Hangfire.Common;
@@ -80,7 +83,7 @@
             // Arrange
             conversationFixture.InitDbContextData();
             var message = "um notify";
-            var scheduleUnderMaintenanceInfo = new Dictionary<int, UM> { { 8, new UM { From = DateTime.Now, To = DateTime.Now } } };
+            var scheduleUnderMaintenanceInfo = new Dictionary<int, Core.UM.Models.UM> { { 8, new Core.UM.Models.UM { From = DateTime.Now, To = DateTime.Now } } };
             umService.GetScheduledInfo().Returns(scheduleUnderMaintenanceInfo);
             var dbContext = conversationFixture.MockDbContext();
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i324223423342323749823748923" });
@@ -112,10 +115,10 @@
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i23749823748923" });
             dbContext.SaveChanges();
             umService.CheckPageShowUM(Arg.Any<Uri>()).Returns(true);
-            var underMaintenanceInfo = new Dictionary<int, UM> {
+            var underMaintenanceInfo = new Dictionary<int, Core.UM.Models.UM> {
                 {
                     8,
-                    new UM {
+                    new Core.UM.Models.UM {
                         IsUnderMaintenanceTime = true,
                         From = DateTime.Now,
                         To = DateTime.Now.AddMinutes(90),
@@ -151,10 +154,10 @@
             dbContext.UMPage.Add(new UMPage { SiteUrl = "http://www.agbong8888342388.com", Name = "alpha", SiteId = "2000000" });
             await dbContext.SaveChangesAsync();
 
-            var underMaintenanceInfo = new Dictionary<int, UM> {
+            var underMaintenanceInfo = new Dictionary<int, Core.UM.Models.UM> {
                 {
                     8,
-                    new UM {
+                    new Core.UM.Models.UM {
                         IsUnderMaintenanceTime = true,
                         From = DateTime.Now,
                         To = DateTime.Now.AddMinutes(90),
@@ -163,7 +166,7 @@
                 },
                 {
                     2000000,
-                    new UM {
+                    new Core.UM.Models.UM {
                         IsUnderMaintenanceTime = true,
                         From = DateTime.Now,
                         To = DateTime.Now.AddMinutes(90),
@@ -172,7 +175,7 @@
                 },
                  {
                     2000001,
-                    new UM {
+                    new Core.UM.Models.UM {
                         IsUnderMaintenanceTime = true,
                         From = DateTime.Now,
                         To = DateTime.Now.AddMinutes(90),
@@ -216,10 +219,10 @@
             dbContext.MessageInfo.Add(new MessageInfo { ConversationId = "374i2372342344982dfas343748923" });
             dbContext.UMInfo.Add(new UMInfo { ConversationId = "374i2372342344982dfas343748923" });
             await dbContext.SaveChangesAsync();
-            var underMaintenanceInfo = new Dictionary<int, UM> {
+            var underMaintenanceInfo = new Dictionary<int, Core.UM.Models.UM> {
                 {
                     8,
-                    new UM {
+                    new Core.UM.Models.UM {
                         IsUnderMaintenanceTime = false,
                         From = DateTime.Now,
                         To = DateTime.Now.AddMinutes(90),

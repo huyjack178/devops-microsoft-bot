@@ -2,24 +2,24 @@
 {
     using System;
     using System.Linq;
-    using Fanex.Bot.API.Middlewares;
-    using Fanex.Bot.API.Services;
-    using Fanex.Bot.Core.Utilities.Web;
-    using Fanex.Data;
-    using Fanex.Data.Repository;
-    using Fanex.Logging;
+    using Data;
+    using Data.Repository;
+    using Fanex.Bot.Common.Helpers.Web;
     using Fanex.Logging.RabbitMQ;
+    using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Middlewares;
     using ONEbook.UM;
     using ONEbook.UM.AspNetCore.Configuration;
     using ONEbook.UM.Helpers;
     using ONEbook.UM.Services;
     using ONEbook.UM.Transport;
+    using Services;
 
     public class Startup
     {
@@ -36,6 +36,7 @@
             LogManager
                 .SetDefaultLogCategory(Configuration["Fanex.Logging:DefaultCategory"])
                 .Use(new RabbitMQLogging(Configuration["Fanex.Logging:RabbitMQConnectionStrings"]));
+
             services.AddSingleton(Logger.Log);
             services.AddSingleton<RestSharp.IRestClient, RestSharp.RestClient>();
             services.AddSingleton<IWebClient, RestSharpWebClient>();

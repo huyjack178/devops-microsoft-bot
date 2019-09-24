@@ -1,8 +1,9 @@
+using Fanex.Bot.Core.Bot.Models;
+using Fanex.Bot.Core.Bot.Services;
+
 namespace Fanex.Bot.Skynex.Tests.Services
 {
     using System.Threading.Tasks;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Services;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
     using RestSharp;

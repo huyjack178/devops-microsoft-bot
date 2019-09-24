@@ -1,11 +1,8 @@
-﻿namespace Fanex.Bot.Skynex.Tests.Filters
+﻿using Fanex.Bot.Skynex.GitLab;
+
+namespace Fanex.Bot.Skynex.Tests.Filters
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Fanex.Bot.Filters;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Abstractions;

@@ -1,8 +1,9 @@
-﻿namespace Fanex.Bot.API.Controllers
+﻿using Fanex.Bot.Core.Zabbix.Models;
+
+namespace Fanex.Bot.API.Controllers
 {
     using System.Threading.Tasks;
     using Fanex.Bot.API.Services;
-    using Fanex.Bot.Models.Zabbix;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]

@@ -1,12 +1,15 @@
-﻿namespace Fanex.Bot.Skynex.Tests.Fixtures
+﻿using Fanex.Bot.Core._Shared.Constants;
+using Fanex.Bot.Core._Shared.Database;
+using Fanex.Bot.Core.Bot.Models;
+using Fanex.Bot.Core.Log.Models;
+using Fanex.Bot.Core.UM.Models;
+using Fanex.Bot.Skynex._Shared.MessageSenders;
+
+namespace Fanex.Bot.Skynex.Tests.Fixtures
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Fanex.Bot.Models;
-    using Fanex.Bot.Models.Log;
-    using Fanex.Bot.Models.UM;
-    using Fanex.Bot.Skynex.MessageHandlers.MessageSenders;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
