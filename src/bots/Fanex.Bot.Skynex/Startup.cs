@@ -23,6 +23,7 @@ using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -52,7 +53,11 @@ namespace Fanex.Bot
             ConfigureBotDialog(services);
             ConfigureBotAuthentication(services);
 
-            services.AddMvc(options => { options.Filters.Add(typeof(TrustServiceUrlAttribute)); });
+            services.AddMvc(options =>
+                {
+                    options.Filters.Add(typeof(TrustServiceUrlAttribute));
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
 #pragma warning disable S1075 // URIs should not be hardcoded
