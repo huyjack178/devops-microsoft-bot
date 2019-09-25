@@ -96,6 +96,7 @@ namespace Fanex.Bot.Skynex.Sentry
 
         public async Task HandlePushEventAsync(PushEvent pushEvent)
         {
+            var projectName = pushEvent.Id;
             var message = messageBuilder.BuildMessage(pushEvent);
 
             foreach (var sentryInfo in DbContext.SentryInfo)

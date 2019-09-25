@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Fanex.Bot.Common\Fanex.Bot.Common.csproj" />
+    <ProjectReference Include="..\Fanex.Bot.Common\Fanex.Bot.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
