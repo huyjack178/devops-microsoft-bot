@@ -48,8 +48,8 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
 
             // Assert
             await _conversation.Received().SendAdminAsync(
-                    $"**Exception occured in Skynex** {MessageFormatSignal.NEWLINE}" +
-                    $"Exception of type 'System.Exception' was thrown. {MessageFormatSignal.NEWLINE}");
+                    $"**Exception occured in Skynex** {MessageFormatSymbol.NEWLINE}" +
+                    $"Exception of type 'System.Exception' was thrown. {MessageFormatSymbol.NEWLINE}");
             Assert.IsType<ForbidResult>(result);
         }
 

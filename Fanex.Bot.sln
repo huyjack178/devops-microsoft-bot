@@ -7,11 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{62C60DFA-597
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7C1FD0A2-919E-487F-A096-10C413639B9A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F7EB6E4E-A825-4715-9A13-A8903A039C92}"
-	ProjectSection(SolutionItems) = preProject
-		Directory.build.props = Directory.build.props
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BotClients", "BotClients", "{F989CE04-59F0-4CB7-A014-FCCA0A5C6E1A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BotServices", "BotServices", "{7DC794C0-BE92-4149-9545-FDB9D39A3C41}"
@@ -32,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.Client.Tests", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Bot.Client.Integration.Tests", "tests\Fanex.Bot.Client.IntegrationTests\Fanex.Bot.Client.Integration.Tests.csproj", "{435BFDB6-3E3A-467F-894C-CE2F6840F263}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Bot.Common", "src\Fanex.Bot.Common\Fanex.Bot.Common.csproj", "{2CA93940-FB7C-4CF9-8E00-1F50B60188A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Bot.Common", "src\Fanex.Bot.Common\Fanex.Bot.Common.csproj", "{2CA93940-FB7C-4CF9-8E00-1F50B60188A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

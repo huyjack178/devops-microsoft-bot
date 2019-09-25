@@ -1,27 +1,31 @@
-﻿using Fanex.Bot.Core._Shared.Constants;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core.Bot.Models;
 using Fanex.Bot.Core.GitLab.Models;
 using Fanex.Bot.Core.Log.Models;
 using Fanex.Bot.Skynex.Bot;
+using Fanex.Bot.Skynex.Tests.Fixtures;
+using Microsoft.Bot.Connector;
+using NSubstitute;
+using Xunit;
 
 namespace Fanex.Bot.Skynex.Tests.Dialogs
 {
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Fanex.Bot.Skynex.Tests.Fixtures;
-    using Microsoft.Bot.Connector;
-    using NSubstitute;
-    using Xunit;
-
     public class CommonDialogTests : IClassFixture<BotConversationFixture>
     {
-        private readonly BotConversationFixture _conversationFixture;
-        private readonly ICommonDialog _dialog;
+        private readonly BotConversationFixture conversationFixture;
+        private readonly ICommonDialog dialog;
 
         public CommonDialogTests(BotConversationFixture conversationFixture)
         {
-            _conversationFixture = conversationFixture;
-            _dialog = new CommonDialog(_conversationFixture.BotDbContext, conversationFixture.Conversation);
+            this.conversationFixture = conversationFixture;
+
+            dialog = new CommonDialog(
+                conversationFixture.BotDbContext,
+                conversationFixture.Conversation,
+                conversationFixture.Configuration);
         }
 
         [Fact]
@@ -29,16 +33,16 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         {
             // Arrange
             var message = "group";
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324" });
+            conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324" });
 
             // Act
-            await _dialog.HandleMessage(_conversationFixture.Activity, message);
+            await dialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is("Your group id is: 13324"));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Your group id is: 13324"));
         }
 
         [Fact]
@@ -48,13 +52,13 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
             var message = "help";
 
             // Act
-            await _dialog.HandleMessage(_conversationFixture.Activity, message);
+            await dialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(_conversationFixture.Activity), Arg.Is(_conversationFixture.CommandMessage));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is(conversationFixture.CommandMessage));
         }
 
         [Fact]
@@ -64,76 +68,170 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
             var message = "any";
 
             // Act
-            await _dialog.HandleMessage(_conversationFixture.Activity, message);
+            await dialog.HandleMessage(conversationFixture.Activity, message);
 
             // Assert
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
                 .ReplyAsync(
-                    Arg.Is(_conversationFixture.Activity),
-                    Arg.Is($"Please send {MessageFormatSignal.BOLD_START}help{MessageFormatSignal.BOLD_END} to get my commands"));
+                    Arg.Is(conversationFixture.Activity),
+                    Arg.Is($"Please send {MessageFormatSymbol.BOLD_START}help{MessageFormatSymbol.BOLD_END} to get my commands"));
         }
 
         [Fact]
-        public async Task RegisterMessageInfo_MessageDoesNotExist_AddMessageInfoAndSendAdmin()
+        public async Task HandleConversationUpdate_IsBotRemoved_RemoveConversationData()
         {
             // Arrange
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324dfwer234" });
+            var dbContext = conversationFixture.MockDbContext();
+            await dbContext.LogInfo.AddAsync(new LogInfo { ConversationId = "43235grerew", LogCategories = "alpha" });
+            await dbContext.GitLabInfo.AddAsync(new GitLabInfo { ConversationId = "43235grerew", ProjectUrl = "3424" });
+            await dbContext.MessageInfo.AddAsync(new MessageInfo { ConversationId = "43235grerew" });
+            await dbContext.SaveChangesAsync();
+
+            conversationFixture.Configuration.GetSection("BotId").Value.Returns("12324342345");
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                Conversation = new ConversationAccount { Id = "43235grerew" },
+                MembersRemoved = new List<ChannelAccount> { new ChannelAccount { Id = "12324342345" } }
+            };
 
             // Act
-            await _dialog.RegisterMessageInfo(_conversationFixture.Activity);
+            await dialog.HandleConversationUpdate(activity);
 
-            // Assert
+            // Asserts
+            Assert.False(
+                conversationFixture
+                    .BotDbContext
+                    .MessageInfo
+                    .Any(info => info.ConversationId == "43235grerew"));
+
+            Assert.False(
+                conversationFixture
+                    .BotDbContext
+                    .GitLabInfo
+                    .Any(info => info.ConversationId == "43235grerew"));
+
+            Assert.False(
+                conversationFixture
+                    .BotDbContext
+                    .LogInfo
+                    .Any(info => info.ConversationId == "43235grerew"));
+
+            await conversationFixture
+                .Conversation
+                .Received()
+                .SendAdminAsync($"Client {MessageFormatSymbol.BOLD_START}43235grerew{MessageFormatSymbol.BOLD_END} has been removed");
+        }
+
+        [Fact]
+        public async Task HandleConversationUpdate_IsBotAdded_RegisterConversationData()
+        {
+            // Arrange
+            conversationFixture.Configuration.GetSection("BotId").Value.Returns("12324342345");
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                Conversation = new ConversationAccount { Id = "13324dfwer234" },
+                MembersAdded = new List<ChannelAccount> { new ChannelAccount { Id = "12324342345" } }
+            };
+
+            // Act
+            await dialog.HandleConversationUpdate(activity);
+
+            // Asserts
             Assert.True(
-                _conversationFixture
+                conversationFixture
                     .BotDbContext
                     .MessageInfo
                     .Any(info => info.ConversationId == "13324dfwer234"));
 
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .SendAdminAsync($"New client {MessageFormatSignal.BOLD_START}13324dfwer234{MessageFormatSignal.BOLD_END} has been added");
+                .SendAdminAsync($"New client {MessageFormatSymbol.BOLD_START}13324dfwer234{MessageFormatSymbol.BOLD_END} has been added");
+
+            await conversationFixture
+                .Conversation
+                .Received()
+                .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
         }
 
         [Fact]
-        public async Task RemoveConversationDatat_RemoveDataAndSendAdmin()
+        public async Task HandleContactRelationUpdate_IsNotRemovedAction_RegisterMessageInfo()
         {
             // Arrange
-            _conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "13324d234234fwer234" });
-            var dbContext = _conversationFixture.MockDbContext();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ContactRelationUpdate,
+                Conversation = new ConversationAccount { Id = "43235g43235gre324234rewrerew" },
+            };
+
+            // Act
+            await dialog.HandleContactRelationUpdate(activity);
+
+            // Asserts
+            Assert.True(
+                conversationFixture
+                    .BotDbContext
+                    .MessageInfo
+                    .Any(info => info.ConversationId == "43235g43235gre324234rewrerew"));
+
+            await conversationFixture
+                .Conversation
+                .Received()
+                .SendAdminAsync($"New client {MessageFormatSymbol.BOLD_START}43235g43235gre324234rewrerew{MessageFormatSymbol.BOLD_END} has been added");
+
+            await conversationFixture
+                .Conversation
+                .Received()
+                .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+        }
+
+        [Fact]
+        public async Task HandleContactRelationUpdate_RemoveDataAndSendAdmin()
+        {
+            // Arrange
+            conversationFixture.Activity = new Activity
+            {
+                Type = ActivityTypes.ContactRelationUpdate,
+                Conversation = new ConversationAccount { Id = "13324d234234fwer234" },
+                Action = "remove"
+            };
+
+            var dbContext = conversationFixture.MockDbContext();
             await dbContext.LogInfo.AddAsync(new LogInfo { ConversationId = "13324d234234fwer234", LogCategories = "alpha" });
             await dbContext.GitLabInfo.AddAsync(new GitLabInfo { ConversationId = "13324d234234fwer234", ProjectUrl = "3424" });
             await dbContext.MessageInfo.AddAsync(new MessageInfo { ConversationId = "13324d234234fwer234" });
             await dbContext.SaveChangesAsync();
 
             // Act
-            await _dialog.RemoveConversationData(_conversationFixture.Activity);
+            await dialog.HandleContactRelationUpdate(conversationFixture.Activity);
 
             // Assert
             Assert.False(
-                _conversationFixture
+                conversationFixture
                     .BotDbContext
                     .MessageInfo
                     .Any(info => info.ConversationId == "13324d234234fwer234"));
 
             Assert.False(
-                _conversationFixture
+                conversationFixture
                     .BotDbContext
                     .GitLabInfo
                     .Any(info => info.ConversationId == "13324d234234fwer234"));
 
             Assert.False(
-              _conversationFixture
+              conversationFixture
                   .BotDbContext
                   .LogInfo
                   .Any(info => info.ConversationId == "13324d234234fwer234"));
 
-            await _conversationFixture
+            await conversationFixture
                 .Conversation
                 .Received()
-                .SendAdminAsync($"Client {MessageFormatSignal.BOLD_START}13324d234234fwer234{MessageFormatSignal.BOLD_END} has been removed");
+                .SendAdminAsync($"Client {MessageFormatSymbol.BOLD_START}13324d234234fwer234{MessageFormatSymbol.BOLD_END} has been removed");
         }
     }
 }

@@ -5,7 +5,7 @@ using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Zabbix.Models;
 using Fanex.Bot.Helpers;
-using Fanex.Bot.Skynex.Log;
+using Fanex.Bot.Skynex._Shared.Base;
 
 namespace Fanex.Bot.Skynex.Zabbix
 {
@@ -20,7 +20,7 @@ namespace Fanex.Bot.Skynex.Zabbix
             var message = new StringBuilder();
             var serviceGroup = DataHelper.Parse<IGrouping<string, Service>>(model);
 
-            message.Append($"{MessageFormatSignal.BOLD_END}[{serviceGroup.Key}]{MessageFormatSignal.BOLD_START}{MessageFormatSignal.NEWLINE}");
+            message.Append($"{MessageFormatSymbol.BOLD_END}[{serviceGroup.Key}]{MessageFormatSymbol.BOLD_START}{MessageFormatSymbol.NEWLINE}");
 
             foreach (var service in serviceGroup.OrderByDescending(s => s.LastValue))
             {
@@ -29,13 +29,13 @@ namespace Fanex.Bot.Skynex.Zabbix
 
                 if (status != ZabbixServiceStatus.Running)
                 {
-                    statusMessage = MessageFormatSignal.BOLD_START + status.ToString() + MessageFormatSignal.BOLD_END;
+                    statusMessage = MessageFormatSymbol.BOLD_START + status.ToString() + MessageFormatSymbol.BOLD_END;
                 }
 
-                message.Append($"{service.Name} is {statusMessage}{MessageFormatSignal.NEWLINE}");
+                message.Append($"{service.Name} is {statusMessage}{MessageFormatSymbol.NEWLINE}");
             }
 
-            message.Append(MessageFormatSignal.DIVIDER + MessageFormatSignal.NEWLINE);
+            message.Append(MessageFormatSymbol.DIVIDER + MessageFormatSymbol.NEWLINE);
 
             return message.ToString();
         }

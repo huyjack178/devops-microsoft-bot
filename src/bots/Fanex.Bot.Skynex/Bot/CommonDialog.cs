@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
@@ -6,12 +7,17 @@ using Fanex.Bot.Core.Bot.Models;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex._Shared.MessageSenders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Connector = Microsoft.Bot.Connector;
 
 namespace Fanex.Bot.Skynex.Bot
 {
     public interface ICommonDialog : IDialog
     {
+        Task HandleConversationUpdate(Connector.IMessageActivity activity);
+
+        Task HandleContactRelationUpdate(Connector.IMessageActivity activity);
+
         Task RegisterMessageInfo(Connector.IMessageActivity activity);
 
         Task RemoveConversationData(Connector.IMessageActivity activity);
@@ -19,10 +25,14 @@ namespace Fanex.Bot.Skynex.Bot
 
     public class CommonDialog : BaseDialog, ICommonDialog
     {
+        private readonly IConfiguration configuration;
+
         public CommonDialog(
             BotDbContext dbContext,
-            IConversation conversation) : base(dbContext, conversation)
+            IConversation conversation,
+            IConfiguration configuration) : base(dbContext, conversation)
         {
+            this.configuration = configuration;
         }
 
         public async Task HandleMessage(Connector.IMessageActivity activity, string message)
@@ -41,7 +51,41 @@ namespace Fanex.Bot.Skynex.Bot
 
             await Conversation.ReplyAsync(
                 activity,
-                $"Please send {MessageFormatSignal.BOLD_START}help{MessageFormatSignal.BOLD_END} to get my commands");
+                $"Please send {MessageFormatSymbol.BOLD_START}help{MessageFormatSymbol.BOLD_END} to get my commands");
+        }
+
+        public async Task HandleConversationUpdate(Connector.IMessageActivity activity)
+        {
+            var conversationUpdate = activity.AsConversationUpdateActivity();
+            var botId = configuration.GetSection("BotId")?.Value;
+
+            if (conversationUpdate.MembersRemoved != null &&
+                conversationUpdate.MembersRemoved.Any(mem => mem.Id == botId))
+            {
+                await RemoveConversationData(activity);
+                return;
+            }
+
+            if (conversationUpdate.MembersAdded != null &&
+                conversationUpdate.MembersAdded.Any(mem => mem.Id == botId))
+            {
+                await RegisterMessageInfo(activity);
+            }
+
+            await Conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
+        }
+
+        public async Task HandleContactRelationUpdate(Connector.IMessageActivity activity)
+        {
+            if ((activity as Connector.Activity)?.Action?.ToLowerInvariant() == "remove")
+            {
+                await RemoveConversationData(activity);
+            }
+            else
+            {
+                await RegisterMessageInfo(activity);
+                await Conversation.ReplyAsync(activity, "Hello. I am SkyNex.");
+            }
         }
 
         public virtual async Task RegisterMessageInfo(Connector.IMessageActivity activity)
@@ -54,7 +98,7 @@ namespace Fanex.Bot.Skynex.Bot
                 messageInfo = InitMessageInfo(activity);
                 await SaveMessageInfo(messageInfo);
                 await Conversation.SendAdminAsync(
-                    $"New client {MessageFormatSignal.BOLD_START}{activity.Conversation.Id}{MessageFormatSignal.BOLD_END} has been added");
+                    $"New client {MessageFormatSymbol.BOLD_START}{activity.Conversation.Id}{MessageFormatSymbol.BOLD_END} has been added");
             }
         }
 
@@ -86,20 +130,20 @@ namespace Fanex.Bot.Skynex.Bot
 
             await DbContext.SaveChangesAsync();
             await Conversation.SendAdminAsync(
-                $"Client {MessageFormatSignal.BOLD_START}{activity.Conversation.Id}{MessageFormatSignal.BOLD_END} has been removed");
+                $"Client {MessageFormatSymbol.BOLD_START}{activity.Conversation.Id}{MessageFormatSymbol.BOLD_END} has been removed");
         }
 
         private static MessageInfo InitMessageInfo(Connector.IMessageActivity activity)
         {
             return new MessageInfo
             {
-                ToId = activity.From.Id,
-                ToName = activity.From.Name,
-                FromId = activity.Recipient.Id,
-                FromName = activity.Recipient.Name,
+                ToId = activity.From?.Id,
+                ToName = activity.From?.Name,
+                FromId = activity.Recipient?.Id,
+                FromName = activity.Recipient?.Name,
                 ServiceUrl = activity.ServiceUrl,
                 ChannelId = activity.ChannelId,
-                ConversationId = activity.Conversation.Id,
+                ConversationId = activity.Conversation?.Id,
                 CreatedTime = DateTime.UtcNow.AddHours(7)
             };
         }

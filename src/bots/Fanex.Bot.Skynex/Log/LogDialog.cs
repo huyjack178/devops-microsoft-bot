@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fanex.Bot.Common.Extensions;
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
+using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Log.Models;
 using Fanex.Bot.Core.Log.Services;
 using Fanex.Bot.Core.UM.Services;
@@ -63,25 +64,27 @@ namespace Fanex.Bot.Skynex.Log
 
         public async Task HandleMessage(IMessageActivity activity, string message)
         {
-            if (message.StartsWith("log add"))
+            var command = message.Replace(FunctionType.LogMSiteFunctionName, string.Empty).Trim();
+
+            if (command.StartsWith("add"))
             {
-                await AddLogCategoriesAsync(activity, message);
+                await AddLogCategoriesAsync(activity, command);
             }
-            else if (message.StartsWith("log remove"))
+            else if (command.StartsWith("remove"))
             {
-                await RemoveLogCategoriesAsync(activity, message);
+                await RemoveLogCategoriesAsync(activity, command);
             }
-            else if (message.StartsWith("log status"))
+            else if (command.StartsWith("status"))
             {
                 await GetLogInfoAsync(activity);
             }
-            else if (message.StartsWith("log start"))
+            else if (command.StartsWith("start"))
             {
                 await StartNotifyingLogAsync(activity);
             }
-            else if (message.StartsWith("log stop"))
+            else if (command.StartsWith("stop"))
             {
-                await StopNotifyingLogAsync(activity, message);
+                await StopNotifyingLogAsync(activity, command);
             }
             else
             {
@@ -91,7 +94,7 @@ namespace Fanex.Bot.Skynex.Log
 
         public async Task AddLogCategoriesAsync(IMessageActivity activity, string messageCmd)
         {
-            var logCategories = messageCmd.Substring(7).Trim();
+            var logCategories = messageCmd.Substring(3).Trim();
 
             if (string.IsNullOrEmpty(logCategories))
             {
@@ -113,18 +116,20 @@ namespace Fanex.Bot.Skynex.Log
             await SaveLogInfoAsync(logInfo);
 
             await Conversation.ReplyAsync(activity,
-                $"You will receive log with categories contain {MessageFormatSignal.BOLD_START}[{logCategories}]{MessageFormatSignal.BOLD_END}");
+                $"You will receive log with categories contain {MessageFormatSymbol.BOLD_START}[{logCategories}]{MessageFormatSymbol.BOLD_END}");
         }
 
         public async Task RemoveLogCategoriesAsync(IMessageActivity activity, string messageCmd)
         {
-            var logCategories = messageCmd.Substring(10).Trim();
+            var messageParams = messageCmd.Split(" ");
 
-            if (string.IsNullOrEmpty(logCategories))
+            if (messageParams.Length < 2)
             {
                 await SendMissingLogCategoriesMessage(activity);
                 return;
             }
+
+            var logCategories = messageParams[1];
 
             var logCategoryList = logCategories.Split(';');
             var logInfo = await FindLogInfoAsync(activity);
@@ -142,7 +147,7 @@ namespace Fanex.Bot.Skynex.Log
 
             await SaveLogInfoAsync(logInfo);
             await Conversation.ReplyAsync(activity,
-                $"You will not receive log with categories contain {MessageFormatSignal.BOLD_START}[{logCategories}]{MessageFormatSignal.BOLD_END}");
+                $"You will not receive log with categories contain {MessageFormatSymbol.BOLD_START}[{logCategories}]{MessageFormatSymbol.BOLD_END}");
         }
 
         public async Task StartNotifyingLogAsync(IMessageActivity activity)
@@ -218,12 +223,12 @@ namespace Fanex.Bot.Skynex.Log
         {
             var logInfo = await GetOrCreateLogInfoAsync(activity);
 
-            var message = $"Your log status {MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}Log Categories:{MessageFormatSignal.BOLD_END} [{logInfo.LogCategories}]{MessageFormatSignal.NEWLINE}";
+            var message = $"Your log status {MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}Log Categories:{MessageFormatSymbol.BOLD_END} [{logInfo.LogCategories}]{MessageFormatSymbol.NEWLINE}";
 
             message += logInfo.IsActive ?
-                $"{MessageFormatSignal.BOLD_START}Running{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" :
-                $"{MessageFormatSignal.BOLD_START}Stopped{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}";
+                $"{MessageFormatSymbol.BOLD_START}Running{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" :
+                $"{MessageFormatSymbol.BOLD_START}Stopped{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}";
 
             await Conversation.ReplyAsync(activity, message);
         }
@@ -313,18 +318,19 @@ namespace Fanex.Bot.Skynex.Log
 
         private static TimeSpan GenerateLogStopTime(string messageCmd)
         {
-            var timeSpanText = messageCmd.Replace("log stop", string.Empty).Trim();
-
+            var messageParams = messageCmd.Split(" ");
             TimeSpan logStopDelayTime;
 
-            if (string.IsNullOrEmpty(timeSpanText))
+            if (messageParams.Length < 2)
             {
                 logStopDelayTime = TimeSpan.FromMinutes(10);
             }
             else
             {
-                var timeSpanNumber = Regex.Match(timeSpanText, @"\d+").Value;
-                var timeSpanFormat = timeSpanText.Replace(timeSpanNumber, string.Empty);
+                var timeSpan = messageParams[1];
+
+                var timeSpanNumber = Regex.Match(timeSpan, @"\d+").Value;
+                var timeSpanFormat = timeSpan.Replace(timeSpanNumber, string.Empty);
                 TimeSpan.TryParseExact(timeSpanNumber, $"%{timeSpanFormat}", null, out logStopDelayTime);
             }
 

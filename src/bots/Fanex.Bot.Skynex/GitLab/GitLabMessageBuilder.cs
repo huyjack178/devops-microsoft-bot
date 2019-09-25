@@ -2,7 +2,7 @@
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core.GitLab.Models;
 using Fanex.Bot.Helpers;
-using Fanex.Bot.Skynex.Log;
+using Fanex.Bot.Skynex._Shared.Base;
 
 namespace Fanex.Bot.Skynex.GitLab
 {
@@ -18,23 +18,23 @@ namespace Fanex.Bot.Skynex.GitLab
             var project = gitlabPushEvent.Project;
             var commits = gitlabPushEvent.Commits;
 
-            var message = $"{MessageFormatSignal.BOLD_START}GitLab Master Branch Change{MessageFormatSignal.BOLD_END} (bell){MessageFormatSignal.NEWLINE}" +
-                            $"{MessageFormatSignal.BOLD_START}Repository:{MessageFormatSignal.BOLD_END} {project.WebUrl}{MessageFormatSignal.NEWLINE}";
+            var message = $"{MessageFormatSymbol.BOLD_START}GitLab Master Branch Change{MessageFormatSymbol.BOLD_END} (bell){MessageFormatSymbol.NEWLINE}" +
+                            $"{MessageFormatSymbol.BOLD_START}Repository:{MessageFormatSymbol.BOLD_END} {project.WebUrl}{MessageFormatSymbol.NEWLINE}";
 
             var commitMessageBuilder = new StringBuilder();
-            commitMessageBuilder.Append($"{MessageFormatSignal.BOLD_START}Commits:{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}");
+            commitMessageBuilder.Append($"{MessageFormatSymbol.BOLD_START}Commits:{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}");
 
             foreach (var commit in commits)
             {
                 var commitUrl = $"{project.WebUrl}/commit/{commit.Id}";
 
                 commitMessageBuilder
-                    .Append($"{MessageFormatSignal.BOLD_START}[{commit.Id.Substring(0, 8)}]({commitUrl}){MessageFormatSignal.BOLD_END}")
+                    .Append($"{MessageFormatSymbol.BOLD_START}[{commit.Id.Substring(0, 8)}]({commitUrl}){MessageFormatSymbol.BOLD_END}")
                     .Append($" {commit.Message} ({commit.Author.Name})")
-                    .Append(MessageFormatSignal.NEWLINE);
+                    .Append(MessageFormatSymbol.NEWLINE);
             }
 
-            commitMessageBuilder.Append(MessageFormatSignal.DIVIDER + MessageFormatSignal.NEWLINE);
+            commitMessageBuilder.Append(MessageFormatSymbol.DIVIDER + MessageFormatSymbol.NEWLINE);
 
             message += commitMessageBuilder;
 

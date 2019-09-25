@@ -65,7 +65,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_AddCategory_CategoriesIsEmpty_SendErrorMessage()
         {
             // Arrange
-            var message = "log add";
+            var message = "log_msite add";
 
             // Act
             await logDialog.HandleMessage(conversationFixture.Activity, message);
@@ -83,7 +83,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_AddCategory_IsDisableAddAndNotAdmin_SendErrorMessage()
         {
             // Arrange
-            var message = "log add alpha";
+            var message = "log_msite add alpha";
 
             conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("DisableAddCategories").Value
@@ -108,7 +108,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         {
             // Arrange
             conversationFixture.InitDbContextData();
-            var message = "log add alpha";
+            var message = "log_msite add alpha";
 
             conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("DisableAddCategories").Value
@@ -131,14 +131,14 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will receive log with categories contain {MessageFormatSignal.BOLD_START}[alpha]{MessageFormatSignal.BOLD_END}"));
+                    Arg.Is($"You will receive log with categories contain {MessageFormatSymbol.BOLD_START}[alpha]{MessageFormatSymbol.BOLD_END}"));
         }
 
         [Fact]
         public async Task HandleMessageAsync_AddCategory_IsEnableAdd_SendSuccessMessage()
         {
             // Arrange
-            var message = "log add alpha";
+            var message = "log_msite add alpha";
 
             conversationFixture.Configuration
                 .GetSection("LogInfo").GetSection("DisableAddCategories").Value
@@ -161,7 +161,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will receive log with categories contain {MessageFormatSignal.BOLD_START}[alpha]{MessageFormatSignal.BOLD_END}"));
+                    Arg.Is($"You will receive log with categories contain {MessageFormatSymbol.BOLD_START}[alpha]{MessageFormatSymbol.BOLD_END}"));
         }
 
         #endregion AddCategory
@@ -172,7 +172,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_RemoveCategory_CategoriesIsEmpty_SendErrorMessage()
         {
             // Arrange
-            var message = "log remove";
+            var message = "log_msite remove";
 
             // Act
             await logDialog.HandleMessage(conversationFixture.Activity, message);
@@ -190,7 +190,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_RemoveCategory_NotFoundLogInfo_SendErrorMessage()
         {
             // Arrange
-            var message = "log remove alpha";
+            var message = "log_msite remove alpha";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "55" });
 
             // Act
@@ -209,7 +209,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_RemoveCategory_SendSuccessMessage()
         {
             // Arrange
-            var message = "log remove nap";
+            var message = "log_msite remove nap";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "10" });
             conversationFixture.InitDbContextData();
 
@@ -229,7 +229,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
                 .Received()
                 .ReplyAsync(
                     Arg.Is(conversationFixture.Activity),
-                    Arg.Is($"You will not receive log with categories contain {MessageFormatSignal.BOLD_START}[nap]{MessageFormatSignal.BOLD_END}"));
+                    Arg.Is($"You will not receive log with categories contain {MessageFormatSymbol.BOLD_START}[nap]{MessageFormatSymbol.BOLD_END}"));
         }
 
         #endregion Remove Category
@@ -238,7 +238,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_StartLogging_SendSuccessMessage()
         {
             // Arrange
-            var message = "log start";
+            var message = "log_msite start";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });
             memoryCache.Set("5", "1234");
 
@@ -273,7 +273,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_StopLogging_WithDefaultStopTime_SendSuccessMessage()
         {
             // Arrange
-            var message = "log stop";
+            var message = "log_msite stop";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "6" });
             memoryCache.Set("6", "1234");
 
@@ -304,7 +304,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_StopLogging_WithStopTime_SendSuccessMessage()
         {
             // Arrange
-            var message = "log stop 3h";
+            var message = "log_msite stop 3h";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "126" });
 
             // Act
@@ -448,11 +448,11 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
 
             // Assert
             var expectedAlphaMessage =
-                $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: alpha{MessageFormatSignal.NEWLINE}" +
-                $"log{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: 0 " +
-                $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: 0" +
-                $"{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
+                $"{MessageFormatSymbol.BOLD_START}Category{MessageFormatSymbol.BOLD_END}: alpha{MessageFormatSymbol.NEWLINE}" +
+                $"log{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}#Log Id{MessageFormatSymbol.BOLD_END}: 0 " +
+                $"{MessageFormatSymbol.BOLD_START}Count{MessageFormatSymbol.BOLD_END}: 0" +
+                $"{MessageFormatSymbol.DOUBLE_NEWLINE}{MessageFormatSymbol.DIVIDER}";
 
             await conversationFixture.Conversation
                  .Received()
@@ -491,11 +491,11 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
 
             // Assert
             var expectedAlphaMessage =
-                    $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: alpha{MessageFormatSignal.NEWLINE}" +
-                    $"log{MessageFormatSignal.NEWLINE}" +
-                    $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: 0 " +
-                    $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: 0" +
-                    $"{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
+                    $"{MessageFormatSymbol.BOLD_START}Category{MessageFormatSymbol.BOLD_END}: alpha{MessageFormatSymbol.NEWLINE}" +
+                    $"log{MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}#Log Id{MessageFormatSymbol.BOLD_END}: 0 " +
+                    $"{MessageFormatSymbol.BOLD_START}Count{MessageFormatSymbol.BOLD_END}: 0" +
+                    $"{MessageFormatSymbol.DOUBLE_NEWLINE}{MessageFormatSymbol.DIVIDER}";
             await conversationFixture.Conversation
                  .Received(1)
                  .SendAsync(Arg.Is("1"), Arg.Is(expectedAlphaMessage));
@@ -589,11 +589,11 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
 
             // Assert
             var expectedAlphaMessage =
-                    $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: nap{MessageFormatSignal.NEWLINE}" +
-                    $"thread was not being aborted{MessageFormatSignal.NEWLINE}" +
-                    $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: 0 " +
-                    $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: 0" +
-                    $"{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
+                    $"{MessageFormatSymbol.BOLD_START}Category{MessageFormatSymbol.BOLD_END}: nap{MessageFormatSymbol.NEWLINE}" +
+                    $"thread was not being aborted{MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}#Log Id{MessageFormatSymbol.BOLD_END}: 0 " +
+                    $"{MessageFormatSymbol.BOLD_START}Count{MessageFormatSymbol.BOLD_END}: 0" +
+                    $"{MessageFormatSymbol.DOUBLE_NEWLINE}{MessageFormatSymbol.DIVIDER}";
             await conversationFixture.Conversation
                  .Received(1)
                  .SendAsync(Arg.Is("234234231"), Arg.Is(expectedAlphaMessage));
@@ -605,7 +605,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         public async Task HandleMessageAsync_ViewStatus_SendLogInfoMessage(string conversationId, bool isActive, string expectedActiveResult)
         {
             // Arrange
-            var message = "log status";
+            var message = "log_msite status";
             var dbContext = conversationFixture.MockDbContext();
             dbContext.LogInfo.Add(new LogInfo { ConversationId = conversationId, LogCategories = "alpha;nap", IsActive = isActive });
             dbContext.SaveChanges();
@@ -621,18 +621,18 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
               .ReplyAsync(
                   Arg.Is(conversationFixture.Activity),
                   Arg.Is(
-                    $"Your log status {MessageFormatSignal.NEWLINE}" +
-                    $"{MessageFormatSignal.BOLD_START}Log Categories:{MessageFormatSignal.BOLD_END} " +
-                    $"[alpha;nap]{MessageFormatSignal.NEWLINE}" +
-                    MessageFormatSignal.BOLD_START + expectedActiveResult + MessageFormatSignal.BOLD_END +
-                    MessageFormatSignal.NEWLINE));
+                    $"Your log status {MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}Log Categories:{MessageFormatSymbol.BOLD_END} " +
+                    $"[alpha;nap]{MessageFormatSymbol.NEWLINE}" +
+                    MessageFormatSymbol.BOLD_START + expectedActiveResult + MessageFormatSymbol.BOLD_END +
+                    MessageFormatSymbol.NEWLINE));
         }
 
         [Fact]
         public async Task HandleMessageAsync_AnyMessage_SendCommandMessage()
         {
             // Arrange
-            var message = "log";
+            var message = "log_msite";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "669" });
 
             // Act

@@ -69,9 +69,9 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessengerFormatters
         {
             // Arrange
             var text =
-                $"{MessageFormatSignal.BOLD_START}Hello: {MessageFormatSignal.BOLD_END}\n\n \n\n" +
-                $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.DOUBLE_NEWLINE}" +
-                $"{MessageFormatSignal.DIVIDER}";
+                $"{MessageFormatSymbol.BOLD_START}Hello: {MessageFormatSymbol.BOLD_END}\n\n \n\n" +
+                $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.DOUBLE_NEWLINE}" +
+                $"{MessageFormatSymbol.DIVIDER}";
 
             // Act
             var formatedText = defautFormatter.Format(text);

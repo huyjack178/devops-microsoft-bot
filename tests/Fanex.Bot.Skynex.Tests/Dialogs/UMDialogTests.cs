@@ -99,10 +99,10 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
                     .SendAsync(
                         "374i324223423342323749823748923",
                         $"System will be under maintenance with the following information " +
-                        $"(GMT +8){MessageFormatSignal.NEWLINE}" +
-                        $"{MessageFormatSignal.BOLD_START}Site Agency (8){MessageFormatSignal.BOLD_END} - " +
-                        $"From {MessageFormatSignal.BOLD_START}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.BOLD_END} " +
-                        $"To {MessageFormatSignal.BOLD_START}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}");
+                        $"(GMT +8){MessageFormatSymbol.NEWLINE}" +
+                        $"{MessageFormatSymbol.BOLD_START}Site Agency (8){MessageFormatSymbol.BOLD_END} - " +
+                        $"From {MessageFormatSymbol.BOLD_START}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSymbol.BOLD_END} " +
+                        $"To {MessageFormatSymbol.BOLD_START}{scheduleUnderMaintenanceInfo.First().Value.From}{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}");
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
             await conversationFixture.Conversation.Received(1)
               .SendAsync(
                 "374i23749823748923",
-                $"Site {MessageFormatSignal.BOLD_START}Agency (8){MessageFormatSignal.BOLD_END} is under maintenance now!");
+                $"Site {MessageFormatSymbol.BOLD_START}Agency (8){MessageFormatSymbol.BOLD_END} is under maintenance now!");
 
             Assert.True(memoryCache.Get<bool>("InformedUM8"));
         }
@@ -196,18 +196,18 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
             await conversationFixture.Conversation.Received()
              .SendAsync("374i2374982dfas343748923", "Scanning started!");
             await conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BOLD_START}google{MessageFormatSignal.BOLD_END} PASSED! {MessageFormatSignal.NEWLINE}");
+                .SendAsync("374i2374982dfas343748923", $"{MessageFormatSymbol.BOLD_START}google{MessageFormatSymbol.BOLD_END} PASSED! {MessageFormatSymbol.NEWLINE}");
             await conversationFixture.Conversation.Received()
                .SendAsync(
                     "374i2374982dfas343748923",
-                    $"{MessageFormatSignal.BOLD_START}alpha{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}alpha{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
                     $"http://www.agbong888888.com does not show UM");
             await conversationFixture.Conversation.DidNotReceive()
-              .SendAsync("374i2374982dfas343748923", $"{MessageFormatSignal.BOLD_START}alpha{MessageFormatSignal.BOLD_END} PASSED! {MessageFormatSignal.NEWLINE}");
+              .SendAsync("374i2374982dfas343748923", $"{MessageFormatSymbol.BOLD_START}alpha{MessageFormatSymbol.BOLD_END} PASSED! {MessageFormatSymbol.NEWLINE}");
             await conversationFixture.Conversation.Received(1)
                 .SendAsync("374i2374982dfas343748923", "No site to be scanned!");
             await conversationFixture.Conversation.Received()
-                .SendAsync("374i2374982dfas343748923", $"Scanning completed!{MessageFormatSignal.NEWLINE}{MessageFormatSignal.DIVIDER}");
+                .SendAsync("374i2374982dfas343748923", $"Scanning completed!{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.DIVIDER}");
         }
 
         [Fact]
@@ -241,7 +241,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
             await conversationFixture.Conversation.Received(1)
              .SendAsync(
                 "374i2372342344982dfas343748923",
-                $"Site {MessageFormatSignal.BOLD_START}Agency (8){MessageFormatSignal.BOLD_END} is back to normal now!");
+                $"Site {MessageFormatSymbol.BOLD_START}Agency (8){MessageFormatSymbol.BOLD_END} is back to normal now!");
             Assert.False(memoryCache.Get<bool>("InformedUM1"));
         }
     }

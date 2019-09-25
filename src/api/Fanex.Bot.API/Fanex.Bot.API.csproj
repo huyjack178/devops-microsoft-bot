@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <TieredCompilation>true</TieredCompilation>
     <SonarQubeExclude>True</SonarQubeExclude>
   </PropertyGroup>
@@ -45,8 +45,8 @@
     <PackageReference Include="ONEbook.UM" Version="3.0.0-beta3" />
     <PackageReference Include="ONEbook.UM.AspNetCore" Version="3.0.0-beta" />
     <PackageReference Include="ONEbook.UM.Transport" Version="3.0.0-beta" />
-    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="2.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
   </ItemGroup>
 

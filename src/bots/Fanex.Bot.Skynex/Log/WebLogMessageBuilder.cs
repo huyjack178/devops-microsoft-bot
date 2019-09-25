@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Helpers;
+using Fanex.Bot.Skynex._Shared.Base;
 
 namespace Fanex.Bot.Skynex.Log
 {
@@ -52,18 +53,18 @@ namespace Fanex.Bot.Skynex.Log
             var returnMessage = message
                     .Replace("\r", string.Empty)
                     .Replace("\t", string.Empty)
-                    .Replace("\n", MessageFormatSignal.NEWLINE)
-                    .Replace(MessageFormatSignal.NEWLINE + MessageFormatSignal.NEWLINE, MessageFormatSignal.NEWLINE)
-                    .Replace(MessageFormatSignal.NEWLINE + MessageFormatSignal.NEWLINE, MessageFormatSignal.NEWLINE)
-                    .Replace(MessageFormatSignal.NEWLINE + " " + MessageFormatSignal.NEWLINE, MessageFormatSignal.NEWLINE)
-                    .Replace("Timestamp", $"{MessageFormatSignal.BOLD_START}Timestamp{MessageFormatSignal.BOLD_END}")
-                    .Replace("Message", $"{MessageFormatSignal.BOLD_START}Message{MessageFormatSignal.BOLD_END}");
+                    .Replace("\n", MessageFormatSymbol.NEWLINE)
+                    .Replace(MessageFormatSymbol.NEWLINE + MessageFormatSymbol.NEWLINE, MessageFormatSymbol.NEWLINE)
+                    .Replace(MessageFormatSymbol.NEWLINE + MessageFormatSymbol.NEWLINE, MessageFormatSymbol.NEWLINE)
+                    .Replace(MessageFormatSymbol.NEWLINE + " " + MessageFormatSymbol.NEWLINE, MessageFormatSymbol.NEWLINE)
+                    .Replace("Timestamp", $"{MessageFormatSymbol.BOLD_START}Timestamp{MessageFormatSymbol.BOLD_END}")
+                    .Replace("Message", $"{MessageFormatSymbol.BOLD_START}Message{MessageFormatSymbol.BOLD_END}");
 
-            return $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: {log.CategoryName}{MessageFormatSignal.NEWLINE}" +
-                    $"{WebUtility.HtmlDecode(returnMessage)}{MessageFormatSignal.NEWLINE}" +
-                    $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: {log.LogId} " +
-                    $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: " +
-                    $"{log.NumMessage}{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
+            return $"{MessageFormatSymbol.BOLD_START}Category{MessageFormatSymbol.BOLD_END}: {log.CategoryName}{MessageFormatSymbol.NEWLINE}" +
+                    $"{WebUtility.HtmlDecode(returnMessage)}{MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}#Log Id{MessageFormatSymbol.BOLD_END}: {log.LogId} " +
+                    $"{MessageFormatSymbol.BOLD_START}Count{MessageFormatSymbol.BOLD_END}: " +
+                    $"{log.NumMessage}{MessageFormatSymbol.DOUBLE_NEWLINE}{MessageFormatSymbol.DIVIDER}";
         }
 
         private static string FormatRequestInfo(string rawMessage, string categoryName)
@@ -86,7 +87,7 @@ namespace Fanex.Bot.Skynex.Log
                 returnMessage = rawMessage.Remove(requestInfoIndex);
                 returnMessage = returnMessage.Trim('\n', ' ');
                 returnMessage +=
-                    $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Request:{MessageFormatSignal.BOLD_END} " +
+                    $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Request:{MessageFormatSymbol.BOLD_END} " +
                     CheckAndHideAlphaDomain(requestUrl, categoryName);
             }
 
@@ -119,7 +120,7 @@ namespace Fanex.Bot.Skynex.Log
                     mobileDeviceModel = rawMessage.Substring(mobileDeviceModelIndex, serverInfoIndex - mobileDeviceModelIndex);
                 }
 
-                returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Browser:{MessageFormatSignal.BOLD_END}" +
+                returnMessage = $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Browser:{MessageFormatSymbol.BOLD_END}" +
                     $" {browser} {mobileDeviceModel.Trim('\n', ' ')}";
             }
 
@@ -128,7 +129,7 @@ namespace Fanex.Bot.Skynex.Log
 
         private static string FormatServerAndDatabaseInfo(string rawMessage, string machineName, string machineIP)
         {
-            var returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Server:{MessageFormatSignal.BOLD_END} {machineName} ({machineIP})";
+            var returnMessage = $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Server:{MessageFormatSymbol.BOLD_END} {machineName} ({machineIP})";
 
             var databaseInfoIndex = rawMessage.IndexOf("DATABASE INFO", StringComparison.InvariantCultureIgnoreCase);
 
@@ -151,8 +152,8 @@ namespace Fanex.Bot.Skynex.Log
                     }
                 }
 
-                returnMessage += $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Database:{MessageFormatSignal.BOLD_END}" +
-                    $"{MessageFormatSignal.NEWLINE}{databaseInfo}";
+                returnMessage += $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Database:{MessageFormatSymbol.BOLD_END}" +
+                    $"{MessageFormatSymbol.NEWLINE}{databaseInfo}";
             }
 
             return returnMessage;
@@ -172,8 +173,8 @@ namespace Fanex.Bot.Skynex.Log
                     "No information";
 
                 customInfo = customInfo.Replace("CUSTOM INFO", string.Empty);
-                returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Custom Info:{MessageFormatSignal.BOLD_END}" +
-                    $" {MessageFormatSignal.NEWLINE}{customInfo}";
+                returnMessage = $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Custom Info:{MessageFormatSymbol.BOLD_END}" +
+                    $" {MessageFormatSymbol.NEWLINE}{customInfo}";
             }
 
             return returnMessage;
@@ -197,8 +198,8 @@ namespace Fanex.Bot.Skynex.Log
                 exceptionInfo = exceptionInfo.Replace(
                     "EXCEPTION INFO", string.Empty);
 
-                returnMessage = $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Exception:{MessageFormatSignal.BOLD_END}" +
-                    $" {MessageFormatSignal.NEWLINE}{exceptionInfo.Trim('\n', ' ')}";
+                returnMessage = $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Exception:{MessageFormatSymbol.BOLD_END}" +
+                    $" {MessageFormatSymbol.NEWLINE}{exceptionInfo.Trim('\n', ' ')}";
             }
 
             return returnMessage;
@@ -213,7 +214,7 @@ namespace Fanex.Bot.Skynex.Log
 
             if (sessionInfoIndex > 0)
             {
-                returnMessage.Append($"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Session Info:{MessageFormatSignal.BOLD_END}");
+                returnMessage.Append($"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Session Info:{MessageFormatSymbol.BOLD_END}");
 
                 foreach (var key in SessionInfoKeys)
                 {
@@ -232,7 +233,7 @@ namespace Fanex.Bot.Skynex.Log
                     {
                         var value = rawMessage.Substring(keyIndex, firstNewLineCharIndex - keyIndex);
 
-                        returnMessage.Append(MessageFormatSignal.NEWLINE + value);
+                        returnMessage.Append(MessageFormatSymbol.NEWLINE + value);
                     }
                 }
             }

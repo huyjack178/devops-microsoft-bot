@@ -31,11 +31,11 @@ namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
 
         public virtual string Format(string message)
             => Clean(message)
-                .Replace(MessageFormatSignal.NEWLINE, NewLine)
-                .Replace(MessageFormatSignal.DOUBLE_NEWLINE, DoubleNewLine)
-                .Replace(MessageFormatSignal.BOLD_START, BeginBold)
-                .Replace(MessageFormatSignal.BOLD_END, EndBold)
-                .Replace(MessageFormatSignal.DIVIDER, BreakLine);
+                .Replace(MessageFormatSymbol.NEWLINE, NewLine)
+                .Replace(MessageFormatSymbol.DOUBLE_NEWLINE, DoubleNewLine)
+                .Replace(MessageFormatSymbol.BOLD_START, BeginBold)
+                .Replace(MessageFormatSymbol.BOLD_END, EndBold)
+                .Replace(MessageFormatSymbol.DIVIDER, BreakLine);
 
         protected virtual string Clean(string message)
             => message

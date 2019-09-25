@@ -74,10 +74,10 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
                 logger.LogError($"{ex.Message}\n{ex.StackTrace}");
 
                 await SendAdminAsync(
-                    $"Can not send message to {MessageFormatSignal.BOLD_START}{messageInfo?.ConversationId}{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}" +
-                    $"{MessageFormatSignal.BOLD_START}Exception:{MessageFormatSignal.BOLD_END} {ex.Message} {MessageFormatSignal.NEWLINE}" +
+                    $"Can not send message to {MessageFormatSymbol.BOLD_START}{messageInfo?.ConversationId}{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}Exception:{MessageFormatSymbol.BOLD_END} {ex.Message} {MessageFormatSymbol.NEWLINE}" +
                     $"Message: {messageInfo?.Text}" +
-                    $"{MessageFormatSignal.DIVIDER}").ConfigureAwait(false);
+                    $"{MessageFormatSymbol.DIVIDER}").ConfigureAwait(false);
             }
         }
 
@@ -97,7 +97,7 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
             }
             else
             {
-                var errorMessage = $"Error: {MessageFormatSignal.BOLD_START}{conversationId}{MessageFormatSignal.BOLD_END} not found";
+                var errorMessage = $"Error: {MessageFormatSymbol.BOLD_START}{conversationId}{MessageFormatSymbol.BOLD_END} not found";
                 await SendAdminAsync(errorMessage);
 
                 return Result.CreateFailedResult(errorMessage);

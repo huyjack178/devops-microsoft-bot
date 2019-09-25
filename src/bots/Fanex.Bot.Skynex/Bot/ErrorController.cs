@@ -31,8 +31,8 @@ namespace Fanex.Bot.Skynex.Bot
                     $"{exceptionThatOccurred.Message}\n{exceptionThatOccurred.StackTrace}\n");
 
                 await conversation.SendAdminAsync(
-                    $"**Exception occured in Skynex** {MessageFormatSignal.NEWLINE}" +
-                    $"{exceptionThatOccurred.Message} {MessageFormatSignal.NEWLINE}" +
+                    $"**Exception occured in Skynex** {MessageFormatSymbol.NEWLINE}" +
+                    $"{exceptionThatOccurred.Message} {MessageFormatSymbol.NEWLINE}" +
                     $"{exceptionThatOccurred.StackTrace}");
 
                 return Forbid();

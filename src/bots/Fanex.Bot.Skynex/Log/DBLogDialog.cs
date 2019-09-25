@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
+using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Log.Services;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex._Shared.MessageSenders;
@@ -40,7 +41,7 @@ namespace Fanex.Bot.Skynex.Log
 
         public async Task HandleMessage(IMessageActivity activity, string message)
         {
-            var command = message.Replace(MessageCommand.DBLOG, string.Empty).Trim();
+            var command = message.Replace(FunctionType.LogDb.DisplayName, string.Empty).Trim();
 
             if (command.StartsWith(MessageCommand.START))
             {

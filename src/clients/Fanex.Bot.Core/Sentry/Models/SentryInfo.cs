@@ -5,5 +5,7 @@ namespace Fanex.Bot.Core.Sentry.Models
     public class SentryInfo : EntityBase
     {
         public string Project { get; set; }
+
+        public string Level { get; set; }
     }
 }

@@ -66,7 +66,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
 
             // Assert
             var expecteRequestInfo =
-                $"URL: http://alpha.site:8071/ex-main/_MemberInfo/SearchAndCopy/MasterPage.aspx?lv=2 {MessageFormatSignal.NEWLINE}" +
+                $"URL: http://alpha.site:8071/ex-main/_MemberInfo/SearchAndCopy/MasterPage.aspx?lv=2 {MessageFormatSymbol.NEWLINE}" +
                 "REFERRER: http://alpha.site:8071/site-main";
             Assert.Contains(expecteRequestInfo, actualMessage);
         }
@@ -84,7 +84,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
 
             // Assert
             var expecteRequestInfo =
-                $"{MessageFormatSignal.BOLD_START}Request:{MessageFormatSignal.BOLD_END}" +
+                $"{MessageFormatSymbol.BOLD_START}Request:{MessageFormatSymbol.BOLD_END}" +
                 "  http://mb.stakecity.com:8072/site-reports/Statement/";
             Assert.Contains(expecteRequestInfo, actualMessage);
         }
@@ -103,7 +103,7 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
 
             // Assert
             var expecteRequestInfo =
-                $"{MessageFormatSignal.BOLD_START}Request:{MessageFormatSignal.BOLD_END}" +
+                $"{MessageFormatSymbol.BOLD_START}Request:{MessageFormatSymbol.BOLD_END}" +
                 $"  http://alpha.site:8072/site-reports/Statement/";
             Assert.Contains(expecteRequestInfo, actualMessage);
         }
@@ -121,8 +121,8 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
 
             // Assert
             var expecteRequestInfo =
-                $"{MessageFormatSignal.BOLD_START}Browser:{MessageFormatSignal.BOLD_END}" +
-                $"  Firefox 60.0 (Beta: False) {MessageFormatSignal.NEWLINE} MobileDeviceModel: Unknown";
+                $"{MessageFormatSymbol.BOLD_START}Browser:{MessageFormatSymbol.BOLD_END}" +
+                $"  Firefox 60.0 (Beta: False) {MessageFormatSymbol.NEWLINE} MobileDeviceModel: Unknown";
             Assert.Contains(expecteRequestInfo, actualMessage);
         }
 
@@ -138,15 +138,15 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
 
             // Assert
-            var expecteDbInfo = $"{MessageFormatSignal.BOLD_START}Server:{MessageFormatSignal.BOLD_END}" +
+            var expecteDbInfo = $"{MessageFormatSymbol.BOLD_START}Server:{MessageFormatSymbol.BOLD_END}" +
                 $" {log.MachineName} ({log.MachineIP})" +
-                $"{MessageFormatSignal.NEWLINE}{MessageFormatSignal.BOLD_START}Database:{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" +
-                $"Server: 10.40.40.100 {MessageFormatSignal.NEWLINE}" +
-                $"DbName: DBACC.bodb02.BODBDownlineNet {MessageFormatSignal.NEWLINE}" +
-                $"UserID: bodbDownlineNet {MessageFormatSignal.NEWLINE}" +
-                $"SpName: Acc_StatementSelTransfer {MessageFormatSignal.NEWLINE}" +
-                $"Parameters: @winlostdate=6/17/2018 12:00:00 AM;@custid=26570707 {MessageFormatSignal.NEWLINE}" +
-                $"Line: 0 {MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Database:{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
+                $"Server: 10.40.40.100 {MessageFormatSymbol.NEWLINE}" +
+                $"DbName: DBACC.bodb02.BODBDownlineNet {MessageFormatSymbol.NEWLINE}" +
+                $"UserID: bodbDownlineNet {MessageFormatSymbol.NEWLINE}" +
+                $"SpName: Acc_StatementSelTransfer {MessageFormatSymbol.NEWLINE}" +
+                $"Parameters: @winlostdate=6/17/2018 12:00:00 AM;@custid=26570707 {MessageFormatSymbol.NEWLINE}" +
+                $"Line: 0 {MessageFormatSymbol.NEWLINE}" +
                 $"CommandTimeout: 120";
             Assert.Contains(expecteDbInfo, actualMessage);
         }
@@ -164,10 +164,10 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
 
             // Assert
             var expectedCustomInfo =
-                $"{MessageFormatSignal.BOLD_START}Custom Info:{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}" +
-                $"CustId: 26570707 {MessageFormatSignal.NEWLINE}" +
-                $"CustName: IX1388 {MessageFormatSignal.NEWLINE}" +
-                $"SubAccountName: IX1388SUB03 {MessageFormatSignal.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}Custom Info:{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}" +
+                $"CustId: 26570707 {MessageFormatSymbol.NEWLINE}" +
+                $"CustName: IX1388 {MessageFormatSymbol.NEWLINE}" +
+                $"SubAccountName: IX1388SUB03 {MessageFormatSymbol.NEWLINE}" +
                 $"AdminName: ";
             Assert.Contains(expectedCustomInfo, actualMessage);
         }
@@ -184,9 +184,9 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             var actualMessage = webLogMessageBuilder.BuildMessage(log);
 
             // Assert
-            var expecteExceptionInfo = $"{MessageFormatSignal.BOLD_START}Exception:{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}" +
-                $"Source: Fanex.Data.CrossCutting.WrappingException {MessageFormatSignal.NEWLINE}" +
-                $"Type: Fanex.Data.CrossCutting.WrappingException.ObjectDbException {MessageFormatSignal.NEWLINE}" +
+            var expecteExceptionInfo = $"{MessageFormatSymbol.BOLD_START}Exception:{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}" +
+                $"Source: Fanex.Data.CrossCutting.WrappingException {MessageFormatSymbol.NEWLINE}" +
+                $"Type: Fanex.Data.CrossCutting.WrappingException.ObjectDbException {MessageFormatSymbol.NEWLINE}" +
                 $"TargetSite: System.Collections.Generic.IEnumerable`1[TReturn] Query[TReturn](System.Object, System.Data.Common.DbTransaction, Boolean, System.Nullable`1[System.Int32]) ";
             Assert.Contains(expecteExceptionInfo, actualMessage);
         }
@@ -204,23 +204,23 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
 
             // Assert
             var expectedSessionInfo =
-                   $"{MessageFormatSignal.BOLD_START}Session Info:{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" +
-                   $"Username: starix69 {MessageFormatSignal.NEWLINE}" +
-                   $"AccUserName: starix69 {MessageFormatSignal.NEWLINE}" +
-                   $"CustRoleId: 4 {MessageFormatSignal.NEWLINE}" +
-                   $"custid: 27671895 {MessageFormatSignal.NEWLINE}" +
-                   $"CustUname: supertestPRO2 {MessageFormatSignal.NEWLINE}" +
-                   $"MemberID: 0 {MessageFormatSignal.NEWLINE}" +
-                   $"MemberUserName: {MessageFormatSignal.NEWLINE}" +
-                   $"AgentID: 0 {MessageFormatSignal.NEWLINE}" +
-                   $"AgentUserName: {MessageFormatSignal.NEWLINE}" +
-                   $"MasterID: 0 {MessageFormatSignal.NEWLINE}" +
-                   $"MasterUserName: {MessageFormatSignal.NEWLINE}" +
-                   $"SuperID: 27671895 {MessageFormatSignal.NEWLINE}" +
-                   $"SusperUserName: supertestPRO2 {MessageFormatSignal.NEWLINE}" +
-                   $"IsSyncCSCurrentCust: False {MessageFormatSignal.NEWLINE}" +
-                   $"IsInternal: False {MessageFormatSignal.NEWLINE}" +
-                   $"sitename: BEST-ODDS {MessageFormatSignal.NEWLINE}";
+                   $"{MessageFormatSymbol.BOLD_START}Session Info:{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
+                   $"Username: starix69 {MessageFormatSymbol.NEWLINE}" +
+                   $"AccUserName: starix69 {MessageFormatSymbol.NEWLINE}" +
+                   $"CustRoleId: 4 {MessageFormatSymbol.NEWLINE}" +
+                   $"custid: 27671895 {MessageFormatSymbol.NEWLINE}" +
+                   $"CustUname: supertestPRO2 {MessageFormatSymbol.NEWLINE}" +
+                   $"MemberID: 0 {MessageFormatSymbol.NEWLINE}" +
+                   $"MemberUserName: {MessageFormatSymbol.NEWLINE}" +
+                   $"AgentID: 0 {MessageFormatSymbol.NEWLINE}" +
+                   $"AgentUserName: {MessageFormatSymbol.NEWLINE}" +
+                   $"MasterID: 0 {MessageFormatSymbol.NEWLINE}" +
+                   $"MasterUserName: {MessageFormatSymbol.NEWLINE}" +
+                   $"SuperID: 27671895 {MessageFormatSymbol.NEWLINE}" +
+                   $"SusperUserName: supertestPRO2 {MessageFormatSymbol.NEWLINE}" +
+                   $"IsSyncCSCurrentCust: False {MessageFormatSymbol.NEWLINE}" +
+                   $"IsInternal: False {MessageFormatSymbol.NEWLINE}" +
+                   $"sitename: BEST-ODDS {MessageFormatSymbol.NEWLINE}";
             Assert.Contains(expectedSessionInfo, actualMessage);
         }
 
@@ -229,14 +229,14 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessageBuilders
             var returnMessage = message
                     .Replace("\r", string.Empty)
                     .Replace("\t", string.Empty)
-                    .Replace("Timestamp", $"{MessageFormatSignal.BOLD_START}Timestamp{MessageFormatSignal.BOLD_END}")
-                    .Replace("Message", $"{MessageFormatSignal.BOLD_START}Message{MessageFormatSignal.BOLD_END}");
+                    .Replace("Timestamp", $"{MessageFormatSymbol.BOLD_START}Timestamp{MessageFormatSymbol.BOLD_END}")
+                    .Replace("Message", $"{MessageFormatSymbol.BOLD_START}Message{MessageFormatSymbol.BOLD_END}");
 
-            return $"{MessageFormatSignal.BOLD_START}Category{MessageFormatSignal.BOLD_END}: {log.CategoryName}{MessageFormatSignal.NEWLINE}" +
-                    $"{WebUtility.HtmlDecode(returnMessage)}{MessageFormatSignal.NEWLINE}" +
-                    $"{MessageFormatSignal.BOLD_START}#Log Id{MessageFormatSignal.BOLD_END}: {log.LogId} " +
-                    $"{MessageFormatSignal.BOLD_START}Count{MessageFormatSignal.BOLD_END}: " +
-                    $"{log.NumMessage}{MessageFormatSignal.DOUBLE_NEWLINE}{MessageFormatSignal.DIVIDER}";
+            return $"{MessageFormatSymbol.BOLD_START}Category{MessageFormatSymbol.BOLD_END}: {log.CategoryName}{MessageFormatSymbol.NEWLINE}" +
+                    $"{WebUtility.HtmlDecode(returnMessage)}{MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}#Log Id{MessageFormatSymbol.BOLD_END}: {log.LogId} " +
+                    $"{MessageFormatSymbol.BOLD_START}Count{MessageFormatSymbol.BOLD_END}: " +
+                    $"{log.NumMessage}{MessageFormatSymbol.DOUBLE_NEWLINE}{MessageFormatSymbol.DIVIDER}";
         }
 
         private string GetNewLogDataTest()

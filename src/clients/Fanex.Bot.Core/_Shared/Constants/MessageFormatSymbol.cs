@@ -1,6 +1,6 @@
 ﻿namespace Fanex.Bot.Core._Shared.Constants
 {
-    public static class MessageFormatSignal
+    public static class MessageFormatSymbol
     {
         public const string NEWLINE = "{{NewLine}}";
         public const string DOUBLE_NEWLINE = "{{DoubleNewLine}}";

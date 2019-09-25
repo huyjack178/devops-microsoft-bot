@@ -1,20 +1,17 @@
-﻿using Fanex.Bot.Core._Shared.Constants;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
 using Fanex.Bot.Core.Sentry.Models;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex._Shared.MessageSenders;
+using Microsoft.Bot.Connector;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fanex.Bot.Skynex.Sentry
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Microsoft.Bot.Connector;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-
     public interface ISentryDialog : IDialog
     {
         Task HandlePushEventAsync(PushEvent pushEvent);
@@ -22,28 +19,35 @@ namespace Fanex.Bot.Skynex.Sentry
 
     public class SentryDialog : BaseDialog, ISentryDialog
     {
-        private readonly int defaultGMT;
+        private readonly ISentryMessageBuilder messageBuilder;
 
         public SentryDialog(
           BotDbContext dbContext,
           IConversation conversation,
-          IConfiguration configuration)
+          ISentryMessageBuilder messageBuilder)
           : base(dbContext, conversation)
         {
-            defaultGMT = configuration.GetSection("DefaultGMT").Get<int>();
+            this.messageBuilder = messageBuilder;
         }
 
         public async Task HandleMessage(IMessageActivity activity, string message)
         {
-            var command = message.Replace(MessageCommand.SENTRY_LOG, string.Empty).Trim();
+            var messageParts = message.Split(" ");
 
-            if (command.StartsWith(MessageCommand.START))
+            if (messageParts.Length > 1)
             {
-                await EnableLog(activity);
-            }
-            else if (command.StartsWith(MessageCommand.STOP))
-            {
-                await DisableLog(activity, message);
+                if (messageParts[1] == "start")
+                {
+                    await EnableDisableLog(activity, messageParts, true);
+                }
+                else if (messageParts[1] == "stop")
+                {
+                    await EnableDisableLog(activity, messageParts, false);
+                }
+                else
+                {
+                    await Conversation.ReplyAsync(activity, GetCommandMessages());
+                }
             }
             else
             {
@@ -51,135 +55,85 @@ namespace Fanex.Bot.Skynex.Sentry
             }
         }
 
-        protected async Task EnableLog(IMessageActivity activity)
+        protected async Task EnableDisableLog(IMessageActivity activity, string[] messageParts, bool enabled)
         {
-            var sentryInfos = GetOrCreateSentryInfos(activity);
+            var enabledMessage = enabled ? "Enabled" : "Disabled";
 
-            foreach (var sentryInfo in sentryInfos)
+            if (messageParts.Length > 2)
             {
-                sentryInfo.IsActive = true;
-                await SaveSentryInfo(sentryInfo);
+                var projectName = messageParts[2];
+                var sentryInfo = await GetOrCreateSentryInfo(activity, projectName);
+
+                if (sentryInfo != null)
+                {
+                    sentryInfo.IsActive = enabled;
+                    await SaveSentryInfo(sentryInfo);
+
+                    var message = $"Sentry Log has been {enabledMessage} for project " +
+                                  $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}!";
+                    await Conversation.ReplyAsync(activity, message);
+                }
             }
-
-            await Conversation.ReplyAsync(activity, "Sentry Log has been enabled!");
-        }
-
-        protected async Task DisableLog(IMessageActivity activity, string message)
-        {
-            var sentryInfos = GetOrCreateSentryInfos(activity);
-
-            foreach (var sentryInfo in sentryInfos)
+            else
             {
-                sentryInfo.IsActive = false;
-                await SaveSentryInfo(sentryInfo);
-            }
+                var sentryInfos = GetAllSentryInfos(activity);
 
-            await Conversation.ReplyAsync(activity, "Sentry Log has been disabled!");
+                if (sentryInfos == null)
+                {
+                    await Conversation.ReplyAsync(activity, "Not found your Sentry notification info");
+                    return;
+                }
+
+                foreach (var sentryInfo in sentryInfos)
+                {
+                    sentryInfo.IsActive = enabled;
+                    await SaveSentryInfo(sentryInfo);
+                }
+
+                await Conversation.ReplyAsync(activity, $"Sentry Log has been {enabledMessage}!");
+            }
         }
 
         public async Task HandlePushEventAsync(PushEvent pushEvent)
         {
-            var messageBuilder = new StringBuilder();
-
-            messageBuilder.Append(
-                $"{MessageFormatSignal.BOLD_START}Project:{MessageFormatSignal.BOLD_END} " +
-                $"{pushEvent.ProjectName}{MessageFormatSignal.NEWLINE}");
-            messageBuilder.Append(
-                $"{MessageFormatSignal.BOLD_START}Timestamp:{MessageFormatSignal.BOLD_END} " +
-                $"{DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(Convert.ToDouble(pushEvent.Event.LogTime))).ToOffset(TimeSpan.FromHours(defaultGMT))}" +
-                $"{MessageFormatSignal.NEWLINE}");
-            messageBuilder.Append(
-                $"{MessageFormatSignal.BOLD_START}Environment:{MessageFormatSignal.BOLD_END} " +
-                $"{pushEvent.Event.Environment}{MessageFormatSignal.NEWLINE}");
-            messageBuilder.Append(
-                $"{MessageFormatSignal.BOLD_START}Message:{MessageFormatSignal.BOLD_END} " +
-                $"{pushEvent.Event.Message}{MessageFormatSignal.NEWLINE}");
-
-            if (pushEvent.Event.Request != null)
-            {
-                var request = pushEvent.Event.Request;
-                messageBuilder.Append(
-                    $"{MessageFormatSignal.BOLD_START}Request:{MessageFormatSignal.BOLD_END} [{request.Method}] {request.Url}{MessageFormatSignal.NEWLINE}");
-            }
-
-            if (pushEvent.Event.Context.Browser != null)
-            {
-                var browser = pushEvent.Event.Context.Browser;
-                messageBuilder.Append(
-                    $"{MessageFormatSignal.BOLD_START}Browser:{MessageFormatSignal.BOLD_END} {browser.Name} ({browser.Version}){MessageFormatSignal.NEWLINE}");
-            }
-
-            if (pushEvent.Event.Context.Device != null)
-            {
-                var device = pushEvent.Event.Context.Device;
-                messageBuilder.Append(
-                    $"{MessageFormatSignal.BOLD_START}Device:{MessageFormatSignal.BOLD_END} {device.Name} ({device.Model}){MessageFormatSignal.NEWLINE}");
-            }
-
-            if (pushEvent.Event.Context.Os != null)
-            {
-                var os = pushEvent.Event.Context.Os;
-                messageBuilder.Append(
-                    $"{MessageFormatSignal.BOLD_START}OS:{MessageFormatSignal.BOLD_END} {os.Name} {os.Version}{MessageFormatSignal.NEWLINE}");
-            }
-
-            messageBuilder.Append(
-                $"{MessageFormatSignal.BOLD_START}User:{MessageFormatSignal.BOLD_END} " +
-                $"{pushEvent.Event.User.UserName}{MessageFormatSignal.NEWLINE}");
-
-            if (!string.IsNullOrEmpty(pushEvent.Event.User.IpAddress))
-            {
-                messageBuilder.Append(
-                    $"IP Address: {pushEvent.Event.User.IpAddress}{MessageFormatSignal.NEWLINE}");
-            }
-
-            if (!string.IsNullOrEmpty(pushEvent.Event.User.Email))
-            {
-                messageBuilder.Append(
-                    $"Email: {pushEvent.Event.User.Email}{MessageFormatSignal.NEWLINE}");
-            }
-
-            messageBuilder.Append($"{MessageFormatSignal.NEWLINE}");
-            messageBuilder.Append(
-              "For more detail, refer to" +
-              $" {MessageFormatSignal.BOLD_START}[here]({pushEvent.Url}){MessageFormatSignal.BOLD_END}" +
-              $"{MessageFormatSignal.NEWLINE}");
-            messageBuilder.Append($"{MessageFormatSignal.DIVIDER}");
+            var message = messageBuilder.BuildMessage(pushEvent);
 
             foreach (var sentryInfo in DbContext.SentryInfo)
             {
                 if (sentryInfo.IsActive)
                 {
-                    await Conversation.SendAsync(sentryInfo.ConversationId, messageBuilder.ToString());
+                    await Conversation.SendAsync(sentryInfo.ConversationId, message);
                 }
             }
         }
 
-        private IList<SentryInfo> GetOrCreateSentryInfos(IMessageActivity activity)
+        private async Task<SentryInfo> GetOrCreateSentryInfo(IMessageActivity activity, string projectName)
         {
-            var sentryInfos = FindSentryInfos(activity);
+            var sentryInfo = await FindSentryInfo(activity, projectName);
 
-            if (sentryInfos == null || sentryInfos.Count == 0)
+            if (sentryInfo == null)
             {
-                var sentryInfo = new SentryInfo
+                sentryInfo = new SentryInfo
                 {
                     ConversationId = activity.Conversation.Id,
-                    Project = "all",
+                    Project = projectName,
+                    Level = "error",
                     IsActive = true,
                     CreatedTime = DateTime.UtcNow.AddHours(7)
                 };
-
-                sentryInfos = new List<SentryInfo>();
-                sentryInfos.Add(sentryInfo);
             }
 
-            return sentryInfos;
+            return sentryInfo;
         }
 
-        private IList<SentryInfo> FindSentryInfos(IMessageActivity activity)
-            => DbContext
-                .SentryInfo
-                .Where(log => log.ConversationId == activity.Conversation.Id).ToList();
+        private IEnumerable<SentryInfo> GetAllSentryInfos(IMessageActivity activity)
+            => DbContext.SentryInfo.Where(log
+                   => log.ConversationId == activity.Conversation.Id);
+
+        private async Task<SentryInfo> FindSentryInfo(IMessageActivity activity, string projectName)
+            => await DbContext.SentryInfo.FirstOrDefaultAsync(log
+                   => log.ConversationId == activity.Conversation.Id
+                      && String.Equals(log.Project, projectName, StringComparison.InvariantCultureIgnoreCase));
 
         private async Task SaveSentryInfo(SentryInfo sentryInfo)
         {

@@ -2,14 +2,10 @@
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core.Log.Models;
 using Fanex.Bot.Helpers;
+using Fanex.Bot.Skynex._Shared.Base;
 
 namespace Fanex.Bot.Skynex.Log
 {
-    public interface IMessageBuilder
-    {
-        string BuildMessage(object model);
-    }
-
     public interface IDBLogMessageBuilder : IMessageBuilder
     {
     }
@@ -22,18 +18,18 @@ namespace Fanex.Bot.Skynex.Log
 
             if (dbLog.IsSimple)
             {
-                return dbLog.MsgInfo + MessageFormatSignal.NEWLINE + MessageFormatSignal.DIVIDER;
+                return dbLog.MsgInfo + MessageFormatSymbol.NEWLINE + MessageFormatSymbol.DIVIDER;
             }
 
             var builder = new StringBuilder();
 
-            builder.Append(MessageFormatSignal.BOLD_START).Append("Server:").Append(MessageFormatSignal.BOLD_END).Append(" ")
-                .Append(dbLog.ServerName).Append(MessageFormatSignal.NEWLINE);
-            builder.Append(MessageFormatSignal.BOLD_START).Append("Title:").Append(MessageFormatSignal.BOLD_END).Append(" ")
-                .Append(dbLog.Title).Append(MessageFormatSignal.NEWLINE);
-            builder.Append(MessageFormatSignal.BOLD_START).Append("DateTime:").Append(MessageFormatSignal.BOLD_END).Append(" ")
-                .Append(dbLog.LogDate).Append(MessageFormatSignal.DOUBLE_NEWLINE);
-            builder.Append(dbLog.MsgInfo).Append(MessageFormatSignal.NEWLINE).Append(MessageFormatSignal.DIVIDER);
+            builder.Append(MessageFormatSymbol.BOLD_START).Append("Server:").Append(MessageFormatSymbol.BOLD_END).Append(" ")
+                .Append(dbLog.ServerName).Append(MessageFormatSymbol.NEWLINE);
+            builder.Append(MessageFormatSymbol.BOLD_START).Append("Title:").Append(MessageFormatSymbol.BOLD_END).Append(" ")
+                .Append(dbLog.Title).Append(MessageFormatSymbol.NEWLINE);
+            builder.Append(MessageFormatSymbol.BOLD_START).Append("DateTime:").Append(MessageFormatSymbol.BOLD_END).Append(" ")
+                .Append(dbLog.LogDate).Append(MessageFormatSymbol.DOUBLE_NEWLINE);
+            builder.Append(dbLog.MsgInfo).Append(MessageFormatSymbol.NEWLINE).Append(MessageFormatSymbol.DIVIDER);
 
             return builder.ToString();
         }

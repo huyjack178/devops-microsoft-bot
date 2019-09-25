@@ -1,10 +1,15 @@
-﻿using Fanex.Bot.Core.Bot.Models;
+﻿using System;
+using Fanex.Bot.Core._Shared.Enumerations;
+using Fanex.Bot.Core.Bot.Models;
+using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex.Bot;
 using Fanex.Bot.Skynex.GitLab;
 using Fanex.Bot.Skynex.Log;
 using Fanex.Bot.Skynex.Sentry;
 using Fanex.Bot.Skynex.UM;
 using Fanex.Bot.Skynex.Zabbix;
+
+// ReSharper disable All
 
 namespace Fanex.Bot.Skynex.Tests.Controllers
 {
@@ -17,49 +22,71 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
 
     public class MessagesControllerTests : IClassFixture<BotConversationFixture>
     {
-        private readonly BotConversationFixture _conversationFixture;
-        private readonly ICommonDialog _commonDialog;
-        private readonly ILogDialog _logDialog;
-        private readonly IGitLabDialog _gitLabDialog;
-        private readonly IUnderMaintenanceDialog _umDialog;
+        private readonly BotConversationFixture conversationFixture;
+        private readonly ICommonDialog commonDialog;
+        private readonly ILogDialog logDialog;
+        private readonly IGitLabDialog gitLabDialog;
+        private readonly IUnderMaintenanceDialog umDialog;
         private readonly IDBLogDialog dbLogDialog;
         private readonly IZabbixDialog zabbixDialog;
         private readonly ISentryDialog sentryDialog;
-        private readonly MessagesController _messagesController;
+        private readonly MessagesController messagesController;
 
         public MessagesControllerTests(BotConversationFixture conversationFixture)
         {
-            _conversationFixture = conversationFixture;
-            _commonDialog = Substitute.For<ICommonDialog>();
-            _logDialog = Substitute.For<ILogDialog>();
-            _gitLabDialog = Substitute.For<IGitLabDialog>();
-            _umDialog = Substitute.For<IUnderMaintenanceDialog>();
+            this.conversationFixture = conversationFixture;
+            commonDialog = Substitute.For<ICommonDialog>();
+            logDialog = Substitute.For<ILogDialog>();
+            gitLabDialog = Substitute.For<IGitLabDialog>();
+            umDialog = Substitute.For<IUnderMaintenanceDialog>();
             dbLogDialog = Substitute.For<IDBLogDialog>();
             zabbixDialog = Substitute.For<IZabbixDialog>();
             sentryDialog = Substitute.For<ISentryDialog>();
-            _messagesController = new MessagesController(
-                _commonDialog,
-                _logDialog,
-                _gitLabDialog,
-                _umDialog,
-                _conversationFixture.Conversation,
-                _conversationFixture.Configuration,
-                dbLogDialog,
-                sentryDialog,
-                zabbixDialog);
+
+            var functionFactory = new Func<string, IDialog>((functionName) =>
+            {
+                switch (functionName)
+                {
+                    case FunctionType.LogMSiteFunctionName:
+                        return logDialog;
+
+                    case FunctionType.LogDbFunctionName:
+                        return dbLogDialog;
+
+                    case FunctionType.LogSentryFunctionName:
+                        return sentryDialog;
+
+                    case FunctionType.UnderMaintenanceFunctionName:
+                        return umDialog;
+
+                    case FunctionType.GitLabFunctionName:
+                        return gitLabDialog;
+
+                    case FunctionType.ZabbixFunctionName:
+                        return zabbixDialog;
+
+                    default:
+                        return commonDialog;
+                }
+            });
+            messagesController = new MessagesController(
+                this.conversationFixture.Conversation,
+                this.conversationFixture.Configuration,
+                commonDialog,
+                functionFactory);
         }
 
         [Fact]
         public async Task Post_ActivityMessage_HandMessageCommand_LogCommand_CallLogDialog()
         {
             // Arrange
-            var activity = new Activity { Type = ActivityTypes.Message, Text = "log add" };
+            var activity = new Activity { Type = ActivityTypes.Message, Text = "log_msite add" };
 
             // Act
-            await _messagesController.Post(activity);
+            await messagesController.Post(activity);
 
             // Asserts
-            await _logDialog.Received().HandleMessage(Arg.Is(activity), "log add");
+            await logDialog.Received().HandleMessage(Arg.Is(activity), "log_msite add");
         }
 
         [Fact]
@@ -69,10 +96,10 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             var activity = new Activity { Type = ActivityTypes.Message, Text = "gitlab" };
 
             // Act
-            await _messagesController.Post(activity);
+            await messagesController.Post(activity);
 
             // Asserts
-            await _gitLabDialog.Received().HandleMessage(Arg.Is(activity), "gitlab");
+            await gitLabDialog.Received().HandleMessage(Arg.Is(activity), "gitlab");
         }
 
         [Fact]
@@ -82,10 +109,49 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             var activity = new Activity { Type = ActivityTypes.Message, Text = "um" };
 
             // Act
-            await _messagesController.Post(activity);
+            await messagesController.Post(activity);
 
             // Asserts
-            await _umDialog.Received().HandleMessage(Arg.Is(activity), "um");
+            await umDialog.Received().HandleMessage(Arg.Is(activity), "um");
+        }
+
+        [Fact]
+        public async Task Post_ActivityMessage_HandMessageCommand_LogDbCommand_CallDbLogDialog()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.Message, Text = "log_database add" };
+
+            // Act
+            await messagesController.Post(activity);
+
+            // Asserts
+            await dbLogDialog.Received().HandleMessage(Arg.Is(activity), "log_database add");
+        }
+
+        [Fact]
+        public async Task Post_ActivityMessage_HandMessageCommand_LogSentryCommand_CallSentryDialog()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.Message, Text = "log_sentry add" };
+
+            // Act
+            await messagesController.Post(activity);
+
+            // Asserts
+            await sentryDialog.Received().HandleMessage(Arg.Is(activity), "log_sentry add");
+        }
+
+        [Fact]
+        public async Task Post_ActivityMessage_HandMessageCommand_ZabbixCommand_CallZabbixDialog()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.Message, Text = "zabbix add" };
+
+            // Act
+            await messagesController.Post(activity);
+
+            // Asserts
+            await zabbixDialog.Received().HandleMessage(Arg.Is(activity), "zabbix add");
         }
 
         [Fact]
@@ -95,10 +161,10 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             var activity = new Activity { Type = ActivityTypes.Message, Text = "group" };
 
             // Act
-            await _messagesController.Post(activity);
+            await messagesController.Post(activity);
 
             // Asserts
-            await _commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
+            await commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
         }
 
         [Theory]
@@ -108,51 +174,17 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
         {
             // Arrange
             var activity = new Activity { Type = ActivityTypes.Message, Text = message };
-            _conversationFixture.Configuration.GetSection("BotName")?.Value.Returns("Skynex");
+            conversationFixture.Configuration.GetSection("BotName")?.Value.Returns("Skynex");
 
             // Act
-            await _messagesController.Post(activity);
+            await messagesController.Post(activity);
 
             // Asserts
-            await _commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
+            await commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
         }
 
         [Fact]
-        public async Task Post_ActivityConversationUpdate_SendHelloMessage()
-        {
-            // Arrange
-            var activity = new Activity { Type = ActivityTypes.ConversationUpdate };
-
-            // Act
-            await _messagesController.Post(activity);
-
-            // Asserts
-            await _conversationFixture
-                .Conversation
-                .Received()
-                .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
-        }
-
-        [Fact]
-        public async Task Post_ActivityContactRelationUpdate_ActionIsRemove_RemoveConversationData()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.ContactRelationUpdate,
-                Conversation = new ConversationAccount { Id = "43235grerew" },
-                Action = "remove"
-            };
-
-            // Act
-            await _messagesController.Post(activity);
-
-            // Asserts
-            await _commonDialog.Received().RemoveConversationData(Arg.Is(activity));
-        }
-
-        [Fact]
-        public async Task Post_ActivityContactRelationUpdate_ActionIsNotRemove_RemoveConversationData()
+        public async Task Post_ActivityContactRelationUpdate_CallHandleContactRelationUpdate()
         {
             // Arrange
             var activity = new Activity
@@ -162,56 +194,28 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             };
 
             // Act
-            await _messagesController.Post(activity);
+            await messagesController.Post(activity);
 
             // Asserts
-            await _commonDialog.Received().RegisterMessageInfo(Arg.Is(activity));
-            await _conversationFixture
-               .Conversation
-               .Received()
-               .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+            await commonDialog.Received().HandleContactRelationUpdate(Arg.Is(activity));
         }
 
         [Fact]
-        public async Task Post_ActivityConverstationUpdate_IsBotRemoved_RemoveConversationData()
+        public async Task Post_ActivityConverstationUpdate_CallHandleConversationUpdate()
         {
             // Arrange
-            _conversationFixture.Configuration.GetSection("BotId").Value.Returns("12324342345");
+            conversationFixture.Configuration.GetSection("BotId").Value.Returns("12324342345");
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
                 Conversation = new ConversationAccount { Id = "43235grerew" },
-                MembersRemoved = new List<ChannelAccount> { new ChannelAccount { Id = "12324342345" } }
             };
 
             // Act
-            await _messagesController.Post(activity);
+            await messagesController.Post(activity);
 
             // Asserts
-            await _commonDialog.Received().RemoveConversationData(Arg.Is(activity));
-        }
-
-        [Fact]
-        public async Task Post_ActivityConverstationUpdate_IsBotAdded_RemoveConversationData()
-        {
-            // Arrange
-            _conversationFixture.Configuration.GetSection("BotId").Value.Returns("12324342345");
-            var activity = new Activity
-            {
-                Type = ActivityTypes.ConversationUpdate,
-                Conversation = new ConversationAccount { Id = "43235grerew" },
-                MembersAdded = new List<ChannelAccount> { new ChannelAccount { Id = "12324342345" } }
-            };
-
-            // Act
-            await _messagesController.Post(activity);
-
-            // Asserts
-            await _commonDialog.Received().RegisterMessageInfo(Arg.Is(activity));
-            await _conversationFixture
-              .Conversation
-              .Received()
-              .ReplyAsync(Arg.Is(activity), "Hello. I am SkyNex.");
+            await commonDialog.Received().HandleConversationUpdate(Arg.Is(activity));
         }
 
         [Fact]
@@ -221,13 +225,13 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             var conversationId = "@#423424";
             var message = "hello";
             var expectedResult = Result.CreateSuccessfulResult();
-            _conversationFixture.Conversation.SendAsync(conversationId, message).Returns(expectedResult);
+            conversationFixture.Conversation.SendAsync(conversationId, message).Returns(expectedResult);
 
             // Act
-            var result = await _messagesController.Forward(message, conversationId);
+            var result = await messagesController.Forward(message, conversationId);
 
             // Assert
-            await _conversationFixture.Conversation.Received(1).SendAsync(conversationId, message);
+            await conversationFixture.Conversation.Received(1).SendAsync(conversationId, message);
             Assert.Equal(200, result.StatusCode);
             Assert.Equal(expectedResult, result.Value);
         }

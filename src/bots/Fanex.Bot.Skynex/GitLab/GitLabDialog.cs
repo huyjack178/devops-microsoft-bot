@@ -63,7 +63,7 @@ namespace Fanex.Bot.Skynex.GitLab
             gitLabInfo.IsActive = true;
 
             await SaveGitLabInfoAsync(gitLabInfo);
-            await Conversation.ReplyAsync(activity, $"You will receive notification of project {MessageFormatSignal.BOLD_START}{projectUrl}{MessageFormatSignal.BOLD_END}");
+            await Conversation.ReplyAsync(activity, $"You will receive notification of project {MessageFormatSymbol.BOLD_START}{projectUrl}{MessageFormatSymbol.BOLD_END}");
         }
 
         private async Task DisableProjectAsync(IMessageActivity activity, string message)
@@ -86,7 +86,7 @@ namespace Fanex.Bot.Skynex.GitLab
 
             gitLabInfo.IsActive = false;
             await SaveGitLabInfoAsync(gitLabInfo);
-            await Conversation.ReplyAsync(activity, $"You will not receive notification of project {MessageFormatSignal.BOLD_START}{projectUrl}{MessageFormatSignal.BOLD_END}");
+            await Conversation.ReplyAsync(activity, $"You will not receive notification of project {MessageFormatSymbol.BOLD_START}{projectUrl}{MessageFormatSymbol.BOLD_END}");
         }
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)

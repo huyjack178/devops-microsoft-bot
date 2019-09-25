@@ -1,5 +1,6 @@
 ﻿using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
+using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Bot.Models;
 using Fanex.Bot.Core.Log.Models;
 using Fanex.Bot.Core.UM.Models;
@@ -31,35 +32,38 @@ namespace Fanex.Bot.Skynex.Tests.Fixtures
 
         public IConversation Conversation { get; private set; }
 
-        public IMessageActivity Activity { get; }
+        public IMessageActivity Activity { get; internal set; }
 
         public string CommandMessage { get; }
-            = $"Skynex's available commands:{MessageFormatSignal.NEWLINE} " +
-                $"{MessageFormatSignal.BOLD_START}group{MessageFormatSignal.BOLD_END} " +
-                    $"=> Get your group ID {MessageFormatSignal.NEWLINE}" + MessageFormatSignal.DIVIDER + MessageFormatSignal.NEWLINE +
-                $"{MessageFormatSignal.BOLD_START}log add [Contains-LogCategory]{MessageFormatSignal.BOLD_END} " +
+            = $"Skynex's available commands:{MessageFormatSymbol.NEWLINE} " +
+                $"{MessageFormatSymbol.BOLD_START}group{MessageFormatSymbol.BOLD_END} " +
+                    $"=> Get your group ID {MessageFormatSymbol.NEWLINE}" + MessageFormatSymbol.DIVIDER + MessageFormatSymbol.NEWLINE +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} add [Contains-LogCategory]{MessageFormatSymbol.BOLD_END} " +
                     $"==> Register to get log which has category name " +
-                    $"{MessageFormatSignal.BOLD_START}contains [Contains-LogCategory]{MessageFormatSignal.BOLD_END}. " +
-                    $"Example: log add Alpha;NAP {MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}log remove [LogCategory]{MessageFormatSignal.BOLD_END}{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}log start{MessageFormatSignal.BOLD_END} " +
-                    $"=> Start receiving logs{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}log stop [TimeSpan(Optional)]{MessageFormatSignal.BOLD_END} " +
+                    $"{MessageFormatSymbol.BOLD_START}contains [Contains-LogCategory]{MessageFormatSymbol.BOLD_END}. " +
+                    $"Example: log add Alpha;NAP {MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} remove [LogCategory]{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} start{MessageFormatSymbol.BOLD_END} " +
+                    $"=> Start receiving logs{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} stop [TimeSpan(Optional)]{MessageFormatSymbol.BOLD_END} " +
                     $"=> Stop receiving logs for [TimeSpan] - Default is 10 minutes. " +
-                    $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}log status{MessageFormatSignal.BOLD_END} " +
-                    $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.DIVIDER}{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}gitlab addProject [GitlabProjectUrl]{MessageFormatSignal.BOLD_END} " +
-                    $"=> Register to get notification of Gitlab's project{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}gitlab removeProject [GitlabProjectUrl]{MessageFormatSignal.BOLD_END} " +
-                    $"=> Disable getting notification of Gitlab's project{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.DIVIDER}{MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}um start{MessageFormatSignal.BOLD_END} " +
-                    $"=> Start getting notification when UM starts {MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}um stop{MessageFormatSignal.BOLD_END} " +
-                    $"=> Stop getting UM information {MessageFormatSignal.NEWLINE}" +
-                $"{MessageFormatSignal.BOLD_START}um addPage [PageUrl]{MessageFormatSignal.BOLD_END} " +
+                    $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} status{MessageFormatSymbol.BOLD_END} " +
+                    $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogDbFunctionName} start{MessageFormatSymbol.BOLD_END} " +
+                $"=> Start to get log from Database (for DBA team){MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}gitlab addProject [GitlabProjectUrl]{MessageFormatSymbol.BOLD_END} " +
+                    $"=> Register to get notification of Gitlab's project{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}gitlab removeProject [GitlabProjectUrl]{MessageFormatSymbol.BOLD_END} " +
+                    $"=> Disable getting notification of Gitlab's project{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}um start{MessageFormatSymbol.BOLD_END} " +
+                    $"=> Start getting notification when UM starts {MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}um stop{MessageFormatSymbol.BOLD_END} " +
+                    $"=> Stop getting UM information {MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}um addPage [PageUrl]{MessageFormatSymbol.BOLD_END} " +
                     $"=> Add page to check show UM in UM Time. For example: um addPage [http://page1.com;http://page2.com]";
 
         public void Dispose()

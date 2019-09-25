@@ -187,7 +187,7 @@ namespace Fanex.Bot.Skynex.UM
                 var underMaintenanceMessage = new StringBuilder(
                         "System will be under maintenance with the following information " +
                         $"(GMT {DateTimeExtention.GenerateGMTText(underMaintenanceGMT)})" +
-                        MessageFormatSignal.NEWLINE);
+                        MessageFormatSymbol.NEWLINE);
                 var hasValidUnderMaintenanceInfo = false;
 
                 foreach (var item in underMaintenanceInfos)
@@ -203,10 +203,10 @@ namespace Fanex.Bot.Skynex.UM
                     {
                         hasValidUnderMaintenanceInfo = true;
                         underMaintenanceMessage
-                            .Append($"{MessageFormatSignal.BOLD_START}Site {GetUMSiteName(item.Key).Result} ({item.Key}){MessageFormatSignal.BOLD_END} - ")
+                            .Append($"{MessageFormatSymbol.BOLD_START}Site {GetUMSiteName(item.Key).Result} ({item.Key}){MessageFormatSymbol.BOLD_END} - ")
                             .Append(
-                                $"From {MessageFormatSignal.BOLD_START}{item.Value.From}{MessageFormatSignal.BOLD_END} " +
-                                $"To {MessageFormatSignal.BOLD_START}{item.Value.To}{MessageFormatSignal.BOLD_END} {MessageFormatSignal.NEWLINE}");
+                                $"From {MessageFormatSymbol.BOLD_START}{item.Value.From}{MessageFormatSymbol.BOLD_END} " +
+                                $"To {MessageFormatSymbol.BOLD_START}{item.Value.To}{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}");
                     }
                 }
 
@@ -230,7 +230,7 @@ namespace Fanex.Bot.Skynex.UM
                 if (!hasInformedUnderMaintenanceInfo)
                 {
                     memoryCache.Set(InformedCacheKey + info.Key, true, TimeSpan.FromHours(5));
-                    await SendMessage($"Site {MessageFormatSignal.BOLD_START}{await GetUMSiteName(info.Key)} ({info.Key}){MessageFormatSignal.BOLD_END} is under maintenance now!");
+                    await SendMessage($"Site {MessageFormatSymbol.BOLD_START}{await GetUMSiteName(info.Key)} ({info.Key}){MessageFormatSymbol.BOLD_END} is under maintenance now!");
                     await ScanPages(info.Key);
                 }
             }
@@ -257,13 +257,13 @@ namespace Fanex.Bot.Skynex.UM
                 await ScanPageInGroup(group);
             }
 
-            await SendMessage($"Scanning completed!{MessageFormatSignal.NEWLINE}{MessageFormatSignal.DIVIDER}", isScanPageMessage: true);
+            await SendMessage($"Scanning completed!{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.DIVIDER}", isScanPageMessage: true);
         }
 
         private async Task ScanPageInGroup(IGrouping<string, UMPage> groupPage)
         {
             var allPagesShowUM = true;
-            var message = new StringBuilder($"{MessageFormatSignal.BOLD_START}{groupPage.Key}{MessageFormatSignal.BOLD_END}");
+            var message = new StringBuilder($"{MessageFormatSymbol.BOLD_START}{groupPage.Key}{MessageFormatSymbol.BOLD_END}");
 
             foreach (var page in groupPage)
             {
@@ -278,14 +278,14 @@ namespace Fanex.Bot.Skynex.UM
 
                 if (!isShowUM)
                 {
-                    message.Append($"{MessageFormatSignal.NEWLINE}{page.SiteUrl} does not show UM");
+                    message.Append($"{MessageFormatSymbol.NEWLINE}{page.SiteUrl} does not show UM");
                     allPagesShowUM = false;
                 }
             }
 
             if (allPagesShowUM)
             {
-                message.Append($" PASSED! {MessageFormatSignal.NEWLINE}");
+                message.Append($" PASSED! {MessageFormatSymbol.NEWLINE}");
             }
 
             await SendMessage(message.ToString(), isScanPageMessage: true);
@@ -300,7 +300,7 @@ namespace Fanex.Bot.Skynex.UM
 
                 if (hasInformedUnderMaintenanceInfo && !info.Value.IsUnderMaintenanceTime)
                 {
-                    await SendMessage($"Site {MessageFormatSignal.BOLD_START}{await GetUMSiteName(info.Key)} ({info.Key}){MessageFormatSignal.BOLD_END} is back to normal now!");
+                    await SendMessage($"Site {MessageFormatSymbol.BOLD_START}{await GetUMSiteName(info.Key)} ({info.Key}){MessageFormatSymbol.BOLD_END} is back to normal now!");
                     memoryCache.Remove(siteInformedCacheKey);
                 }
             }
