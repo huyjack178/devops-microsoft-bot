@@ -24,7 +24,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.DirectLine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -178,8 +177,6 @@ namespace Fanex.Bot
                 .AddBotAuthentication(credentialProvider);
 
             services.AddSingleton(typeof(ICredentialProvider), credentialProvider);
-
-            services.AddSingleton<IDirectLineClient>(new DirectLineClient(Configuration.GetSection("DirectLineSecret")?.Value));
         }
     }
 }

@@ -78,7 +78,7 @@ namespace Fanex.Bot.Common.Helpers.Web
         {
             if (response.StatusCode == 0)
             {
-                throw new TimeoutException($"The request timed out! {request.Parameters[0].Value}");
+                throw new TimeoutException($"The request timed out!");
             }
         }
 
