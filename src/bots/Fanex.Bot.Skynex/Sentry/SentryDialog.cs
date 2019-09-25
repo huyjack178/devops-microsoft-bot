@@ -61,7 +61,7 @@ namespace Fanex.Bot.Skynex.Sentry
 
             if (messageParts.Length > 2)
             {
-                var projectName = messageParts[2];
+                var projectName = messageParts[2]?.ToLowerInvariant();
                 var sentryInfo = await GetOrCreateSentryInfo(activity, projectName);
 
                 if (sentryInfo != null)
@@ -96,12 +96,12 @@ namespace Fanex.Bot.Skynex.Sentry
 
         public async Task HandlePushEventAsync(PushEvent pushEvent)
         {
-            var projectName = pushEvent.Id;
             var message = messageBuilder.BuildMessage(pushEvent);
+            var project = pushEvent.Project.ToLowerInvariant();
 
-            foreach (var sentryInfo in DbContext.SentryInfo)
+            foreach (var sentryInfo in DbContext.SentryInfo.Where(s => project.StartsWith(s.Project)))
             {
-                if (sentryInfo.IsActive)
+                if (sentryInfo?.IsActive == true && sentryInfo.Level == pushEvent.Level)
                 {
                     await Conversation.SendAsync(sentryInfo.ConversationId, message);
                 }
