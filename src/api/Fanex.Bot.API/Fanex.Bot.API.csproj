@@ -42,6 +42,7 @@
     <PackageReference Include="Fanex.Data.Repository" Version="3.0.0" />
     <PackageReference Include="Fanex.Logging.RabbitMQ" Version="1.0.0-beta8" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="ONEbook.UM" Version="3.0.0-beta3" />
     <PackageReference Include="ONEbook.UM.AspNetCore" Version="3.0.0-beta" />
     <PackageReference Include="ONEbook.UM.Transport" Version="3.0.0-beta" />
@@ -53,4 +54,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Fanex.Bot.Core\Fanex.Bot.Core.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1pro_1json__JSONSchema="http://json.schemastore.org/behat" /></VisualStudio></ProjectExtensions>
 </Project>

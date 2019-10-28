@@ -46,6 +46,7 @@
             services.AddSingleton<ILogService, Services.LogService>();
             services.AddSingleton<IDBLogService, DBLogService>();
             services.AddSingleton<IZabbixService, ZabbixService>();
+            services.AddSingleton<IExecuteSpService, ExecuteSpService>();
             services.AddSession();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

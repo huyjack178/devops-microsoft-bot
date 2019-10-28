@@ -6,6 +6,7 @@ using Fanex.Bot.Common.Helpers.Web;
 using Fanex.Bot.Core._Shared.Database;
 using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Bot.Services;
+using Fanex.Bot.Core.ExecuteSP.Services;
 using Fanex.Bot.Core.Log.Services;
 using Fanex.Bot.Core.UM.Services;
 using Fanex.Bot.Core.Zabbix.Services;
@@ -13,6 +14,7 @@ using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex._Shared.MessageSenders;
 using Fanex.Bot.Skynex._Shared.MessengerFormatters;
 using Fanex.Bot.Skynex.Bot;
+using Fanex.Bot.Skynex.ExecuteSP;
 using Fanex.Bot.Skynex.GitLab;
 using Fanex.Bot.Skynex.Log;
 using Fanex.Bot.Skynex.Sentry;
@@ -114,6 +116,7 @@ namespace Fanex.Bot
             services.AddSingleton<IUnderMaintenanceService, UnderMaintenanceService>();
             services.AddSingleton<ITokenService, TokenService>();
             services.AddSingleton<IZabbixService, ZabbixService>();
+            services.AddSingleton<IExecuteSpService, ExecuteSpService>();
         }
 
         private static void ConfigureBotDialog(IServiceCollection services)
@@ -125,6 +128,7 @@ namespace Fanex.Bot
             services.AddScoped<IDBLogDialog, DBLogDialog>();
             services.AddScoped<IZabbixDialog, ZabbixDialog>();
             services.AddScoped<ISentryDialog, SentryDialog>();
+            services.AddScoped<IExecuteSpDialog, ExecuteSpDialog>();
 
             services.AddScoped<Func<string, IDialog>>(serviceProvider => (functionType) =>
             {
@@ -147,6 +151,9 @@ namespace Fanex.Bot
 
                     case FunctionType.ZabbixFunctionName:
                         return serviceProvider.GetService<IZabbixDialog>();
+
+                    case FunctionType.ExecuteSpFunctionName:
+                        return serviceProvider.GetService<IExecuteSpDialog>();
 
                     default:
                         return serviceProvider.GetService<ICommonDialog>();

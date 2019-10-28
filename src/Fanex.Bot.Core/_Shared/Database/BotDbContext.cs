@@ -46,6 +46,7 @@ namespace Fanex.Bot.Core._Shared.Database
         public virtual DbSet<UMPage> UMPage { get; set; }
 
         public virtual DbSet<UMSite> UMSite { get; set; }
+
         public virtual DbSet<SentryInfo> SentryInfo { get; set; }
 
         public virtual DbSet<ZabbixInfo> ZabbixInfo { get; set; }
