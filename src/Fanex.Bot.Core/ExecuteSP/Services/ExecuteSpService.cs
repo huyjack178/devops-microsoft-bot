@@ -20,16 +20,16 @@
             botServiceUrl = configuration.GetSection("BotServiceUrl")?.Value;
         }
 
-        public async Task<ExecuteSpResult> ExecuteSpWithParams(string message)
+        public async Task<ExecuteSpResult> ExecuteSpWithParams(string conversationId, string commands)
         {
             var result = new ExecuteSpResult { IsSuccessful = false };
-            ExecuteSpParam param = ParseParamFromMessage(message);
-            if (string.IsNullOrWhiteSpace(param.SpName) || string.IsNullOrWhiteSpace(param.GroupId) || string.IsNullOrWhiteSpace(param.Command))
+            if (string.IsNullOrWhiteSpace(commands))
             {
-                result.Message = "Syntax error. The syntax is: execute_sp SpName(groupId, commands).";
+                result.Message = "Syntax error. The Commands cannot be null";
             }
             else
             {
+                var param = new ExecuteSpParam { ConversationId = conversationId, Command = commands };
                 result = await ExecuteSPByWebClient(param).ConfigureAwait(false);
             }
 
@@ -64,33 +64,6 @@
             var response = await restClient.ExecuteTaskAsync(request).ConfigureAwait(false);
 
             return response;
-        }
-
-        private ExecuteSpParam ParseParamFromMessage(string message)
-        {
-            string spName = message.Substring(0, message.IndexOf('('));
-            spName = spName.Replace("dbo.", string.Empty).Trim();
-            var param = GetParamInsideMessage(message);
-            var paramObject = param.Split(',');
-            return new ExecuteSpParam
-            {
-                SpName = spName,
-                GroupId = paramObject[0].Trim(),
-                Command = paramObject[1].Trim()
-            };
-        }
-
-        private static string GetParamInsideMessage(string message)
-        {
-            string param = string.Empty;
-            int startIndex = message.IndexOf('(');
-            int lastIndex = message.LastIndexOf(')');
-            if (startIndex != -1 && lastIndex != -1)
-            {
-                param = message.Substring(startIndex + 1, message.Length - startIndex - 2);
-            }
-
-            return param;
         }
     }
 }

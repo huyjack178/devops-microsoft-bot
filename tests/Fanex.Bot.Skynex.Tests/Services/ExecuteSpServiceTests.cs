@@ -29,14 +29,14 @@
         [Fact]
         public async Task ExecuteSpWithParams_WhenIncorrectSyntax_ReturnExpectedResult()
         {
-            string message = "dbo.ExecuteSpWrongSyntax(,)";
+            string message = "";
             var expect = new ExecuteSpResult
             {
                 IsSuccessful = false,
-                Message = "Syntax error. The syntax is: execute_sp SpName(groupId, commands)."
+                Message = "Syntax error. The Commands cannot be null"
             };
 
-            var actual = await executeSpService.ExecuteSpWithParams(message);
+            var actual = await executeSpService.ExecuteSpWithParams("conversationId", message);
 
             Assert.Equal(JsonConvert.SerializeObject(expect), JsonConvert.SerializeObject(actual));
         }
@@ -44,7 +44,7 @@
         [Fact]
         public async Task ExecuteSpWithParams_WhenCorrectSyntax_NotThrowsException()
         {
-            string message = "dbo.ExecuteSpWrongSyntax(param1, param2)";
+            string message = "query commands";
             var expect = new ExecuteSpResult
             {
                 IsSuccessful = true,
@@ -52,7 +52,7 @@
             };
             var response = new RestResponse { Content = JsonConvert.SerializeObject(expect), StatusCode = HttpStatusCode.OK };
             restClient.ExecuteTaskAsync(Arg.Any<RestRequest>()).Returns(response);
-            var actual = await executeSpService.ExecuteSpWithParams(message);
+            var actual = await executeSpService.ExecuteSpWithParams("conversationId", message);
 
             Assert.Equal(JsonConvert.SerializeObject(expect), JsonConvert.SerializeObject(actual));
         }
@@ -60,10 +60,10 @@
         [Fact]
         public async Task ExecuteSpWithParams_WhenCorrectSyntax_ThrowsException()
         {
-            string message = "dbo.ExecuteSpWrongSyntax(param1, param2)";
+            string message = "query commands";
             var expect = "exception message";
             restClient.ExecuteTaskAsync(Arg.Any<RestRequest>()).Throws(new Exception(expect));
-            var actual = await executeSpService.ExecuteSpWithParams(message);
+            var actual = await executeSpService.ExecuteSpWithParams("conversationId", message);
 
             Assert.Equal(expect, actual.Message);
         }

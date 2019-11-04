@@ -12,14 +12,14 @@
     public class ExecuteSpDialogTests : IClassFixture<BotConversationFixture>
     {
         private readonly BotConversationFixture conversationFixture;
-        private readonly IExecuteSpDialog dialog;
+        private readonly IExecuteSpDialog executeSpDialog;
         private readonly IExecuteSpService executeSpService;
 
         public ExecuteSpDialogTests(BotConversationFixture conversationFixture)
         {
             this.conversationFixture = conversationFixture;
             executeSpService = Substitute.For<IExecuteSpService>();
-            dialog = new ExecuteSpDialog(
+            executeSpDialog = new ExecuteSpDialog(
                 this.conversationFixture.MockDbContext(),
                 this.conversationFixture.Conversation,
                 executeSpService);
@@ -28,7 +28,7 @@
         [Fact]
         public async Task HandleMessageAsync_StopLogging_WithDefaultStopTime_SendSuccessMessage()
         {
-            var message = "execute_sp dbo.SpName(groupId, commands)";
+            var message = "query commands";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });
 
             var result = new ExecuteSpResult
@@ -36,8 +36,8 @@
                 IsSuccessful = true,
                 Message = "abc"
             };
-            executeSpService.ExecuteSpWithParams(Arg.Any<string>()).Returns(result);
-            await dialog.HandleMessage(conversationFixture.Activity, message);
+            executeSpService.ExecuteSpWithParams(Arg.Any<string>(), Arg.Any<string>()).Returns(result);
+            await executeSpDialog.HandleMessage(conversationFixture.Activity, message);
 
             await conversationFixture
                 .Conversation

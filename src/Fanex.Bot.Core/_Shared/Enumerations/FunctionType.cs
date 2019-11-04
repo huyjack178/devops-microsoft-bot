@@ -9,7 +9,7 @@
         public const string UnderMaintenanceFunctionName = "um";
         public const string GitLabFunctionName = "gitlab";
         public const string ZabbixFunctionName = "zabbix";
-        public const string ExecuteSpFunctionName = "execute_sp";
+        public const string ExecuteSpFunctionName = "query";
 
         public static readonly FunctionType Bot = new FunctionType(1, BotFunctionName);
 

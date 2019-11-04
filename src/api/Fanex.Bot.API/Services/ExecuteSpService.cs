@@ -5,7 +5,6 @@
     using Fanex.Bot.API.DbParams.Criterias;
     using Fanex.Bot.Core.ExecuteSP.Models;
     using Fanex.Data.Repository;
-    using Newtonsoft.Json;
 
     public interface IExecuteSpService
     {
@@ -26,27 +25,20 @@
             var result = new ExecuteSpResult();
             var criteria = new ExecuteSpCriteria
             {
-                GroupId = param.GroupId,
+                ConversationId = param.ConversationId,
                 Commands = param.Command
             };
 
-            if (string.Equals(param.SpName, criteria.GetSettingKey(), StringComparison.OrdinalIgnoreCase))
+            try
             {
-                try
-                {
-                    var query = await dynamicRepository.FetchAsync<object>(criteria).ConfigureAwait(false);
-                    result.IsSuccessful = true;
-                    result.Message = JsonConvert.SerializeObject(query);
-                }
-                catch (Exception ex)
-                {
-                    result.IsSuccessful = false;
-                    result.Message = ex.Message;
-                }
+                var query = await dynamicRepository.GetAsync<string>(criteria).ConfigureAwait(false);
+                result.IsSuccessful = true;
+                result.Message = query;
             }
-            else
+            catch (Exception ex)
             {
-                result.Message = "The SP Name is incorrect.";
+                result.IsSuccessful = false;
+                result.Message = ex.Message;
             }
 
             return result;

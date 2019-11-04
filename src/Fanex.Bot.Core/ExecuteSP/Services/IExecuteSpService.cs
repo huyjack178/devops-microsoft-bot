@@ -5,6 +5,6 @@
 
     public interface IExecuteSpService
     {
-        Task<ExecuteSpResult> ExecuteSpWithParams(string message);
+        Task<ExecuteSpResult> ExecuteSpWithParams(string conversationId, string commands);
     }
 }
