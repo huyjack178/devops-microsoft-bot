@@ -14,7 +14,9 @@
 
             if (formatted.EndsWith(", "))
             {
+#pragma warning disable S109 // Magic numbers should not be used
                 formatted = formatted.Substring(0, formatted.Length - 2);
+#pragma warning restore S109 // Magic numbers should not be used
             }
 
             if (string.IsNullOrEmpty(formatted))

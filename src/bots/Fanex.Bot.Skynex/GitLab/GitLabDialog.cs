@@ -112,7 +112,9 @@ namespace Fanex.Bot.Skynex.GitLab
                 {
                     ConversationId = activity.Conversation.Id,
                     ProjectUrl = projectUrl,
+#pragma warning disable S109 // Magic numbers should not be used
                     CreatedTime = DateTime.UtcNow.AddHours(7)
+#pragma warning restore S109 // Magic numbers should not be used
                 };
             }
 

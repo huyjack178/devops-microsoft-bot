@@ -203,7 +203,9 @@ namespace Fanex.Bot.Skynex.UM
                     {
                         hasValidUnderMaintenanceInfo = true;
                         underMaintenanceMessage
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
                             .Append($"{MessageFormatSymbol.BOLD_START}Site {GetUMSiteName(item.Key).Result} ({item.Key}){MessageFormatSymbol.BOLD_END} - ")
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
                             .Append(
                                 $"From {MessageFormatSymbol.BOLD_START}{item.Value.From}{MessageFormatSymbol.BOLD_END} " +
                                 $"To {MessageFormatSymbol.BOLD_START}{item.Value.To}{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}");
@@ -229,7 +231,9 @@ namespace Fanex.Bot.Skynex.UM
 
                 if (!hasInformedUnderMaintenanceInfo)
                 {
+#pragma warning disable S109 // Magic numbers should not be used
                     memoryCache.Set(InformedCacheKey + info.Key, true, TimeSpan.FromHours(5));
+#pragma warning restore S109 // Magic numbers should not be used
                     await SendMessage($"Site {MessageFormatSymbol.BOLD_START}{await GetUMSiteName(info.Key)} ({info.Key}){MessageFormatSymbol.BOLD_END} is under maintenance now!");
                     await ScanPages(info.Key);
                 }
@@ -347,7 +351,9 @@ namespace Fanex.Bot.Skynex.UM
                 underMaintenanceInfo = new UMInfo
                 {
                     ConversationId = activity.Conversation.Id,
+#pragma warning disable S109 // Magic numbers should not be used
                     CreatedTime = DateTime.UtcNow.AddHours(7)
+#pragma warning restore S109 // Magic numbers should not be used
                 };
             }
 

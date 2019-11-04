@@ -59,7 +59,9 @@ namespace Fanex.Bot.Skynex.Sentry
         {
             var enabledMessage = enabled ? "Enabled" : "Disabled";
 
+#pragma warning disable S109 // Magic numbers should not be used
             if (messageParts.Length > 2)
+#pragma warning restore S109 // Magic numbers should not be used
             {
                 var projectName = messageParts[2]?.ToLowerInvariant();
                 var sentryInfo = await GetOrCreateSentryInfo(activity, projectName);
@@ -120,7 +122,9 @@ namespace Fanex.Bot.Skynex.Sentry
                     Project = projectName,
                     Level = "error",
                     IsActive = true,
+#pragma warning disable S109 // Magic numbers should not be used
                     CreatedTime = DateTime.UtcNow.AddHours(7)
+#pragma warning restore S109 // Magic numbers should not be used
                 };
             }
 

@@ -22,6 +22,7 @@ namespace Fanex.Bot.Skynex.Log
     public class DBLogDialog : BaseDialog, IDBLogDialog
     {
         private const string NotifyDBLogJobId = "NotifyDbLogPeriodically";
+        private const int LoopTimes = 11;
         private readonly ILogService logService;
         private readonly IRecurringJobManager recurringJobManager;
         private readonly IDBLogMessageBuilder messageBuilder;
@@ -72,7 +73,7 @@ namespace Fanex.Bot.Skynex.Log
 
         public async Task GetAndSendLogAsync()
         {
-            for (int i = 0; i < 11; i++)
+            for (int i = 0; i < LoopTimes; i++)
             {
                 var dbLogs = await logService.GetDBLogs();
 
@@ -99,7 +100,9 @@ namespace Fanex.Bot.Skynex.Log
                     await logService.AckDBLog(successfulSentLogNotificationIds.ToArray());
                 }
 
-                Thread.Sleep(5000);
+#pragma warning disable S109 // Magic numbers should not be used
+                await Task.Delay(5000);
+#pragma warning restore S109 // Magic numbers should not be used
             }
         }
     }

@@ -12,6 +12,8 @@ namespace Fanex.Bot.Skynex.GitLab
 
     public class GitLabMessageBuilder : IGitLabMessageBuilder
     {
+        private const int HexLength = 8;
+
         public string BuildMessage(object model)
         {
             var gitlabPushEvent = DataHelper.Parse<PushEvent>(model);
@@ -29,7 +31,7 @@ namespace Fanex.Bot.Skynex.GitLab
                 var commitUrl = $"{project.WebUrl}/commit/{commit.Id}";
 
                 commitMessageBuilder
-                    .Append($"{MessageFormatSymbol.BOLD_START}[{commit.Id.Substring(0, 8)}]({commitUrl}){MessageFormatSymbol.BOLD_END}")
+                    .Append($"{MessageFormatSymbol.BOLD_START}[{commit.Id.Substring(0, HexLength)}]({commitUrl}){MessageFormatSymbol.BOLD_END}")
                     .Append($" {commit.Message} ({commit.Author.Name})")
                     .Append(MessageFormatSymbol.NEWLINE);
             }

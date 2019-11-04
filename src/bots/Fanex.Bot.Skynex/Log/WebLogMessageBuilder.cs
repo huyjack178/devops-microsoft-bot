@@ -11,9 +11,12 @@ namespace Fanex.Bot.Skynex.Log
     {
     }
 
+#pragma warning disable S109 // Magic numbers should not be used
+
     public class WebLogMessageBuilder : IWebLogMessageBuilder
     {
         private const string SessionInfo = "SESSION INFO";
+        private const string NoInfo = "No information";
 
         private static readonly string[] SessionInfoKeys = new[] {
             "Username", "AccUserName", "CustRoleId", "custid","CustUname",
@@ -76,7 +79,7 @@ namespace Fanex.Bot.Skynex.Log
             {
                 var urlIndex = rawMessage.IndexOf("Url:", requestInfoIndex, StringComparison.InvariantCultureIgnoreCase);
                 var urlReferrerIndex = rawMessage.IndexOf("UrlReferrer:", requestInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var requestUrl = "No information";
+                var requestUrl = NoInfo;
 
                 if (urlIndex > 0 && urlReferrerIndex > 0)
                 {
@@ -103,7 +106,7 @@ namespace Fanex.Bot.Skynex.Log
             {
                 var browserIndex = rawMessage.IndexOf("Browser:", browserInfoIndex, StringComparison.InvariantCultureIgnoreCase);
                 var platformIndex = rawMessage.IndexOf("Platform:", browserInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var browser = "No information";
+                var browser = NoInfo;
 
                 if (browserIndex > 0 && platformIndex > 0)
                 {
@@ -137,8 +140,10 @@ namespace Fanex.Bot.Skynex.Log
             {
                 var serverIndex = rawMessage.IndexOf("Server:", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
                 var customInfo = rawMessage.IndexOf("CUSTOM INFO", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
+#pragma warning disable S1192 // String literals should not be duplicated
                 var exceptionInfo = rawMessage.IndexOf("EXCEPTION INFO", databaseInfoIndex, StringComparison.InvariantCultureIgnoreCase);
-                var databaseInfo = "No information";
+#pragma warning restore S1192 // String literals should not be duplicated
+                var databaseInfo = NoInfo;
 
                 if (serverIndex > 0 && customInfo > 0)
                 {
@@ -170,7 +175,7 @@ namespace Fanex.Bot.Skynex.Log
                     "EXCEPTION INFO", StringComparison.InvariantCultureIgnoreCase);
                 var customInfo = exceptionInfoIndex > 0 ?
                     rawMessage.Substring(customInfoIndex, exceptionInfoIndex - customInfoIndex) :
-                    "No information";
+                    NoInfo;
 
                 customInfo = customInfo.Replace("CUSTOM INFO", string.Empty);
                 returnMessage = $"{MessageFormatSymbol.NEWLINE}{MessageFormatSymbol.BOLD_START}Custom Info:{MessageFormatSymbol.BOLD_END}" +
@@ -292,4 +297,6 @@ namespace Fanex.Bot.Skynex.Log
             return hideDomainRequest;
         }
     }
+
+#pragma warning restore S109 // Magic numbers should not be used
 }

@@ -123,7 +123,9 @@ namespace Fanex.Bot.Skynex.Log
         {
             var messageParams = messageCmd.Split(" ");
 
+#pragma warning disable S109 // Magic numbers should not be used
             if (messageParams.Length < 2)
+#pragma warning restore S109 // Magic numbers should not be used
             {
                 await SendMissingLogCategoriesMessage(activity);
                 return;
@@ -246,7 +248,9 @@ namespace Fanex.Bot.Skynex.Log
                     ConversationId = activity.Conversation.Id,
                     LogCategories = string.Empty,
                     IsActive = true,
+#pragma warning disable S109 // Magic numbers should not be used
                     CreatedTime = DateTime.UtcNow.AddHours(7)
+#pragma warning restore S109 // Magic numbers should not be used
                 };
             }
 
@@ -321,6 +325,7 @@ namespace Fanex.Bot.Skynex.Log
             var messageParams = messageCmd.Split(" ");
             TimeSpan logStopDelayTime;
 
+#pragma warning disable S109 // Magic numbers should not be used
             if (messageParams.Length < 2)
             {
                 logStopDelayTime = TimeSpan.FromMinutes(10);
@@ -333,6 +338,7 @@ namespace Fanex.Bot.Skynex.Log
                 var timeSpanFormat = timeSpan.Replace(timeSpanNumber, string.Empty);
                 TimeSpan.TryParseExact(timeSpanNumber, $"%{timeSpanFormat}", null, out logStopDelayTime);
             }
+#pragma warning restore S109 // Magic numbers should not be used
 
             return logStopDelayTime;
         }

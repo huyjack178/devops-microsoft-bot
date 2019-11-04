@@ -29,7 +29,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_AddProject_ProjectUrlIsEmpty_SendErrorMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "gitlab addproject";
@@ -49,7 +51,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         [InlineData("http://gitlab.nexdev.vn")]
         [InlineData("https://gitlab.nexdev.vn")]
         [InlineData("<a href='https://gitlab.nexdev.vn'></a>")]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_AddProject_ParseProjectUrl_SendMessage(string projectUrl)
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = $"gitlab addproject {projectUrl}";
@@ -108,7 +112,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_RemoveProject_ProjectUrlIsEmpty_SendMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "gitlab removeproject";
@@ -125,7 +131,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_RemoveProject_NotExistProject_SendMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "gitlab removeproject http://gitlab.nexdev.vn";
@@ -142,7 +150,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_RemoveProject_ExistProject_SendMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var botDbContext = conversationFixture.MockDbContext();
@@ -165,7 +175,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandlePushEventAsync_MasterBranch_HasGitLabInfo_SendPushMessageMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var botDbContext = conversationFixture.MockDbContext();
@@ -205,7 +217,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_AnyMessage_SendCommandMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "gitlab";

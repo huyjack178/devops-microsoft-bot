@@ -20,6 +20,8 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
     using NSubstitute;
     using Xunit;
 
+#pragma warning disable S2699 // Tests should include assertions
+
     public class MessagesControllerTests : IClassFixture<BotConversationFixture>
     {
         private readonly BotConversationFixture conversationFixture;
@@ -184,6 +186,7 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task Post_ActivityContactRelationUpdate_CallHandleContactRelationUpdate()
         {
             // Arrange
@@ -218,6 +221,8 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             await commonDialog.Received().HandleConversationUpdate(Arg.Is(activity));
         }
 
+#pragma warning restore S2699 // Tests should include assertions
+
         [Fact]
         public async Task Forward_Always_SendToConversation_ReturnOk()
         {
@@ -236,4 +241,6 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             Assert.Equal(expectedResult, result.Value);
         }
     }
+
+#pragma warning restore S2699 // Tests should include assertions
 }

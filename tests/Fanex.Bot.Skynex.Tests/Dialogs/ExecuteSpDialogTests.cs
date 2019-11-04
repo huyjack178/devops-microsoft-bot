@@ -26,7 +26,9 @@
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_StopLogging_WithDefaultStopTime_SendSuccessMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             var message = "query commands";
             conversationFixture.Activity.Conversation.Returns(new ConversationAccount { Id = "5" });

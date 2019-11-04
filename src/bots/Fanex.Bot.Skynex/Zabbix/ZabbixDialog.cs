@@ -83,7 +83,9 @@ namespace Fanex.Bot.Skynex.Zabbix
             bool existZabbixInfo = await DbContext.ZabbixInfo.AsNoTracking().AnyAsync(e =>
                    e.ConversationId == zabbixInfo.ConversationId);
 
+#pragma warning disable S109 // Magic numbers should not be used
             zabbixInfo.ModifiedTime = DateTime.UtcNow.AddHours(7);
+#pragma warning restore S109 // Magic numbers should not be used
             DbContext.Entry(zabbixInfo).State = existZabbixInfo ? EntityState.Modified : EntityState.Added;
 
             await DbContext.SaveChangesAsync();
@@ -100,7 +102,9 @@ namespace Fanex.Bot.Skynex.Zabbix
                 zabbixInfo = new ZabbixInfo
                 {
                     ConversationId = activity.Conversation.Id,
+#pragma warning disable S109 // Magic numbers should not be used
                     CreatedTime = DateTime.UtcNow.AddHours(7),
+#pragma warning restore S109 // Magic numbers should not be used
                 };
             }
 

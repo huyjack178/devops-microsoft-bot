@@ -62,7 +62,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         #region AddCategory
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_AddCategory_CategoriesIsEmpty_SendErrorMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "log_msite add";
@@ -80,7 +82,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_AddCategory_IsDisableAddAndNotAdmin_SendErrorMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "log_msite add alpha";
@@ -169,7 +173,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         #region Remove Category
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_RemoveCategory_CategoriesIsEmpty_SendErrorMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "log_msite remove";
@@ -187,7 +193,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_RemoveCategory_NotFoundLogInfo_SendErrorMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "log_msite remove alpha";
@@ -352,7 +360,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task GetAndSendLogAsync_HasNoMessageInfo_DontSendMesage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var dbContext = conversationFixture.MockDbContext();
@@ -388,7 +398,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task GetAndSendLogAsync_InUM_NotAllowSendLogInUM_DontSendMesage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var dbContext = conversationFixture.MockDbContext();
@@ -418,7 +430,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task GetAndSendLogAsync_InUM_AllowSendLogInUM_SendMesage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var dbContext = conversationFixture.MockDbContext();
@@ -460,7 +474,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task GetAndSendLogAsync_HasLogInfoData_IsActive_HasLogCategory_SendLogToClient()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             conversationFixture.InitDbContextData();
@@ -507,7 +523,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task GetAndSendLogAsync_IsUM_DontAllowSendLogInUM_NotSendLog()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             umService.GetActualInfo().Returns(new Dictionary<int, Core.UM.Models.UM> { { 1, new Core.UM.Models.UM { IsUnderMaintenanceTime = true } } });
@@ -535,7 +553,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task GetAndSendLogAsync_HasLogInfoData_IsActive_HasLogCategory_HasIgnoreMessage_NotSendLogToClient()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             conversationFixture.InitDbContextData();
@@ -566,7 +586,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task GetAndSendLogAsync_HasLogInfoData_IsActive_HasLogCategory_HasNoIgnoreMessage_NotSendLogToClient()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             conversationFixture.InitDbContextData();
@@ -602,7 +624,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         [Theory]
         [InlineData("9", true, "Running")]
         [InlineData("8", false, "Stopped")]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_ViewStatus_SendLogInfoMessage(string conversationId, bool isActive, string expectedActiveResult)
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "log_msite status";
@@ -629,7 +653,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_AnyMessage_SendCommandMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "log_msite";

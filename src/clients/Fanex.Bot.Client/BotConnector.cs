@@ -15,6 +15,7 @@
     public class BotConnector : IBotConnector
     {
         private const string TokenCachedKey = "TokenCachedKey";
+        private const int DefaultTimeOut = 10000;
         private readonly IRestClient restClient;
         private readonly ICacheService cacheService;
 
@@ -24,7 +25,7 @@
 
         protected internal BotConnector(IRestClient restClient, ICacheService cacheService)
         {
-            this.restClient = restClient ?? new RestClient { Encoding = Encoding.UTF8, Timeout = 10000 };
+            this.restClient = restClient ?? new RestClient { Encoding = Encoding.UTF8, Timeout = DefaultTimeOut };
             this.cacheService = cacheService ?? new CacheService();
         }
 

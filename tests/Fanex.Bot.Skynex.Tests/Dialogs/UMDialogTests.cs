@@ -78,7 +78,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_NotifyUM_SaveUMPage_NotifyToAllUMUser()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             conversationFixture.InitDbContextData();

@@ -50,7 +50,9 @@ namespace Fanex.Bot.Client.Tests
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public void Send_ResultIsUnauthorized_RefreshToken()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var tokenResponse = new RestResponse

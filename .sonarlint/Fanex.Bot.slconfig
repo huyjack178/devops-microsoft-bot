@@ -2,10 +2,11 @@
   "ServerUri": "http://sonarqube.nexdev.net",
   "Organization": null,
   "ProjectKey": "Fanex.Bot",
+  "ProjectName": "NexOps / Fanex.Bot",
   "Profiles": {
     "CSharp": {
       "ProfileKey": "cs-sonar-way-80515",
-      "ProfileTimestamp": "2018-10-29T13:10:41+07:00"
+      "ProfileTimestamp": "2019-10-01T13:55:11+07:00"
     }
   }
 }

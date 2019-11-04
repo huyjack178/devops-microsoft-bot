@@ -29,7 +29,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_MessageGroup_SendGroupId()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "group";
@@ -46,7 +48,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_MessageHelp_SendCommand()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "help";
@@ -62,7 +66,9 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
         }
 
         [Fact]
+#pragma warning disable S2699 // Tests should include assertions
         public async Task HandleMessageAsync_AnyMessage_SendDefaultMessage()
+#pragma warning restore S2699 // Tests should include assertions
         {
             // Arrange
             var message = "any";

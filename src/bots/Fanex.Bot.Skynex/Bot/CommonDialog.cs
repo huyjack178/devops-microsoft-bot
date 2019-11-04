@@ -144,7 +144,9 @@ namespace Fanex.Bot.Skynex.Bot
                 ServiceUrl = activity.ServiceUrl,
                 ChannelId = activity.ChannelId,
                 ConversationId = activity.Conversation?.Id,
+#pragma warning disable S109 // Magic numbers should not be used
                 CreatedTime = DateTime.UtcNow.AddHours(7)
+#pragma warning restore S109 // Magic numbers should not be used
             };
         }
     }

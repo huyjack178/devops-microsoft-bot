@@ -35,7 +35,9 @@
         private static string BuildErrorMessage(HttpContext httpContext, Exception ex)
         {
             var request = httpContext.Request;
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
             var bodyData = request.GetRawBodyStringAsync().Result;
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
             var path = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
             var headers = string.Join(
                 "\r\n",
