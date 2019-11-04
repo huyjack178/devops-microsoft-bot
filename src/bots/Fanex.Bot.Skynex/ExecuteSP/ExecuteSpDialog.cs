@@ -34,7 +34,10 @@
 
             var result = await executeSpService.ExecuteSpWithParams(activity.Conversation.Id, command);
 
-            await Conversation.ReplyAsync(activity, result.Message);
+            if (!string.IsNullOrEmpty(result.Message))
+            {
+                await Conversation.ReplyAsync(activity, result.Message);
+            }
         }
     }
 }
