@@ -13,7 +13,6 @@ using Fanex.Bot.Skynex.Zabbix;
 
 namespace Fanex.Bot.Skynex.Tests.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Fixtures;
     using Microsoft.Bot.Connector;

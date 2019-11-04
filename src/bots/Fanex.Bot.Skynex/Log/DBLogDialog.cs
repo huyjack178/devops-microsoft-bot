@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
