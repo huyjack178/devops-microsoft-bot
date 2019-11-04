@@ -9,6 +9,6 @@
     <Setting Key="Ack_DBLog" SpName="DBA_Skype_Notify_Ack" DbName="DBLOG.StarixDB.bodbAdminNet" />
   </Function>
   <Function Name="NotificationDB">
-    <Setting Key="Skype_BotQuery" SpName="Skype_BotQuery" DbName="DBNOTI.NotificationDB.dbaSkype" />
+    <Setting Key="Skype_BotQuery" SpName="Skype_BotQuery" DbName="DBLOG.StarixDB.bodbAdminNet" />
   </Function>
 </Functions>
