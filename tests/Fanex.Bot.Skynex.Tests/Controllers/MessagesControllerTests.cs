@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Bot.Models;
 using Fanex.Bot.Skynex._Shared.Base;
@@ -215,10 +216,12 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
         }
 
         [Theory]
-        [InlineData("@Skynex-Bot-Test group")]
-        [InlineData("Skynex-Bot-Test group")]
-        [InlineData("SkynexTestBot group")]
-        public async Task Post_ActivityMessage_HandMessageCommand_TextHasBotName_RemoveBotName(string message)
+        [InlineData("@Skynex-Bot-Test log_sentry", "log_sentry")]
+        [InlineData("Skynex-Bot-Test log_sentry", "log_sentry")]
+        [InlineData("SkynexTestBot log_sentry", "log_sentry")]
+        [InlineData("@Skynex log_sentry start score247", "log_sentry start score247")]
+        [InlineData("log_sentry", "log_sentry")]
+        public async Task Post_ActivityMessage_HandMessageCommand_TextHasBotName_RemoveBotName(string message, string expectedMessage)
         {
             // Arrange
             var activity = new Activity { Type = ActivityTypes.Message, Text = message };
@@ -227,7 +230,7 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             await messagesController.Post(activity);
 
             // Asserts
-            await skypeDialog.Received().HandleMessage(Arg.Is(activity), "group");
+            await sentryDialog.Received().HandleMessage(Arg.Is(activity), expectedMessage);
         }
 
         [Fact]

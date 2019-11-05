@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Fanex.Bot.Common.Helpers.Bot
@@ -13,16 +14,14 @@ namespace Fanex.Bot.Common.Helpers.Bot
             }
 
             var formattedMessage = message;
+            var messageParts = message.Split(' ');
 
-            foreach (var botName in botNames)
+            if (messageParts.Length > 1 && botNames.Any(name => messageParts[0].Contains(name)))
             {
-                formattedMessage = formattedMessage.Replace(botName, string.Empty);
+                formattedMessage = message.Replace(messageParts[0], string.Empty);
             }
 
-            return formattedMessage
-                .Replace("@", string.Empty)
-                .Trim()
-                .ToLowerInvariant();
+            return formattedMessage.Trim().ToLowerInvariant();
         }
 
 #pragma warning disable S3994 // URI Parameters should not be strings
