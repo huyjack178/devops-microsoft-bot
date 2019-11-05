@@ -28,23 +28,25 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
     {
         private readonly BotDbContext dbContext;
         private readonly ILogger<Conversation> logger;
-        private readonly ISkypeConversation skypeConversation;
+        private readonly Func<string, IMessengerConversation> messengerFactory;
 
         public Conversation(
             BotDbContext dbContext,
             ILogger<Conversation> logger,
-            ISkypeConversation skypeConversation)
+            Func<string, IMessengerConversation> messengerFactory)
         {
             this.dbContext = dbContext;
             this.logger = logger;
-            this.skypeConversation = skypeConversation;
+            this.messengerFactory = messengerFactory;
         }
 
 #pragma warning disable S1301 // "switch" statements should have at least 3 "case" clauses
 
         public async Task ReplyAsync(IMessageActivity activity, string message)
         {
-            await skypeConversation.ReplyAsync(activity, message);
+            var messenger = messengerFactory(activity.ChannelId);
+
+            await messenger.ReplyAsync(activity, message);
         }
 
         public async Task SendAdminAsync(string message)
@@ -57,27 +59,6 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
                 adminMessageInfo.Type = MessageType.Markdown;
 
                 await ForwardMessage(adminMessageInfo);
-            }
-        }
-
-        public async Task SendAsync(MessageInfo messageInfo)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(messageInfo.Text))
-                {
-                    await ForwardMessage(messageInfo);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"{ex.Message}\n{ex.StackTrace}");
-
-                await SendAdminAsync(
-                    $"Can not send message to {MessageFormatSymbol.BOLD_START}{messageInfo?.ConversationId}{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}" +
-                    $"{MessageFormatSymbol.BOLD_START}Exception:{MessageFormatSymbol.BOLD_END} {ex.Message} {MessageFormatSymbol.NEWLINE}" +
-                    $"Message: {messageInfo?.Text}" +
-                    $"{MessageFormatSymbol.DIVIDER}").ConfigureAwait(false);
             }
         }
 
@@ -104,9 +85,32 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
             }
         }
 
+        public async Task SendAsync(MessageInfo messageInfo)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(messageInfo.Text))
+                {
+                    await ForwardMessage(messageInfo);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"{ex.Message}\n{ex.StackTrace}");
+
+                await SendAdminAsync(
+                    $"Can not send message to {MessageFormatSymbol.BOLD_START}{messageInfo?.ConversationId}{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}Exception:{MessageFormatSymbol.BOLD_END} {ex.Message} {MessageFormatSymbol.NEWLINE}" +
+                    $"Message: {messageInfo?.Text}" +
+                    $"{MessageFormatSymbol.DIVIDER}").ConfigureAwait(false);
+            }
+        }
+
         private async Task ForwardMessage(MessageInfo messageInfo)
         {
-            await skypeConversation.SendAsync(messageInfo);
+            var messenger = messengerFactory(messageInfo.ChannelId);
+
+            await messenger.SendAsync(messageInfo);
         }
 
 #pragma warning restore S1301 // "switch" statements should have at least 3 "case" clauses

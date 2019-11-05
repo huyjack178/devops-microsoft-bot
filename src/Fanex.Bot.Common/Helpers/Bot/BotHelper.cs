@@ -1,18 +1,25 @@
-﻿namespace Fanex.Bot.Core.Utilities.Bot
-{
-    using System.Xml.Linq;
+﻿using System.Linq;
+using System.Xml.Linq;
 
+namespace Fanex.Bot.Common.Helpers.Bot
+{
     public static class BotHelper
     {
-        public static string GenerateMessage(string message, string botName)
+        public static string GenerateMessage(string message, string[] botNames)
         {
-            if (string.IsNullOrEmpty(botName))
+            if (botNames?.Any() != true)
             {
                 return message;
             }
 
-            return message
-                .Replace(botName, string.Empty)
+            var formattedMessage = message;
+
+            foreach (var botName in botNames)
+            {
+                formattedMessage = formattedMessage.Replace(botName, string.Empty);
+            }
+
+            return formattedMessage
                 .Replace("@", string.Empty)
                 .Trim()
                 .ToLowerInvariant();
@@ -22,23 +29,23 @@
 
         public static string ExtractProjectLink(string projectUrl)
         {
-            string formatedProjectUrl;
+            string extractProjectLink;
 
             try
             {
-                formatedProjectUrl = XElement.Parse(projectUrl).Attribute("href").Value;
+                extractProjectLink = XElement.Parse(projectUrl).Attribute("href").Value;
             }
             catch
             {
-                formatedProjectUrl = string.Empty;
+                extractProjectLink = string.Empty;
             }
 
-            if (string.IsNullOrEmpty(formatedProjectUrl))
+            if (string.IsNullOrEmpty(extractProjectLink))
             {
-                formatedProjectUrl = projectUrl;
+                extractProjectLink = projectUrl;
             }
 
-            return formatedProjectUrl;
+            return extractProjectLink;
         }
 
 #pragma warning restore S3994 // URI Parameters should not be strings

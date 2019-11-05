@@ -3,11 +3,13 @@ using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Bot.Models;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex.Bot;
+using Fanex.Bot.Skynex.ExecuteSP;
 using Fanex.Bot.Skynex.GitLab;
 using Fanex.Bot.Skynex.Log;
 using Fanex.Bot.Skynex.Sentry;
 using Fanex.Bot.Skynex.UM;
 using Fanex.Bot.Skynex.Zabbix;
+using Microsoft.Extensions.Configuration;
 
 // ReSharper disable All
 
@@ -24,27 +26,35 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
     public class MessagesControllerTests : IClassFixture<BotConversationFixture>
     {
         private readonly BotConversationFixture conversationFixture;
-        private readonly ICommonDialog commonDialog;
+        private readonly IMessengerDialog skypeDialog;
+        private readonly ITelegramDialog telegramDialog;
         private readonly ILogDialog logDialog;
         private readonly IGitLabDialog gitLabDialog;
         private readonly IUnderMaintenanceDialog umDialog;
         private readonly IDBLogDialog dbLogDialog;
         private readonly IZabbixDialog zabbixDialog;
         private readonly ISentryDialog sentryDialog;
+        private readonly IExecuteSpDialog executeSpDialog;
         private readonly MessagesController messagesController;
+        private readonly IConfiguration configuration;
 
         public MessagesControllerTests(BotConversationFixture conversationFixture)
         {
+            configuration = new ConfigurationBuilder()
+                .AddJsonFile($"{AppDomain.CurrentDomain.BaseDirectory}/../../../appsettings.json")
+                .Build();
             this.conversationFixture = conversationFixture;
-            commonDialog = Substitute.For<ICommonDialog>();
+            skypeDialog = Substitute.For<IMessengerDialog>();
+            telegramDialog = Substitute.For<ITelegramDialog>();
             logDialog = Substitute.For<ILogDialog>();
             gitLabDialog = Substitute.For<IGitLabDialog>();
             umDialog = Substitute.For<IUnderMaintenanceDialog>();
             dbLogDialog = Substitute.For<IDBLogDialog>();
             zabbixDialog = Substitute.For<IZabbixDialog>();
             sentryDialog = Substitute.For<ISentryDialog>();
+            executeSpDialog = Substitute.For<IExecuteSpDialog>();
 
-            var functionFactory = new Func<string, IDialog>((functionName) =>
+            var functionDialogFactory = new Func<string, string, IDialog>((functionName, messengerName) =>
             {
                 switch (functionName)
                 {
@@ -66,15 +76,38 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
                     case FunctionType.ZabbixFunctionName:
                         return zabbixDialog;
 
+                    case FunctionType.ExecuteSpFunctionName:
+                        return executeSpDialog;
+
                     default:
-                        return commonDialog;
+                        switch (messengerName)
+                        {
+                            case MessengerType.TelegramMessengerTypeName:
+                                return telegramDialog;
+
+                            default:
+                                return skypeDialog;
+                        }
                 }
             });
+
+            var messengerDialogFactory = new Func<string, IMessengerDialog>(messengerTypeName =>
+            {
+                switch (messengerTypeName)
+                {
+                    case MessengerType.TelegramMessengerTypeName:
+                        return telegramDialog;
+
+                    default:
+                        return skypeDialog;
+                }
+            });
+
             messagesController = new MessagesController(
                 this.conversationFixture.Conversation,
-                this.conversationFixture.Configuration,
-                commonDialog,
-                functionFactory);
+                configuration,
+                messengerDialogFactory,
+                functionDialogFactory);
         }
 
         [Fact]
@@ -156,6 +189,19 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
         }
 
         [Fact]
+        public async Task Post_ActivityMessage_HandMessageCommand_ExecuteSpCommand_CallExecuteDialog()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.Message, Text = "query add" };
+
+            // Act
+            await messagesController.Post(activity);
+
+            // Asserts
+            await executeSpDialog.Received().HandleMessage(Arg.Is(activity), "query add");
+        }
+
+        [Fact]
         public async Task Post_ActivityMessage_HandMessageCommand_OtherCommand_CallDialog()
         {
             // Arrange
@@ -165,23 +211,23 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             await messagesController.Post(activity);
 
             // Asserts
-            await commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
+            await skypeDialog.Received().HandleMessage(Arg.Is(activity), "group");
         }
 
         [Theory]
-        [InlineData("@Skynex group")]
-        [InlineData("Skynex group")]
+        [InlineData("@Skynex-Bot-Test group")]
+        [InlineData("Skynex-Bot-Test group")]
+        [InlineData("SkynexTestBot group")]
         public async Task Post_ActivityMessage_HandMessageCommand_TextHasBotName_RemoveBotName(string message)
         {
             // Arrange
             var activity = new Activity { Type = ActivityTypes.Message, Text = message };
-            conversationFixture.Configuration.GetSection("BotName")?.Value.Returns("Skynex");
 
             // Act
             await messagesController.Post(activity);
 
             // Asserts
-            await commonDialog.Received().HandleMessage(Arg.Is(activity), "group");
+            await skypeDialog.Received().HandleMessage(Arg.Is(activity), "group");
         }
 
         [Fact]
@@ -199,7 +245,7 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             await messagesController.Post(activity);
 
             // Asserts
-            await commonDialog.Received().HandleContactRelationUpdate(Arg.Is(activity));
+            await skypeDialog.Received().HandleContactRelationUpdate(Arg.Is(activity));
         }
 
         [Fact]
@@ -217,7 +263,7 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
             await messagesController.Post(activity);
 
             // Asserts
-            await commonDialog.Received().HandleConversationUpdate(Arg.Is(activity));
+            await skypeDialog.Received().HandleConversationUpdate(Arg.Is(activity));
         }
 
 #pragma warning restore S2699 // Tests should include assertions

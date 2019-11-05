@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Fanex.Bot.Common.Helpers.Bot;
 using Fanex.Bot.Core._Shared.Enumerations;
-using Fanex.Bot.Core.Utilities.Bot;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex._Shared.MessageSenders;
 using Microsoft.AspNetCore.Authorization;
@@ -16,21 +17,21 @@ namespace Fanex.Bot.Skynex.Bot
     {
         private readonly IConversation conversation;
         private readonly IConfiguration configuration;
-        private readonly ICommonDialog commonDialog;
-        private readonly Func<string, IDialog> functionFactory;
+        private readonly Func<string, IMessengerDialog> messengerDialogFactory;
+        private readonly Func<string, string, IDialog> functionDialogFactory;
 
 #pragma warning disable S107 // Methods should not have too many parameters
 
         public MessagesController(
             IConversation conversation,
             IConfiguration configuration,
-            ICommonDialog commonDialog,
-            Func<string, IDialog> functionFactory)
+            Func<string, IMessengerDialog> messengerDialogFactory,
+            Func<string, string, IDialog> functionDialogFactory)
         {
             this.conversation = conversation;
             this.configuration = configuration;
-            this.commonDialog = commonDialog;
-            this.functionFactory = functionFactory;
+            this.messengerDialogFactory = messengerDialogFactory;
+            this.functionDialogFactory = functionDialogFactory;
         }
 
 #pragma warning restore S107 // Methods should not have too many parameters
@@ -39,6 +40,8 @@ namespace Fanex.Bot.Skynex.Bot
         [HttpPost]
         public async Task<OkResult> Post([FromBody] Activity activity)
         {
+            var messengerDialog = messengerDialogFactory(activity.ChannelId);
+
             switch (activity.Type)
             {
                 case ActivityTypes.Message:
@@ -46,11 +49,11 @@ namespace Fanex.Bot.Skynex.Bot
                     break;
 
                 case ActivityTypes.ConversationUpdate:
-                    await commonDialog.HandleConversationUpdate(activity);
+                    await messengerDialog.HandleConversationUpdate(activity);
                     break;
 
                 case ActivityTypes.ContactRelationUpdate:
-                    await commonDialog.HandleContactRelationUpdate(activity);
+                    await messengerDialog.HandleContactRelationUpdate(activity);
                     break;
 
                 default:
@@ -87,14 +90,14 @@ namespace Fanex.Bot.Skynex.Bot
 
         private async Task HandleMessage(IMessageActivity activity)
         {
-            var botName = configuration.GetSection("BotName")?.Value;
-            var message = BotHelper.GenerateMessage(activity.Text, botName);
+            var botNames = configuration.GetSection("BotName")?.Get<string[]>();
+            var message = BotHelper.GenerateMessage(activity.Text, botNames);
             var messageParts = message?.Split(" ");
 
             if (messageParts?.Length > 0)
             {
                 var functionName = messageParts[0];
-                var functionDialog = functionFactory(functionName);
+                var functionDialog = functionDialogFactory(functionName, activity.ChannelId);
 
                 await functionDialog.HandleMessage(activity, message);
             }

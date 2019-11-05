@@ -2,7 +2,7 @@
 
 namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
 {
-    public interface IMessengerFormatter
+    public interface IMessageFormatter
     {
         string NewLine { get; }
 
@@ -17,17 +17,17 @@ namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
         string Format(string message);
     }
 
-    public class DefaultFormatter : IMessengerFormatter
+    public class SkypeFormatter : IMessageFormatter
     {
-        public string NewLine { get; } = "\n";
+        public virtual string NewLine { get; } = "\n";
 
-        public string DoubleNewLine { get; } = "\n\n";
+        public virtual string DoubleNewLine { get; } = "\n\n";
 
-        public string BeginBold { get; } = "**";
+        public virtual string BeginBold { get; } = "**";
 
-        public string EndBold { get; } = "**";
+        public virtual string EndBold { get; } = "**";
 
-        public string BreakLine { get; } = "***";
+        public virtual string BreakLine { get; } = "***";
 
         public virtual string Format(string message)
             => Clean(message)

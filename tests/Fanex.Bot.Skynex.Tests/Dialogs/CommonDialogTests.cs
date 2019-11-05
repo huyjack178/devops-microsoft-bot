@@ -16,13 +16,13 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
     public class CommonDialogTests : IClassFixture<BotConversationFixture>
     {
         private readonly BotConversationFixture conversationFixture;
-        private readonly ICommonDialog dialog;
+        private readonly IMessengerDialog dialog;
 
         public CommonDialogTests(BotConversationFixture conversationFixture)
         {
             this.conversationFixture = conversationFixture;
 
-            dialog = new CommonDialog(
+            dialog = new SkypeDialog(
                 conversationFixture.BotDbContext,
                 conversationFixture.Conversation,
                 conversationFixture.Configuration);

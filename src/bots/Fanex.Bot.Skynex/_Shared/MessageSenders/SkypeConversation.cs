@@ -10,33 +10,33 @@ using Microsoft.Extensions.Configuration;
 
 namespace Fanex.Bot.Skynex._Shared.MessageSenders
 {
-    public interface ISkypeConversation
+    public interface IMessengerConversation
     {
         Task ReplyAsync(IMessageActivity activity, string message);
 
         Task SendAsync(MessageInfo messageInfo);
     }
 
-    public class SkypeConversation : ISkypeConversation
+    public class SkypeConversation : IMessengerConversation
     {
         private readonly IConfiguration configuration;
-        private readonly IMessengerFormatter messengerFormatter;
+        private readonly IMessageFormatter messageFormatter;
 
-        public SkypeConversation(IConfiguration configuration, IMessengerFormatter messengerFormatter)
+        public SkypeConversation(IConfiguration configuration, IMessageFormatter messageFormatter)
         {
             this.configuration = configuration;
-            this.messengerFormatter = messengerFormatter;
+            this.messageFormatter = messageFormatter;
         }
 
-        public async Task ReplyAsync(IMessageActivity activity, string message)
+        public virtual async Task ReplyAsync(IMessageActivity activity, string message)
         {
             var connector = await CreateConnectorClient(new Uri(activity.ServiceUrl));
-            var reply = (activity as Activity).CreateReply(messengerFormatter.Format(message));
+            var reply = (activity as Activity).CreateReply(messageFormatter.Format(message));
 
             await connector.Conversations.ReplyToActivityAsync(reply);
         }
 
-        public async Task SendAsync(MessageInfo messageInfo)
+        public virtual async Task SendAsync(MessageInfo messageInfo)
         {
             var connector = await CreateConnectorClient(new Uri(messageInfo.ServiceUrl));
             var message = CreateMessageActivity(messageInfo);
@@ -50,7 +50,7 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
                     message.TextFormat = messageType;
                 }
 
-                message.Text = messengerFormatter.Format(messageInfo.Text);
+                message.Text = messageFormatter.Format(messageInfo.Text);
                 await connector.Conversations.SendToConversationAsync((Activity)message);
             }
         }

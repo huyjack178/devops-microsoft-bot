@@ -7,11 +7,11 @@ namespace Fanex.Bot.Skynex.Tests.MessageHandlers.MessengerFormatters
 
     public class DefaultFormatterTests
     {
-        private readonly IMessengerFormatter defautFormatter;
+        private readonly IMessageFormatter defautFormatter;
 
         public DefaultFormatterTests()
         {
-            defautFormatter = new DefaultFormatter();
+            defautFormatter = new SkypeFormatter();
         }
 
         [Fact]

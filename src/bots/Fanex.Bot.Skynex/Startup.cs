@@ -121,7 +121,8 @@ namespace Fanex.Bot
 
         private static void ConfigureBotDialog(IServiceCollection services)
         {
-            services.AddScoped<ICommonDialog, CommonDialog>();
+            services.AddScoped<ITelegramDialog, TelegramDialog>();
+            services.AddScoped<IMessengerDialog, SkypeDialog>();
             services.AddScoped<ILogDialog, LogDialog>();
             services.AddScoped<IGitLabDialog, GitLabDialog>();
             services.AddScoped<IUnderMaintenanceDialog, UnderMaintenanceDialog>();
@@ -130,9 +131,9 @@ namespace Fanex.Bot
             services.AddScoped<ISentryDialog, SentryDialog>();
             services.AddScoped<IExecuteSpDialog, ExecuteSpDialog>();
 
-            services.AddScoped<Func<string, IDialog>>(serviceProvider => (functionType) =>
+            services.AddScoped<Func<string, string, IDialog>>(serviceProvider => (functionTypeName, messengerTypeName) =>
             {
-                switch (functionType)
+                switch (functionTypeName)
                 {
                     case FunctionType.LogMSiteFunctionName:
                         return serviceProvider.GetService<ILogDialog>();
@@ -155,10 +156,31 @@ namespace Fanex.Bot
                     case FunctionType.ExecuteSpFunctionName:
                         return serviceProvider.GetService<IExecuteSpDialog>();
 
+
                     default:
-                        return serviceProvider.GetService<ICommonDialog>();
+                        switch (messengerTypeName)
+                        {
+                            case MessengerType.TelegramMessengerTypeName:
+                                return serviceProvider.GetService<ITelegramDialog>();
+                            
+                            default:
+                                return serviceProvider.GetService<IMessengerDialog>();
+                        }
                 }
             });
+
+            services.AddScoped<Func<string, IMessengerDialog>>(serviceProvider => (messengerTypeName) =>
+            {
+                switch (messengerTypeName)
+                {
+                    case MessengerType.TelegramMessengerTypeName:
+                        return serviceProvider.GetService<ITelegramDialog>();
+
+                    default:
+                        return serviceProvider.GetService<IMessengerDialog>();
+                }
+            });
+
         }
 
         private static void ConfigureBotMessageHandlers(IServiceCollection services)
@@ -168,9 +190,23 @@ namespace Fanex.Bot
             services.AddSingleton<IDBLogMessageBuilder, DBLogMessageBuilder>();
             services.AddSingleton<IZabbixMessageBuilder, ZabbixMessageBuilder>();
             services.AddSingleton<ISentryMessageBuilder, SentryMessageBuilder>();
-            services.AddSingleton<IMessengerFormatter, DefaultFormatter>();
-            services.AddScoped<ISkypeConversation, SkypeConversation>();
+            services.AddSingleton<IMessageFormatter, SkypeFormatter>();
+            services.AddSingleton<ITelegramFormatter, TelegramFormatter>();
+            services.AddScoped<IMessengerConversation, SkypeConversation>();
+            services.AddScoped<ITelegramConversation, TelegramConversation>();
             services.AddScoped<IConversation, Conversation>();
+
+            services.AddScoped<Func<string, IMessengerConversation>>(serviceProvider => (messengerTypeName) =>
+            {
+                switch (messengerTypeName)
+                {
+                    case MessengerType.TelegramMessengerTypeName:
+                        return serviceProvider.GetService<ITelegramConversation>();
+
+                    default:
+                        return serviceProvider.GetService<IMessengerConversation>();
+                }
+            });
         }
 
         private void ConfigureBotAuthentication(IServiceCollection services)

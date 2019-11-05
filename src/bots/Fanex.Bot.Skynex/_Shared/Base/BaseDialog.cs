@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
 using Fanex.Bot.Core._Shared.Enumerations;
@@ -70,5 +71,67 @@ namespace Fanex.Bot.Skynex._Shared.Base
 
         private Task<bool> ExistMessageInfo(MessageInfo messageInfo)
             => DbContext.MessageInfo.AnyAsync(e => e.ConversationId == messageInfo.ConversationId);
+
+        protected virtual async Task RegisterMessageInfo(Connector.IMessageActivity activity)
+        {
+            var messageInfo = await DbContext.MessageInfo.FirstOrDefaultAsync(
+                e => e.ConversationId == activity.Conversation.Id);
+
+            if (messageInfo == null)
+            {
+                messageInfo = InitMessageInfo(activity);
+                await SaveMessageInfo(messageInfo);
+                await Conversation.SendAdminAsync(
+                    $"New client {MessageFormatSymbol.BOLD_START}{activity.Conversation.Id}{MessageFormatSymbol.BOLD_END} has been added");
+            }
+        }
+
+        protected virtual async Task RemoveConversationData(Connector.IMessageActivity activity)
+        {
+            var messageInfo = await DbContext.MessageInfo.SingleOrDefaultAsync(
+                info => info.ConversationId == activity.Conversation.Id);
+
+            if (messageInfo != null)
+            {
+                DbContext.MessageInfo.Remove(messageInfo);
+            }
+
+            var logInfo = await DbContext.LogInfo.SingleOrDefaultAsync(
+                info => info.ConversationId == activity.Conversation.Id);
+
+            if (logInfo != null)
+            {
+                DbContext.LogInfo.Remove(logInfo);
+            }
+
+            var gitlabInfo = await DbContext.GitLabInfo.SingleOrDefaultAsync(
+               info => info.ConversationId == activity.Conversation.Id);
+
+            if (gitlabInfo != null)
+            {
+                DbContext.GitLabInfo.Remove(gitlabInfo);
+            }
+
+            await DbContext.SaveChangesAsync();
+            await Conversation.SendAdminAsync(
+                $"Client {MessageFormatSymbol.BOLD_START}{activity.Conversation.Id}{MessageFormatSymbol.BOLD_END} has been removed");
+        }
+
+        private static MessageInfo InitMessageInfo(Connector.IMessageActivity activity)
+        {
+            return new MessageInfo
+            {
+                ToId = activity.From?.Id,
+                ToName = activity.From?.Name,
+                FromId = activity.Recipient?.Id,
+                FromName = activity.Recipient?.Name,
+                ServiceUrl = activity.ServiceUrl,
+                ChannelId = activity.ChannelId,
+                ConversationId = activity.Conversation?.Id,
+#pragma warning disable S109 // Magic numbers should not be used
+                CreatedTime = DateTime.UtcNow.AddHours(7)
+#pragma warning restore S109 // Magic numbers should not be used
+            };
+        }
     }
 }
