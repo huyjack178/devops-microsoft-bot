@@ -10,6 +10,7 @@
         public const string GitLabFunctionName = "gitlab";
         public const string ZabbixFunctionName = "zabbix";
         public const string ExecuteSpFunctionName = "query";
+        public const string AppCenterFunctionName = "appcenter";
 
         public static readonly FunctionType Bot = new FunctionType(1, BotFunctionName);
 
@@ -26,6 +27,8 @@
         public static readonly FunctionType Zabbix = new FunctionType(7, ZabbixFunctionName);
 
         public static readonly FunctionType ExecuteSP = new FunctionType(8, ExecuteSpFunctionName);
+
+        public static readonly FunctionType AppCenter = new FunctionType(9, AppCenterFunctionName);
 
         public FunctionType()
         {

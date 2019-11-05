@@ -13,6 +13,7 @@ using Fanex.Bot.Core.Zabbix.Services;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex._Shared.MessageSenders;
 using Fanex.Bot.Skynex._Shared.MessengerFormatters;
+using Fanex.Bot.Skynex.AppCenter;
 using Fanex.Bot.Skynex.Bot;
 using Fanex.Bot.Skynex.ExecuteSP;
 using Fanex.Bot.Skynex.GitLab;
@@ -130,6 +131,7 @@ namespace Fanex.Bot
             services.AddScoped<IZabbixDialog, ZabbixDialog>();
             services.AddScoped<ISentryDialog, SentryDialog>();
             services.AddScoped<IExecuteSpDialog, ExecuteSpDialog>();
+            services.AddScoped<IAppCenterDialog, AppCenterDialog>();
 
             services.AddScoped<Func<string, string, IDialog>>(serviceProvider => (functionTypeName, messengerTypeName) =>
             {
@@ -156,6 +158,8 @@ namespace Fanex.Bot
                     case FunctionType.ExecuteSpFunctionName:
                         return serviceProvider.GetService<IExecuteSpDialog>();
 
+                    case FunctionType.AppCenterFunctionName:
+                        return serviceProvider.GetService<IAppCenterDialog>();
 
                     default:
                         switch (messengerTypeName)
@@ -190,6 +194,8 @@ namespace Fanex.Bot
             services.AddSingleton<IDBLogMessageBuilder, DBLogMessageBuilder>();
             services.AddSingleton<IZabbixMessageBuilder, ZabbixMessageBuilder>();
             services.AddSingleton<ISentryMessageBuilder, SentryMessageBuilder>();
+            services.AddSingleton<IAppCenterMessageBuilder, AppCenterMessageBuilder>();
+
             services.AddSingleton<IMessageFormatter, SkypeFormatter>();
             services.AddSingleton<ITelegramFormatter, TelegramFormatter>();
             services.AddScoped<IMessengerConversation, SkypeConversation>();

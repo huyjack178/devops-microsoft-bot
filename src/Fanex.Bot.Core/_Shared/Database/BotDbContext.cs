@@ -1,4 +1,5 @@
-﻿using Fanex.Bot.Core.Bot.Models;
+﻿using Fanex.Bot.Core.AppCenter.Models;
+using Fanex.Bot.Core.Bot.Models;
 using Fanex.Bot.Core.GitLab.Models;
 using Fanex.Bot.Core.Log.Models;
 using Fanex.Bot.Core.Sentry.Models;
@@ -31,6 +32,9 @@ namespace Fanex.Bot.Core._Shared.Database
 
             modelBuilder.Entity<SentryInfo>()
                .HasKey(c => new { c.ConversationId, c.Project });
+
+            modelBuilder.Entity<AppCenterInfo>()
+                .HasKey(c => new { c.ConversationId, c.Project });
         }
 
         public virtual DbSet<MessageInfo> MessageInfo { get; set; }
@@ -50,5 +54,7 @@ namespace Fanex.Bot.Core._Shared.Database
         public virtual DbSet<SentryInfo> SentryInfo { get; set; }
 
         public virtual DbSet<ZabbixInfo> ZabbixInfo { get; set; }
+
+        public virtual DbSet<AppCenterInfo> AppCenterInfo { get; set; }
     }
 }
