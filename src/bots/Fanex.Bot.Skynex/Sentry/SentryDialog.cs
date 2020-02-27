@@ -101,7 +101,7 @@ namespace Fanex.Bot.Skynex.Sentry
             var message = messageBuilder.BuildMessage(pushEvent);
             var project = pushEvent.Project.ToLowerInvariant();
 
-            foreach (var sentryInfo in DbContext.SentryInfo.Where(s => project.StartsWith(s.Project)))
+            foreach (var sentryInfo in DbContext.SentryInfo.Where(s => project.Equals(s.Project, StringComparison.InvariantCultureIgnoreCase)))
             {
                 if (sentryInfo?.IsActive == true && sentryInfo.Level == pushEvent.Level)
                 {
@@ -138,7 +138,7 @@ namespace Fanex.Bot.Skynex.Sentry
         private async Task<SentryInfo> FindSentryInfo(IMessageActivity activity, string projectName)
             => await DbContext.SentryInfo.FirstOrDefaultAsync(log
                    => log.ConversationId == activity.Conversation.Id
-                      && String.Equals(log.Project, projectName, StringComparison.InvariantCultureIgnoreCase));
+                      && string.Equals(log.Project, projectName, StringComparison.InvariantCultureIgnoreCase));
 
         private async Task SaveSentryInfo(SentryInfo sentryInfo)
         {
