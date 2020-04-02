@@ -90,6 +90,11 @@ namespace Fanex.Bot.Skynex.Bot
 
         private async Task HandleMessage(IMessageActivity activity)
         {
+            if (activity?.Text == null)
+            {
+                return;
+            }
+
             var botNames = configuration.GetSection("BotName")?.Get<string[]>();
             var message = BotHelper.GenerateMessage(activity.Text, botNames);
             var messageParts = message?.Split(" ");
