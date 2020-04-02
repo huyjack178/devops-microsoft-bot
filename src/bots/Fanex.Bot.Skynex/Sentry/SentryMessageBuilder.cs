@@ -54,21 +54,21 @@ namespace Fanex.Bot.Skynex.Sentry
                     $"{MessageFormatSymbol.BOLD_START}Request:{MessageFormatSymbol.BOLD_END} [{request.Method}] {request.Url}{MessageFormatSymbol.NEWLINE}");
             }
 
-            if (pushEvent.Event.Context.Browser != null)
+            if (pushEvent.Event.Context?.Browser != null)
             {
                 var browser = pushEvent.Event.Context.Browser;
                 messageBuilder.Append(
                     $"{MessageFormatSymbol.BOLD_START}Browser:{MessageFormatSymbol.BOLD_END} {browser.Name} ({browser.Version}){MessageFormatSymbol.NEWLINE}");
             }
 
-            if (pushEvent.Event.Context.Device != null)
+            if (pushEvent.Event.Context?.Device != null)
             {
                 var device = pushEvent.Event.Context.Device;
                 messageBuilder.Append(
                     $"{MessageFormatSymbol.BOLD_START}Device:{MessageFormatSymbol.BOLD_END} {device.Name} ({device.Model}){MessageFormatSymbol.NEWLINE}");
             }
 
-            if (pushEvent.Event.Context.Os != null)
+            if (pushEvent.Event.Context?.Os != null)
             {
                 var os = pushEvent.Event.Context.Os;
                 messageBuilder.Append(
