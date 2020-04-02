@@ -75,17 +75,20 @@ namespace Fanex.Bot.Skynex.Sentry
                     $"{MessageFormatSymbol.BOLD_START}OS:{MessageFormatSymbol.BOLD_END} {os.Name} {os.Version}{MessageFormatSymbol.NEWLINE}");
             }
 
-            messageBuilder.Append(
-                $"{MessageFormatSymbol.BOLD_START}User:{MessageFormatSymbol.BOLD_END} " +
-                $"{pushEvent.Event.User.UserName}{MessageFormatSymbol.NEWLINE}");
+            if (pushEvent.Event.User?.UserName != null)
+            {
+                messageBuilder.Append(
+                  $"{MessageFormatSymbol.BOLD_START}User:{MessageFormatSymbol.BOLD_END} " +
+                  $"{pushEvent.Event.User.UserName}{MessageFormatSymbol.NEWLINE}");
+            }
 
-            if (!string.IsNullOrEmpty(pushEvent.Event.User.IpAddress))
+            if (!string.IsNullOrEmpty(pushEvent.Event.User?.IpAddress))
             {
                 messageBuilder.Append(
                     $"IP Address: {pushEvent.Event.User.IpAddress}{MessageFormatSymbol.NEWLINE}");
             }
 
-            if (!string.IsNullOrEmpty(pushEvent.Event.User.Email))
+            if (!string.IsNullOrEmpty(pushEvent.Event.User?.Email))
             {
                 messageBuilder.Append(
                     $"Email: {pushEvent.Event.User.Email}{MessageFormatSymbol.NEWLINE}");
