@@ -63,7 +63,7 @@ namespace Fanex.Bot.Skynex.GitLab
 
             messageBuilder.Append(
                 $"{statusIcon}{MessageFormatSymbol.BOLD_START}{jobEvent.BuildStatus.ToUpperInvariant()}{MessageFormatSymbol.BOLD_END}{statusIcon} " +
-                $"CI Job「{jobEvent.BuildName.ToUpperInvariant()}」:rocket: {MessageFormatSymbol.NEWLINE}");
+                $"CI Job 「{jobEvent.BuildName.ToUpperInvariant()}」.. :rocket: {MessageFormatSymbol.NEWLINE}");
             messageBuilder.Append($"{MessageFormatSymbol.BOLD_START}Project:{MessageFormatSymbol.BOLD_END} {jobEvent.Project.Name}{MessageFormatSymbol.NEWLINE}");
             messageBuilder.Append($"{MessageFormatSymbol.BOLD_START}User Trigger:{MessageFormatSymbol.BOLD_END} {jobEvent.User.Name}{MessageFormatSymbol.NEWLINE}");
 

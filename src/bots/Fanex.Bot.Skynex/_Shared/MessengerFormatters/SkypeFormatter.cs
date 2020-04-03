@@ -16,6 +16,8 @@ namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
 
         string Bell { get; }
 
+        string Error { get; }
+
         string Format(string message);
     }
 
@@ -33,6 +35,8 @@ namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
 
         public virtual string Bell { get; } = "(bell)";
 
+        public virtual string Error { get; } = "(fire)";
+
         public virtual string Format(string message)
             => Clean(message)
                 .Replace(MessageFormatSymbol.NEWLINE, NewLine)
@@ -40,7 +44,8 @@ namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
                 .Replace(MessageFormatSymbol.BOLD_START, BeginBold)
                 .Replace(MessageFormatSymbol.BOLD_END, EndBold)
                 .Replace(MessageFormatSymbol.DIVIDER, BreakLine)
-                .Replace(MessageFormatSymbol.BELL, Bell);
+                .Replace(MessageFormatSymbol.BELL, Bell)
+                .Replace(MessageFormatSymbol.ERROR, Error);
 
         protected virtual string Clean(string message)
             => message

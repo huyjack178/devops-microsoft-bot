@@ -9,5 +9,7 @@
         public override string NewLine { get; } = "\n\n";
 
         public override string Bell => ":bell:";
+
+        public override string Error => ":fire:";
     }
 }

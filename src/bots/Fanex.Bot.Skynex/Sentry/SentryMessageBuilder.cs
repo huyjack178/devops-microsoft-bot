@@ -29,8 +29,8 @@ namespace Fanex.Bot.Skynex.Sentry
             var messageBuilder = new StringBuilder();
 
             messageBuilder.Append(
-                $"{MessageFormatSymbol.BOLD_START}Project:{MessageFormatSymbol.BOLD_END} " +
-                $"{pushEvent.ProjectName.ToUpperInvariant()}{MessageFormatSymbol.NEWLINE}");
+                $"{MessageFormatSymbol.ERROR}ERROR{MessageFormatSymbol.ERROR} in " +
+                $"{MessageFormatSymbol.BOLD_START}「{pushEvent.ProjectName.ToUpperInvariant()}」{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}");
 
             var logTime = DateTimeOffset
                 .FromUnixTimeSeconds(Convert.ToInt64(Convert.ToDouble(pushEvent.Event.LogTime)))
