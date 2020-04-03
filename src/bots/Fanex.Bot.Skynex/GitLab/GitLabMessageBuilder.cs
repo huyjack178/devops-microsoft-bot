@@ -33,7 +33,7 @@ namespace Fanex.Bot.Skynex.GitLab
             var project = gitlabPushEvent.Project;
             var commits = gitlabPushEvent.Commits;
 
-            var message = $"{MessageFormatSymbol.BOLD_START}GitLab Master Branch Change{MessageFormatSymbol.BOLD_END} (bell){MessageFormatSymbol.NEWLINE}" +
+            var message = $"{MessageFormatSymbol.BOLD_START}GitLab Master Branch Change{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.BELL}{MessageFormatSymbol.NEWLINE}" +
                             $"{MessageFormatSymbol.BOLD_START}Repository:{MessageFormatSymbol.BOLD_END} {project.WebUrl}{MessageFormatSymbol.NEWLINE}";
 
             var commitMessageBuilder = new StringBuilder();

@@ -7,5 +7,6 @@
         public const string BOLD_START = "{{BeginBold}}";
         public const string BOLD_END = "{{EndBold}}";
         public const string DIVIDER = "{{BreakLine}}";
+        public const string BELL = "{{Bell}}";
     }
 }

@@ -206,7 +206,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
 
             // Assert
             var expectedMessage =
-                    $"{MessageFormatSymbol.BOLD_START}GitLab Master Branch Change{MessageFormatSymbol.BOLD_END} (bell){MessageFormatSymbol.NEWLINE}" +
+                    $"{MessageFormatSymbol.BOLD_START}GitLab Master Branch Change{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.BELL}{MessageFormatSymbol.NEWLINE}" +
                     $"{MessageFormatSymbol.BOLD_START}Repository:{MessageFormatSymbol.BOLD_END} http://gitlab.nexdev.vn/Bot" + MessageFormatSymbol.NEWLINE +
                     $"{MessageFormatSymbol.BOLD_START}Commits:{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
                     $"[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910) " +

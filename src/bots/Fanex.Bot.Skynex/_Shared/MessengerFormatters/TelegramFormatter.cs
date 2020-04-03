@@ -7,5 +7,7 @@
     public class TelegramFormatter : SkypeFormatter, ITelegramFormatter
     {
         public override string NewLine { get; } = "\n\n";
+
+        public override string Bell => ":bell:";
     }
 }

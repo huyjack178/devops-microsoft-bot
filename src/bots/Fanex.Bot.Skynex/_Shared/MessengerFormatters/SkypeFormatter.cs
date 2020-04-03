@@ -14,6 +14,8 @@ namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
 
         string BreakLine { get; }
 
+        string Bell { get; }
+
         string Format(string message);
     }
 
@@ -29,13 +31,16 @@ namespace Fanex.Bot.Skynex._Shared.MessengerFormatters
 
         public virtual string BreakLine { get; } = "***";
 
+        public virtual string Bell { get; } = "(bell)";
+
         public virtual string Format(string message)
             => Clean(message)
                 .Replace(MessageFormatSymbol.NEWLINE, NewLine)
                 .Replace(MessageFormatSymbol.DOUBLE_NEWLINE, DoubleNewLine)
                 .Replace(MessageFormatSymbol.BOLD_START, BeginBold)
                 .Replace(MessageFormatSymbol.BOLD_END, EndBold)
-                .Replace(MessageFormatSymbol.DIVIDER, BreakLine);
+                .Replace(MessageFormatSymbol.DIVIDER, BreakLine)
+                .Replace(MessageFormatSymbol.BELL, Bell);
 
         protected virtual string Clean(string message)
             => message
