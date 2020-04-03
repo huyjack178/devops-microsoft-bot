@@ -9,6 +9,10 @@ namespace Fanex.Bot.Core.GitLab.Models
     {
         [Key]
         public string ProjectUrl { get; set; }
+
+        public bool EnablePush { get; set; } = true;
+
+        public bool EnablePipeline { get; set; } = false;
     }
 }
 

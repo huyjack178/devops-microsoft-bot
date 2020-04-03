@@ -44,7 +44,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
             await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Please input project url"));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Please input right command!"));
         }
 
         [Theory]
@@ -127,7 +127,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
             await conversationFixture
                 .Conversation
                 .Received()
-                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Please input project url"));
+                .ReplyAsync(Arg.Is(conversationFixture.Activity), Arg.Is("Please input right command!"));
         }
 
         [Fact]
@@ -209,7 +209,7 @@ namespace Fanex.Bot.Skynex.Tests.Dialogs
                     $"{MessageFormatSymbol.BOLD_START}GitLab Master Branch Change{MessageFormatSymbol.BOLD_END} (bell){MessageFormatSymbol.NEWLINE}" +
                     $"{MessageFormatSymbol.BOLD_START}Repository:{MessageFormatSymbol.BOLD_END} http://gitlab.nexdev.vn/Bot" + MessageFormatSymbol.NEWLINE +
                     $"{MessageFormatSymbol.BOLD_START}Commits:{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
-                    $"{MessageFormatSymbol.BOLD_START}[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910){MessageFormatSymbol.BOLD_END} " +
+                    $"[12345678](http://gitlab.nexdev.vn/Bot/commit/12345678910) " +
                     $"Push Master (Harrison){MessageFormatSymbol.NEWLINE}" +
                     MessageFormatSymbol.DIVIDER + MessageFormatSymbol.NEWLINE;
 

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fanex.Bot.Common.Helpers.Bot;
 using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
 using Fanex.Bot.Core.GitLab.Models;
+using Fanex.Bot.Core.GitLab.Models.JobEvents;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex._Shared.MessageSenders;
 using Microsoft.Bot.Connector;
@@ -15,13 +17,13 @@ namespace Fanex.Bot.Skynex.GitLab
     public interface IGitLabDialog : IDialog
     {
         Task HandlePushEventAsync(PushEvent pushEvent);
+
+        Task HandleJobEventAsync(JobEvent jobEvent);
     }
 
     public class GitLabDialog : BaseDialog, IGitLabDialog
     {
         private const string MasterBranchName = "heads/master";
-        private const string RemoveProjectCmd = "gitlab removeproject";
-        private const string AddProjectCmd = "gitlab addproject";
         private readonly IGitLabMessageBuilder gitLabMessageBuilder;
 
         public GitLabDialog(
@@ -35,47 +37,53 @@ namespace Fanex.Bot.Skynex.GitLab
 
         public async Task HandleMessage(IMessageActivity activity, string message)
         {
-            if (message.StartsWith(AddProjectCmd))
-            {
-                await AddProjectAsync(activity, message);
-            }
-            else if (message.StartsWith(RemoveProjectCmd))
-            {
-                await DisableProjectAsync(activity, message);
-            }
-            else
+            var messageParts = message.Split(" ");
+
+            if (messageParts.Length < 2)
             {
                 await Conversation.ReplyAsync(activity, GetCommandMessages());
-            }
-        }
-
-        private async Task AddProjectAsync(IMessageActivity activity, string message)
-        {
-            var projectUrl = ExtractProjectLink(message.Replace(AddProjectCmd, string.Empty).Trim());
-
-            if (string.IsNullOrEmpty(projectUrl))
-            {
-                await Conversation.ReplyAsync(activity, "Please input project url");
                 return;
             }
+
+            var command = messageParts[1].ToLowerInvariant();
+
+            if (command == GitlabCommand.AddProject && messageParts.Length > 2)
+            {
+                await AddProjectAsync(activity, messageParts[2]);
+                return;
+            }
+            if (command == GitlabCommand.RemoveProject && messageParts.Length > 2)
+            {
+                await DisableProjectAsync(activity, messageParts[2]);
+                return;
+            }
+
+            if ((command == GitlabCommand.Enable || command == GitlabCommand.Disable) && messageParts.Length > 2)
+            {
+                var function = messageParts[2];
+                await EnableDisableFunction(activity, function, command == GitlabCommand.Enable);
+            }
+
+            await Conversation.ReplyAsync(activity, "Please input right command!");
+        }
+
+        private async Task AddProjectAsync(IMessageActivity activity, string repo)
+        {
+            var projectUrl = ExtractProjectLink(repo).Trim();
 
             var gitLabInfo = await GetGitLabInfo(activity, projectUrl);
             gitLabInfo.IsActive = true;
+            gitLabInfo.EnablePush = true;
+            gitLabInfo.EnablePipeline = true;
 
             await SaveGitLabInfoAsync(gitLabInfo);
-            await Conversation.ReplyAsync(activity, $"You will receive notification of project {MessageFormatSymbol.BOLD_START}{projectUrl}{MessageFormatSymbol.BOLD_END}");
+            await Conversation.ReplyAsync(activity,
+                $"You will receive notification of project {MessageFormatSymbol.BOLD_START}{projectUrl}{MessageFormatSymbol.BOLD_END}");
         }
 
-        private async Task DisableProjectAsync(IMessageActivity activity, string message)
+        private async Task DisableProjectAsync(IMessageActivity activity, string repo)
         {
-            var projectUrl = ExtractProjectLink(message.Replace(RemoveProjectCmd, string.Empty).Trim());
-
-            if (string.IsNullOrEmpty(projectUrl))
-            {
-                await Conversation.ReplyAsync(activity, "Please input project url");
-                return;
-            }
-
+            var projectUrl = ExtractProjectLink(repo).Trim();
             var gitLabInfo = await GetExistingGitLabInfo(activity, projectUrl);
 
             if (gitLabInfo == null)
@@ -87,6 +95,73 @@ namespace Fanex.Bot.Skynex.GitLab
             gitLabInfo.IsActive = false;
             await SaveGitLabInfoAsync(gitLabInfo);
             await Conversation.ReplyAsync(activity, $"You will not receive notification of project {MessageFormatSymbol.BOLD_START}{projectUrl}{MessageFormatSymbol.BOLD_END}");
+        }
+
+        private async Task EnableDisableFunction(IMessageActivity activity, string functionName, bool isEnabled)
+        {
+            foreach (var gitlabInfo in GetExistingGitLabInfo(activity))
+            {
+                if (functionName == GitlabCommand.PushEvent)
+                {
+                    gitlabInfo.EnablePush = isEnabled;
+                }
+                else if (functionName == GitlabCommand.JobEvent)
+                {
+                    gitlabInfo.EnablePipeline = isEnabled;
+                }
+
+                await SaveGitLabInfoAsync(gitlabInfo);
+            }
+
+            await Conversation.ReplyAsync(activity, "Your request is completed!");
+        }
+
+        public async Task HandlePushEventAsync(PushEvent pushEvent)
+        {
+            var project = pushEvent.Project;
+            var branchName = pushEvent.Ref?.ToLowerInvariant() ?? string.Empty;
+
+            if (branchName.Contains(MasterBranchName))
+            {
+                var message = gitLabMessageBuilder.BuildMessage(pushEvent);
+
+                await SendEventMessageAsync(project.WebUrl, message, GitlabCommand.PushEvent);
+            }
+        }
+
+        public async Task HandleJobEventAsync(JobEvent jobEvent)
+        {
+            var project = jobEvent.Project;
+            var message = gitLabMessageBuilder.BuildJobMessage(jobEvent);
+
+            await SendEventMessageAsync(project.Url, message, GitlabCommand.JobEvent);
+        }
+
+        private async Task SendEventMessageAsync(string projectWebUrl, string message, string functionName)
+        {
+            var projectUrl = projectWebUrl.ToLowerInvariant()
+                .Replace("http://", string.Empty)
+                .Replace("https://", string.Empty);
+
+            var gitlabInfos = DbContext.GitLabInfo.Where(
+                    info => projectUrl.Contains(info.ProjectUrl) &&
+                    info.IsActive &&
+                    ((info.EnablePush && functionName == GitlabCommand.PushEvent)
+                        || (info.EnablePipeline && functionName == GitlabCommand.JobEvent)));
+
+            foreach (var gitlabInfo in gitlabInfos)
+            {
+                await Conversation.SendAsync(gitlabInfo.ConversationId, message);
+            }
+        }
+
+        private static string ExtractProjectLink(string projectUrl)
+        {
+            string formatedProjectUrl = BotHelper.ExtractProjectLink(projectUrl);
+
+            return formatedProjectUrl
+                    .Replace("http://", string.Empty)
+                    .Replace("https://", string.Empty);
         }
 
         private async Task SaveGitLabInfoAsync(GitLabInfo gitLabInfo)
@@ -128,44 +203,11 @@ namespace Fanex.Bot.Skynex.GitLab
                     info.ConversationId == activity.Conversation.Id &&
                     formatedProjectUrl.Contains(info.ProjectUrl));
 
-        public async Task HandlePushEventAsync(PushEvent pushEvent)
-        {
-            var project = pushEvent.Project;
-            var branchName = pushEvent.Ref?.ToLowerInvariant() ?? string.Empty;
-
-            if (branchName.Contains(MasterBranchName))
-            {
-                var message = gitLabMessageBuilder.BuildMessage(pushEvent);
-
-                await SendEventMessageAsync(project, message);
-            }
-        }
-
-        private async Task SendEventMessageAsync(Project project, string message)
-        {
-            var projectUrl = project.WebUrl.ToLowerInvariant()
-                .Replace("http://", string.Empty)
-                .Replace("https://", string.Empty);
-
-            var gitlabInfos = DbContext.GitLabInfo.Where(
-                    info => projectUrl.Contains(info.ProjectUrl) &&
-                    info.IsActive);
-
-            foreach (var gitlabInfo in gitlabInfos)
-            {
-                await Conversation.SendAsync(gitlabInfo.ConversationId, message);
-            }
-        }
-
-        private static string ExtractProjectLink(string projectUrl)
-        {
-            string formatedProjectUrl = BotHelper.ExtractProjectLink(projectUrl);
-
-            return formatedProjectUrl
-                    .Replace("http://", string.Empty)
-                    .Replace("https://", string.Empty);
-        }
+        private IEnumerable<GitLabInfo> GetExistingGitLabInfo(IMessageActivity activity)
+          => DbContext.GitLabInfo
+              .AsNoTracking()
+              .Where(info => info.ConversationId == activity.Conversation.Id);
     }
+}
 
 #pragma warning restore S3994 // URI Parameters should not be strings
-}

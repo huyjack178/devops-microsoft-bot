@@ -3,11 +3,8 @@ using Newtonsoft.Json;
 
 namespace Fanex.Bot.Core.GitLab.Models
 {
-    public class PushEvent
+    public class PushEvent : GitlabEvent
     {
-        [JsonProperty("object_kind")]
-        public string ObjectKind { get; set; }
-
         [JsonProperty("before")]
         public string Before { get; set; }
 

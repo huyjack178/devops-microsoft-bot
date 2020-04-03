@@ -30,7 +30,7 @@ namespace Fanex.Bot.Skynex.Sentry
 
             messageBuilder.Append(
                 $"{MessageFormatSymbol.BOLD_START}Project:{MessageFormatSymbol.BOLD_END} " +
-                $"{pushEvent.ProjectName}{MessageFormatSymbol.NEWLINE}");
+                $"{pushEvent.ProjectName.ToUpperInvariant()}{MessageFormatSymbol.NEWLINE}");
 
             var logTime = DateTimeOffset
                 .FromUnixTimeSeconds(Convert.ToInt64(Convert.ToDouble(pushEvent.Event.LogTime)))
@@ -96,8 +96,8 @@ namespace Fanex.Bot.Skynex.Sentry
 
             messageBuilder.Append($"{MessageFormatSymbol.NEWLINE}");
             messageBuilder.Append(
-              "For more detail, refer to" +
-              $" {MessageFormatSymbol.BOLD_START}[here]({pushEvent.Url}){MessageFormatSymbol.BOLD_END}" +
+              "For more detail, refer to " +
+              $"[here]({pushEvent.Url})" +
               $"{MessageFormatSymbol.NEWLINE}");
             messageBuilder.Append($"{MessageFormatSymbol.DIVIDER}");
 
