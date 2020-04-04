@@ -69,30 +69,30 @@ namespace Fanex.Bot.Skynex.Sentry
 
             if (string.IsNullOrEmpty(level))
             {
-                var sentryInfos = GetAllSentryInfos(activity);
+                var sentryInfos = FindSentryInfos(activity, projectName);
 
-                foreach (var sentryInfo in sentryInfos)
+                foreach (var info in sentryInfos)
                 {
-                    sentryInfo.IsActive = false;
-                    await SaveSentryInfo(sentryInfo);
+                    info.IsActive = false;
+                    await SaveSentryInfo(info);
                 }
 
-                await Conversation.ReplyAsync(activity, "Sentry Log has been ENABLED all projects");
+                await Conversation.ReplyAsync(activity,
+                    "Sentry Log has been ENABLED for " +
+                    $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}");
+                return;
             }
-            else
+            var sentryInfo = await GetOrCreateSentryInfo(activity, projectName, level);
+
+            if (sentryInfo != null)
             {
-                var sentryInfo = await GetOrCreateSentryInfo(activity, projectName, level);
+                sentryInfo.IsActive = true;
+                await SaveSentryInfo(sentryInfo);
 
-                if (sentryInfo != null)
-                {
-                    sentryInfo.IsActive = true;
-                    await SaveSentryInfo(sentryInfo);
-
-                    var message = $"Sentry Log has been ENABLED for project " +
-                                  $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
-                                  $"Log Level: {MessageFormatSymbol.BOLD_START}{level.ToUpperInvariant()}{MessageFormatSymbol.BOLD_END}";
-                    await Conversation.ReplyAsync(activity, message);
-                }
+                var message = $"Sentry Log has been ENABLED for project " +
+                              $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
+                              $"Log Level: {MessageFormatSymbol.BOLD_START}{level.ToUpperInvariant()}{MessageFormatSymbol.BOLD_END}";
+                await Conversation.ReplyAsync(activity, message);
             }
         }
 
@@ -108,30 +108,31 @@ namespace Fanex.Bot.Skynex.Sentry
 
             if (string.IsNullOrEmpty(level))
             {
-                var sentryInfos = GetAllSentryInfos(activity);
+                var sentryInfos = FindSentryInfos(activity, projectName);
 
-                foreach (var sentryInfo in sentryInfos)
+                foreach (var info in sentryInfos)
                 {
-                    sentryInfo.IsActive = false;
-                    await SaveSentryInfo(sentryInfo);
+                    info.IsActive = false;
+                    await SaveSentryInfo(info);
                 }
 
-                await Conversation.ReplyAsync(activity, "Sentry Log has been DISABLED all projects");
+                await Conversation.ReplyAsync(activity,
+                    "Sentry Log has been DISABLED for " +
+                    $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}");
+                return;
             }
-            else
+
+            var sentryInfo = await FindSentryInfo(activity, projectName, level);
+
+            if (sentryInfo != null)
             {
-                var sentryInfo = await FindSentryInfo(activity, projectName, level);
+                sentryInfo.IsActive = false;
+                await SaveSentryInfo(sentryInfo);
 
-                if (sentryInfo != null)
-                {
-                    sentryInfo.IsActive = false;
-                    await SaveSentryInfo(sentryInfo);
-
-                    var message = $"Sentry Log has been DISABLED for project " +
-                                  $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
-                                  $"Log Level: {MessageFormatSymbol.BOLD_START}{level.ToUpperInvariant()}{MessageFormatSymbol.BOLD_END}";
-                    await Conversation.ReplyAsync(activity, message);
-                }
+                var message = $"Sentry Log has been DISABLED for project " +
+                              $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
+                              $"Log Level: {MessageFormatSymbol.BOLD_START}{level.ToUpperInvariant()}{MessageFormatSymbol.BOLD_END}";
+                await Conversation.ReplyAsync(activity, message);
             }
         }
 
@@ -174,10 +175,10 @@ namespace Fanex.Bot.Skynex.Sentry
             => DbContext.SentryInfo.Where(log
                    => log.ConversationId == activity.Conversation.Id);
 
-        private async Task<SentryInfo> FindSentryInfo(IMessageActivity activity, string projectName)
-            => await DbContext.SentryInfo.FirstOrDefaultAsync(log
-                   => log.ConversationId == activity.Conversation.Id
-                      && string.Equals(log.Project, projectName, StringComparison.InvariantCultureIgnoreCase));
+        private IEnumerable<SentryInfo> FindSentryInfos(IMessageActivity activity, string projectName)
+            => DbContext.SentryInfo.Where(log =>
+                    log.ConversationId == activity.Conversation.Id
+                    && string.Equals(log.Project, projectName, StringComparison.InvariantCultureIgnoreCase));
 
         private async Task<SentryInfo> FindSentryInfo(IMessageActivity activity, string projectName, string level)
             => await DbContext.SentryInfo.FirstOrDefaultAsync(log
