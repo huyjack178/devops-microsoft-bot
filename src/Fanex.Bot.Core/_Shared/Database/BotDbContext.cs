@@ -31,7 +31,7 @@ namespace Fanex.Bot.Core._Shared.Database
                 .HasKey(c => new { c.Category, c.IgnoreMessage });
 
             modelBuilder.Entity<SentryInfo>()
-               .HasKey(c => new { c.ConversationId, c.Project });
+               .HasKey(c => new { c.ConversationId, c.Project, c.Level });
 
             modelBuilder.Entity<AppCenterInfo>()
                 .HasKey(c => new { c.ConversationId, c.Project });

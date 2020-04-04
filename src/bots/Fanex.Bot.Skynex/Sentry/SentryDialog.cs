@@ -36,13 +36,26 @@ namespace Fanex.Bot.Skynex.Sentry
 
             if (messageParts.Length > 1)
             {
-                if (messageParts[1] == "start")
+                var function = messageParts[1];
+
+                if (function == "start")
                 {
                     await EnableDisableLog(activity, messageParts, true);
                 }
-                else if (messageParts[1] == "stop")
+                else if (function == "stop")
                 {
                     await EnableDisableLog(activity, messageParts, false);
+                }
+                else if ((function == "enable" || function == "disable") && messageParts.Length > 2)
+                {
+                    var command = messageParts[2];
+
+                    if (command == "level" && messageParts.Length > 4)
+                    {
+                        var level = messageParts[3];
+                        var project = messageParts[4];
+                        await EnableDisableLogLevel(activity, level, project, function == "enable");
+                    }
                 }
                 else
                 {
@@ -96,6 +109,18 @@ namespace Fanex.Bot.Skynex.Sentry
             }
         }
 
+        private async Task EnableDisableLogLevel(IMessageActivity activity, string level, string project, bool isEnabled)
+        {
+            var sentryInfo = await GetOrCreateSentryInfo(activity, project, level);
+            var enabledMessage = isEnabled ? "Enabled" : "Disabled";
+            sentryInfo.IsActive = isEnabled;
+
+            await SaveSentryInfo(sentryInfo);
+            var message = $"Sentry Log {level} has been {enabledMessage} for project " +
+                          $"{MessageFormatSymbol.BOLD_START}{project}{MessageFormatSymbol.BOLD_END}!";
+            await Conversation.ReplyAsync(activity, message);
+        }
+
         public async Task HandlePushEventAsync(PushEvent pushEvent)
         {
             var message = messageBuilder.BuildMessage(pushEvent);
@@ -110,9 +135,9 @@ namespace Fanex.Bot.Skynex.Sentry
             }
         }
 
-        private async Task<SentryInfo> GetOrCreateSentryInfo(IMessageActivity activity, string projectName)
+        private async Task<SentryInfo> GetOrCreateSentryInfo(IMessageActivity activity, string projectName, string level = "error")
         {
-            var sentryInfo = await FindSentryInfo(activity, projectName);
+            var sentryInfo = await FindSentryInfo(activity, projectName, level);
 
             if (sentryInfo == null)
             {
@@ -120,7 +145,7 @@ namespace Fanex.Bot.Skynex.Sentry
                 {
                     ConversationId = activity.Conversation.Id,
                     Project = projectName,
-                    Level = "error",
+                    Level = level,
                     IsActive = true,
 #pragma warning disable S109 // Magic numbers should not be used
                     CreatedTime = DateTime.UtcNow.AddHours(7)
@@ -139,6 +164,12 @@ namespace Fanex.Bot.Skynex.Sentry
             => await DbContext.SentryInfo.FirstOrDefaultAsync(log
                    => log.ConversationId == activity.Conversation.Id
                       && string.Equals(log.Project, projectName, StringComparison.InvariantCultureIgnoreCase));
+
+        private async Task<SentryInfo> FindSentryInfo(IMessageActivity activity, string projectName, string level)
+            => await DbContext.SentryInfo.FirstOrDefaultAsync(log
+                   => log.ConversationId == activity.Conversation.Id
+                      && string.Equals(log.Project, projectName, StringComparison.InvariantCultureIgnoreCase)
+                      && string.Equals(log.Level, level, StringComparison.InvariantCultureIgnoreCase));
 
         private async Task SaveSentryInfo(SentryInfo sentryInfo)
         {
