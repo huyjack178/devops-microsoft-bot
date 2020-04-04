@@ -29,7 +29,7 @@ namespace Fanex.Bot.Skynex.Sentry
             var messageBuilder = new StringBuilder();
 
             messageBuilder.Append(
-                $"{MessageFormatSymbol.ERROR}ERROR{MessageFormatSymbol.ERROR} in " +
+                $"{MessageFormatSymbol.ERROR}{pushEvent.Level.ToUpperInvariant()}{MessageFormatSymbol.ERROR} in " +
                 $"{MessageFormatSymbol.BOLD_START}「{pushEvent.ProjectName.ToUpperInvariant()}」{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}");
 
             var logTime = DateTimeOffset
