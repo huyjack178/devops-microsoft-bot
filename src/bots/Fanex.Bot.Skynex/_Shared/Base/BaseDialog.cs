@@ -46,6 +46,10 @@ namespace Fanex.Bot.Skynex._Shared.Base
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} status{MessageFormatSymbol.BOLD_END} " +
                     $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogSentryFunctionName} start{MessageFormatSymbol.BOLD_END} [project_name] level [log_level]" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogSentryFunctionName} stop{MessageFormatSymbol.BOLD_END} [project_name] level [log_level]" +
+                    $"=> Example: log_sentry start nap-api level info{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogDbFunctionName} start{MessageFormatSymbol.BOLD_END} " +
                 $"=> Start to get log from Database (for DBA team){MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
