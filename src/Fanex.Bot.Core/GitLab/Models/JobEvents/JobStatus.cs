@@ -9,6 +9,7 @@ namespace Fanex.Bot.Core.GitLab.Models.JobEvents
         public const string SuccessType = "success";
         public const string FailedType = "failed";
         public const string CanceledType = "canceled";
+        public const string ManualType = "manual";
 
         public static readonly JobStatus Created = new JobStatus(1, CreatedType);
 
@@ -19,6 +20,8 @@ namespace Fanex.Bot.Core.GitLab.Models.JobEvents
         public static readonly JobStatus Failed = new JobStatus(4, FailedType);
 
         public static readonly JobStatus Canceled = new JobStatus(5, CanceledType);
+
+        public static readonly JobStatus Manual = new JobStatus(6, ManualType);
 
         public JobStatus()
         {

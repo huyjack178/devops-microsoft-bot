@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Fanex.Bot.Core.GitLab.Models;
 using Fanex.Bot.Core.GitLab.Models.JobEvents;
 using Microsoft.AspNetCore.Mvc;
@@ -22,18 +23,25 @@ namespace Fanex.Bot.Skynex.GitLab
         {
             var gitlabData = JsonConvert.DeserializeObject<GitlabEvent>(data.ToString());
 
-            if (gitlabData.EventType.IsPush)
+            try
             {
-                var pushEvent = JsonConvert.DeserializeObject<PushEvent>(data.ToString());
-                await gitLabDialog.HandlePushEventAsync(pushEvent);
+                if (gitlabData.EventType.IsPush)
+                {
+                    var pushEvent = JsonConvert.DeserializeObject<PushEvent>(data.ToString());
+                    await gitLabDialog.HandlePushEventAsync(pushEvent);
 
-                return 0;
+                    return 0;
+                }
+
+                if (gitlabData.EventType.IsJob)
+                {
+                    var jobEvent = JsonConvert.DeserializeObject<JobEvent>(data.ToString());
+                    await gitLabDialog.HandleJobEventAsync(jobEvent);
+                }
             }
-
-            if (gitlabData.EventType.IsJob)
+            catch (Exception ex)
             {
-                var jobEvent = JsonConvert.DeserializeObject<JobEvent>(data.ToString());
-                await gitLabDialog.HandleJobEventAsync(jobEvent);
+                throw new Exception($"Gitlab Error {data} \n {ex.Message}");
             }
 
             return 0;
