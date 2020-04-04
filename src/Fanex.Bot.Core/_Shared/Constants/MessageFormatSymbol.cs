@@ -9,5 +9,6 @@
         public const string DIVIDER = "{{BreakLine}}";
         public const string BELL = "{{Bell}}";
         public const string ERROR = "{{Error}}";
+        public const string SUCCESS = "{{Success}}";
     }
 }
