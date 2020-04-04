@@ -40,22 +40,11 @@ namespace Fanex.Bot.Skynex.Sentry
 
                 if (function == "start")
                 {
-                    await EnableDisableLog(activity, messageParts, true);
+                    await EnableLog(activity, messageParts);
                 }
                 else if (function == "stop")
                 {
-                    await EnableDisableLog(activity, messageParts, false);
-                }
-                else if ((function == "enable" || function == "disable") && messageParts.Length > 2)
-                {
-                    var command = messageParts[2];
-
-                    if (command == "level" && messageParts.Length > 4)
-                    {
-                        var level = messageParts[3];
-                        var project = messageParts[4];
-                        await EnableDisableLogLevel(activity, level, project, function == "enable");
-                    }
+                    await DisableLog(activity, messageParts);
                 }
                 else
                 {
@@ -68,57 +57,82 @@ namespace Fanex.Bot.Skynex.Sentry
             }
         }
 
-        protected async Task EnableDisableLog(IMessageActivity activity, string[] messageParts, bool enabled)
+        private async Task EnableLog(IMessageActivity activity, string[] messageParts)
         {
-            var enabledMessage = enabled ? "Enabled" : "Disabled";
-
-#pragma warning disable S109 // Magic numbers should not be used
-            if (messageParts.Length > 2)
-#pragma warning restore S109 // Magic numbers should not be used
+            if (messageParts.Length <= 2)
             {
-                var projectName = messageParts[2]?.ToLowerInvariant();
-                var sentryInfo = await GetOrCreateSentryInfo(activity, projectName);
-
-                if (sentryInfo != null)
-                {
-                    sentryInfo.IsActive = enabled;
-                    await SaveSentryInfo(sentryInfo);
-
-                    var message = $"Sentry Log has been {enabledMessage} for project " +
-                                  $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}!";
-                    await Conversation.ReplyAsync(activity, message);
-                }
+                await Conversation.ReplyAsync(activity, "Wrong command!");
+                return;
             }
-            else
+
+            var (projectName, level) = GetProjectAndLevel(messageParts);
+
+            if (string.IsNullOrEmpty(level))
             {
                 var sentryInfos = GetAllSentryInfos(activity);
 
-                if (sentryInfos == null)
-                {
-                    await Conversation.ReplyAsync(activity, "Not found your Sentry notification info");
-                    return;
-                }
-
                 foreach (var sentryInfo in sentryInfos)
                 {
-                    sentryInfo.IsActive = enabled;
+                    sentryInfo.IsActive = false;
                     await SaveSentryInfo(sentryInfo);
                 }
 
-                await Conversation.ReplyAsync(activity, $"Sentry Log has been {enabledMessage}!");
+                await Conversation.ReplyAsync(activity, "Sentry Log has been ENABLED all projects");
+            }
+            else
+            {
+                var sentryInfo = await GetOrCreateSentryInfo(activity, projectName, level);
+
+                if (sentryInfo != null)
+                {
+                    sentryInfo.IsActive = true;
+                    await SaveSentryInfo(sentryInfo);
+
+                    var message = $"Sentry Log has been ENABLED for project " +
+                                  $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
+                                  $"Log Level: {MessageFormatSymbol.BOLD_START}{level.ToUpperInvariant()}{MessageFormatSymbol.BOLD_END}";
+                    await Conversation.ReplyAsync(activity, message);
+                }
             }
         }
 
-        private async Task EnableDisableLogLevel(IMessageActivity activity, string level, string project, bool isEnabled)
+        private async Task DisableLog(IMessageActivity activity, string[] messageParts)
         {
-            var sentryInfo = await GetOrCreateSentryInfo(activity, project, level);
-            var enabledMessage = isEnabled ? "Enabled" : "Disabled";
-            sentryInfo.IsActive = isEnabled;
+            if (messageParts.Length <= 2)
+            {
+                await Conversation.ReplyAsync(activity, "Wrong command!");
+                return;
+            }
 
-            await SaveSentryInfo(sentryInfo);
-            var message = $"Sentry Log {level} has been {enabledMessage} for project " +
-                          $"{MessageFormatSymbol.BOLD_START}{project}{MessageFormatSymbol.BOLD_END}!";
-            await Conversation.ReplyAsync(activity, message);
+            var (projectName, level) = GetProjectAndLevel(messageParts);
+
+            if (string.IsNullOrEmpty(level))
+            {
+                var sentryInfos = GetAllSentryInfos(activity);
+
+                foreach (var sentryInfo in sentryInfos)
+                {
+                    sentryInfo.IsActive = false;
+                    await SaveSentryInfo(sentryInfo);
+                }
+
+                await Conversation.ReplyAsync(activity, "Sentry Log has been DISABLED all projects");
+            }
+            else
+            {
+                var sentryInfo = await FindSentryInfo(activity, projectName, level);
+
+                if (sentryInfo != null)
+                {
+                    sentryInfo.IsActive = false;
+                    await SaveSentryInfo(sentryInfo);
+
+                    var message = $"Sentry Log has been DISABLED for project " +
+                                  $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}" +
+                                  $"Log Level: {MessageFormatSymbol.BOLD_START}{level.ToUpperInvariant()}{MessageFormatSymbol.BOLD_END}";
+                    await Conversation.ReplyAsync(activity, message);
+                }
+            }
         }
 
         public async Task HandlePushEventAsync(PushEvent pushEvent)
@@ -181,6 +195,18 @@ namespace Fanex.Bot.Skynex.Sentry
             DbContext.Entry(sentryInfo).State = existInfo ? EntityState.Modified : EntityState.Added;
 
             await DbContext.SaveChangesAsync();
+        }
+
+        private static (string, string) GetProjectAndLevel(string[] messageParts)
+        {
+            var projectName = messageParts[2]?.ToLowerInvariant();
+            var level = string.Empty;
+            if (messageParts.Length > 4 && messageParts[3] == "level")
+            {
+                level = messageParts[4];
+            }
+
+            return (projectName, level);
         }
     }
 }
