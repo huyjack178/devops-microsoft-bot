@@ -73,7 +73,7 @@ namespace Fanex.Bot.Skynex.Sentry
 
                 foreach (var info in sentryInfos)
                 {
-                    info.IsActive = false;
+                    info.IsActive = true;
                     await SaveSentryInfo(info);
                 }
 
