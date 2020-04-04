@@ -69,7 +69,13 @@ namespace Fanex.Bot.Skynex.Sentry
 
             if (string.IsNullOrEmpty(level))
             {
-                var sentryInfos = FindSentryInfos(activity, projectName);
+                var sentryInfos = FindSentryInfos(activity, projectName).ToList();
+
+                if (sentryInfos.Count == 0)
+                {
+                    await StartSentryInfoByLevel(activity, projectName, "error");
+                    return;
+                }
 
                 foreach (var info in sentryInfos)
                 {
@@ -82,6 +88,12 @@ namespace Fanex.Bot.Skynex.Sentry
                     $"{MessageFormatSymbol.BOLD_START}{projectName}{MessageFormatSymbol.BOLD_END}{MessageFormatSymbol.NEWLINE}");
                 return;
             }
+
+            await StartSentryInfoByLevel(activity, projectName, level);
+        }
+
+        private async Task StartSentryInfoByLevel(IMessageActivity activity, string projectName, string level)
+        {
             var sentryInfo = await GetOrCreateSentryInfo(activity, projectName, level);
 
             if (sentryInfo != null)
