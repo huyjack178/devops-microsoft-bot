@@ -11,5 +11,7 @@
         public override string Bell => ":bell:";
 
         public override string Error => ":fire:";
+
+        public override string Success => ":white_check_mark:";
     }
 }
