@@ -176,7 +176,7 @@ namespace Fanex.Bot.Skynex.Sentry
             var existInfo = DbContext
                     .SentryInfo
                     .AsNoTracking()
-                    .Any(e => e.ConversationId == sentryInfo.ConversationId && e.Project == sentryInfo.Project);
+                    .Any(e => e.ConversationId == sentryInfo.ConversationId && e.Project == sentryInfo.Project && e.Level == sentryInfo.Level);
 
             DbContext.Entry(sentryInfo).State = existInfo ? EntityState.Modified : EntityState.Added;
 
