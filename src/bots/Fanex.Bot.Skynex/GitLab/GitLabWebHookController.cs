@@ -41,7 +41,7 @@ namespace Fanex.Bot.Skynex.GitLab
             }
             catch (Exception ex)
             {
-                throw new Exception($"Gitlab Error {data} \n {ex.Message}");
+                throw new Exception($"Gitlab Error {data} \n {ex.Message}", ex);
             }
 
             return 0;
