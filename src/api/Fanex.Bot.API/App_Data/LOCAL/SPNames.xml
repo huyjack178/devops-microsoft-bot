@@ -7,6 +7,8 @@
   <Function Name="DBLog">
     <Setting Key="Get_DBLog" SpName="DBA_Skype_Notify" DbName="DBLOG.StarixDB.bodbAdminNet" />
     <Setting Key="Ack_DBLog" SpName="DBA_Skype_Notify_Ack" DbName="DBLOG.StarixDB.bodbAdminNet" />
+    <Setting Key="Get_NewDBLog" SpName="DBA_Skype_Notify" DbName="DBNOTI.NotificationDB.DBA_Skype" />
+    <Setting Key="Ack_NewDBLog" SpName="DBA_Skype_Notify_Ack" DbName="DBNOTI.NotificationDB.DBA_Skype" />
   </Function>
   <Function Name="NotificationDB">
     <Setting Key="Skype_BotQuery" SpName="Skype_BotQuery" DbName="DBLOG.StarixDB.bodbAdminNet" />

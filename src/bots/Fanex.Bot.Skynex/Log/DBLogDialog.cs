@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Fanex.Bot.Core._Shared.Constants;
+﻿using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
 using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Log.Services;
@@ -10,6 +7,9 @@ using Fanex.Bot.Skynex._Shared.MessageSenders;
 using Hangfire;
 using Hangfire.Common;
 using Microsoft.Bot.Connector;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fanex.Bot.Skynex.Log
 {
@@ -74,34 +74,70 @@ namespace Fanex.Bot.Skynex.Log
         {
             for (int i = 0; i < LoopTimes; i++)
             {
-                var dbLogs = await logService.GetDBLogs();
+                var dbLogTask = SendDbLogs();
+                var newDbLogTask = SendNewDbLogs();
 
-                if (dbLogs == null || !dbLogs.Any())
-                {
-                    return;
-                }
-
-                var successfulSentLogNotificationIds = new List<int>();
-
-                foreach (var log in dbLogs)
-                {
-                    var message = messageBuilder.BuildMessage(log);
-                    var result = await Conversation.SendAsync(log.SkypeGroupId, message);
-
-                    if (result.IsOk)
-                    {
-                        successfulSentLogNotificationIds.Add(log.NotificationId);
-                    }
-                }
-
-                if (successfulSentLogNotificationIds.Count > 0)
-                {
-                    await logService.AckDBLog(successfulSentLogNotificationIds.ToArray());
-                }
+                await Task.WhenAll(dbLogTask, newDbLogTask);
 
 #pragma warning disable S109 // Magic numbers should not be used
                 await Task.Delay(5000);
 #pragma warning restore S109 // Magic numbers should not be used
+            }
+        }
+
+        private async Task SendDbLogs()
+        {
+            var dbLogs = await logService.GetDBLogs();
+
+            if (dbLogs == null || !dbLogs.Any())
+            {
+                return;
+            }
+
+            var successfulSentLogNotificationIds = new List<int>();
+
+            foreach (var log in dbLogs)
+            {
+                var message = messageBuilder.BuildMessage(log);
+                var result = await Conversation.SendAsync(log.SkypeGroupId, message);
+
+                if (result.IsOk)
+                {
+                    successfulSentLogNotificationIds.Add(log.NotificationId);
+                }
+            }
+
+            if (successfulSentLogNotificationIds.Count > 0)
+            {
+                await logService.AckDBLog(successfulSentLogNotificationIds.ToArray());
+            }
+        }
+
+        private async Task SendNewDbLogs()
+        {
+            var dbLogs = await logService.GetNewDBLogs();
+
+            if (dbLogs == null || !dbLogs.Any())
+            {
+                return;
+            }
+
+            var successfulSentLogNotificationIds = new List<int>();
+
+            foreach (var log in dbLogs)
+            {
+                var message = messageBuilder.BuildMessage(log);
+                var result = await Conversation.SendAsync(log.SkypeGroupId, message);
+
+                if (result.IsOk)
+                {
+                    successfulSentLogNotificationIds.Add(log.NotificationId);
+                }
+            }
+
+            if (successfulSentLogNotificationIds.Count > 0)
+            {
+                await logService.AckNewDBLog(successfulSentLogNotificationIds.ToArray());
             }
         }
     }
