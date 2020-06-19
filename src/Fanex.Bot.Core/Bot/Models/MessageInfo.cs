@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using Fanex.Bot.Core._Shared.Database;
+﻿using Fanex.Bot.Core._Shared.Database;
 using Fanex.Bot.Core._Shared.Enumerations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Fanex.Bot.Core.Bot.Models
 {
@@ -27,5 +27,10 @@ namespace Fanex.Bot.Core.Bot.Models
 
         [NotMapped]
         public MessageType Type { get; set; }
+
+        public MessageInfo Clone()
+        {
+            return MemberwiseClone() as MessageInfo;
+        }
     }
 }

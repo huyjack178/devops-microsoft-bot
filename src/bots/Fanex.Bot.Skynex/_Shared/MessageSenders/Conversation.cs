@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Fanex.Bot.Core._Shared.Constants;
+﻿using Fanex.Bot.Core._Shared.Constants;
 using Fanex.Bot.Core._Shared.Database;
 using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Bot.Models;
 using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fanex.Bot.Skynex._Shared.MessageSenders
 {
@@ -65,14 +65,17 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
         public async Task<Result> SendAsync(string conversationId, string message, MessageType messageType = MessageType.Markdown)
         {
             var messageInfo = await dbContext
-                .MessageInfo
-                .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
+                                    .MessageInfo
+                                    .FirstOrDefaultAsync(info => info.ConversationId == conversationId);
 
             if (messageInfo != null)
             {
-                messageInfo.Text = message;
-                messageInfo.Type = messageType;
-                await SendAsync(messageInfo);
+                var sendingMessage = messageInfo.Clone();
+
+                sendingMessage.Text = message;
+                sendingMessage.Type = messageType;
+
+                await SendAsync(sendingMessage);
 
                 return Result.CreateSuccessfulResult();
             }
