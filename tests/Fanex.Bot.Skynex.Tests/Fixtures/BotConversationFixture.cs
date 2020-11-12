@@ -35,9 +35,10 @@ namespace Fanex.Bot.Skynex.Tests.Fixtures
         public IMessageActivity Activity { get; internal set; }
 
         public string CommandMessage
-            => $"Skynex's available commands:{MessageFormatSymbol.NEWLINE} " +
+             => $"Skynex's available commands:{MessageFormatSymbol.NEWLINE} " +
                 $"{MessageFormatSymbol.BOLD_START}group{MessageFormatSymbol.BOLD_END} " +
-                    $"=> Get your group ID {MessageFormatSymbol.NEWLINE}" + MessageFormatSymbol.DIVIDER + MessageFormatSymbol.NEWLINE +
+                    $"=> Get your group ID {MessageFormatSymbol.NEWLINE}" +
+                    MessageFormatSymbol.DOUBLE_NEWLINE +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} add [Contains-LogCategory]{MessageFormatSymbol.BOLD_END} " +
                     $"==> Register to get log which has category name " +
                     $"{MessageFormatSymbol.BOLD_START}contains [Contains-LogCategory]{MessageFormatSymbol.BOLD_END}. " +
@@ -50,10 +51,12 @@ namespace Fanex.Bot.Skynex.Tests.Fixtures
                     $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} status{MessageFormatSymbol.BOLD_END} " +
                     $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSymbol.NEWLINE}" +
+                    MessageFormatSymbol.DOUBLE_NEWLINE +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogSentryFunctionName} start{MessageFormatSymbol.BOLD_END} [project_name] level [log_level] " +
                     $"=> Example: log_sentry start nap-api level info{MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogSentryFunctionName} stop{MessageFormatSymbol.BOLD_END} [project_name] level [log_level] " +
                     $"=> Example: log_sentry stop nap-api level info{MessageFormatSymbol.NEWLINE}" +
+                    MessageFormatSymbol.DOUBLE_NEWLINE +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogDbFunctionName} start{MessageFormatSymbol.BOLD_END} " +
                 $"=> Start to get log from Database (for DBA team){MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.DOUBLE_NEWLINE}" +
