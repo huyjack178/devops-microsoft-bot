@@ -11,7 +11,7 @@
         public const string UM_STOP_SCAN = "scanstop";
         public const string DBLOG = "dblog";
         public const string ZABBIX = "zabbix";
-        public const string EXECUTESP = "query";
+        public const string EXECUTESP = "dbc";
         public const string SENTRY_LOG = "sentrylog";
         public const string ZABBIX_ENABLE_SCAN_SERVICE = "enablescanservice";
         public const string ZABBIX_DISABLE_SCAN_SERVICE = "disablescanservice";

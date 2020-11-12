@@ -1,13 +1,13 @@
 ﻿namespace Fanex.Bot.Skynex.ExecuteSP
 {
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
     using Fanex.Bot.Core._Shared.Constants;
     using Fanex.Bot.Core._Shared.Database;
     using Fanex.Bot.Core.ExecuteSP.Services;
     using Fanex.Bot.Skynex._Shared.Base;
     using Fanex.Bot.Skynex._Shared.MessageSenders;
     using Microsoft.Bot.Connector;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
 
     public interface IExecuteSpDialog : IDialog
     {

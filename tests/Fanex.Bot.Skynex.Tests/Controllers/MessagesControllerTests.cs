@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Fanex.Bot.Core._Shared.Enumerations;
+﻿using Fanex.Bot.Core._Shared.Enumerations;
 using Fanex.Bot.Core.Bot.Models;
 using Fanex.Bot.Skynex._Shared.Base;
 using Fanex.Bot.Skynex.Bot;
@@ -11,15 +9,16 @@ using Fanex.Bot.Skynex.Sentry;
 using Fanex.Bot.Skynex.UM;
 using Fanex.Bot.Skynex.Zabbix;
 using Microsoft.Extensions.Configuration;
+using System;
 
 // ReSharper disable All
 
 namespace Fanex.Bot.Skynex.Tests.Controllers
 {
-    using System.Threading.Tasks;
     using Fixtures;
     using Microsoft.Bot.Connector;
     using NSubstitute;
+    using System.Threading.Tasks;
     using Xunit;
 
 #pragma warning disable S2699 // Tests should include assertions
@@ -193,13 +192,13 @@ namespace Fanex.Bot.Skynex.Tests.Controllers
         public async Task Post_ActivityMessage_HandMessageCommand_ExecuteSpCommand_CallExecuteDialog()
         {
             // Arrange
-            var activity = new Activity { Type = ActivityTypes.Message, Text = "query add" };
+            var activity = new Activity { Type = ActivityTypes.Message, Text = "dbc add" };
 
             // Act
             await messagesController.Post(activity);
 
             // Asserts
-            await executeSpDialog.Received().HandleMessage(Arg.Is(activity), "query add");
+            await executeSpDialog.Received().HandleMessage(Arg.Is(activity), "dbc add");
         }
 
         [Fact]

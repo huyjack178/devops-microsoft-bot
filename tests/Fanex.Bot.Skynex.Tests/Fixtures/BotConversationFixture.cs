@@ -8,13 +8,13 @@ using Fanex.Bot.Skynex._Shared.MessageSenders;
 
 namespace Fanex.Bot.Skynex.Tests.Fixtures
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.Bot.Connector;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using NSubstitute;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class BotConversationFixture : IDisposable
     {
@@ -34,8 +34,8 @@ namespace Fanex.Bot.Skynex.Tests.Fixtures
 
         public IMessageActivity Activity { get; internal set; }
 
-        public string CommandMessage { get; }
-            = $"Skynex's available commands:{MessageFormatSymbol.NEWLINE} " +
+        public string CommandMessage
+            => $"Skynex's available commands:{MessageFormatSymbol.NEWLINE} " +
                 $"{MessageFormatSymbol.BOLD_START}group{MessageFormatSymbol.BOLD_END} " +
                     $"=> Get your group ID {MessageFormatSymbol.NEWLINE}" + MessageFormatSymbol.DIVIDER + MessageFormatSymbol.NEWLINE +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} add [Contains-LogCategory]{MessageFormatSymbol.BOLD_END} " +
@@ -50,15 +50,20 @@ namespace Fanex.Bot.Skynex.Tests.Fixtures
                     $"TimeSpan format is *d*(day), *h*(hour), *m*(minute), *s*(second){MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogMSiteFunctionName} status{MessageFormatSymbol.BOLD_END} " +
                     $"=> Get your current subscribing Log Categories and Receiving Logs status{MessageFormatSymbol.NEWLINE}" +
-                $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogSentryFunctionName} start{MessageFormatSymbol.BOLD_END} [project_name] level [log_level] " +
+                    $"=> Example: log_sentry start nap-api level info{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogSentryFunctionName} stop{MessageFormatSymbol.BOLD_END} [project_name] level [log_level] " +
+                    $"=> Example: log_sentry stop nap-api level info{MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}{FunctionType.LogDbFunctionName} start{MessageFormatSymbol.BOLD_END} " +
                 $"=> Start to get log from Database (for DBA team){MessageFormatSymbol.NEWLINE}" +
-                $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.DOUBLE_NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}gitlab addProject [GitlabProjectUrl]{MessageFormatSymbol.BOLD_END} " +
-                    $"=> Register to get notification of Gitlab's project{MessageFormatSymbol.NEWLINE}" +
+                    $"=> Register to get notification of Gitlab's project. " +
+                    $"Example: gitlab addProject gitlab.nexdev.net/tools-and-components/ndict {MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}gitlab removeProject [GitlabProjectUrl]{MessageFormatSymbol.BOLD_END} " +
-                    $"=> Disable getting notification of Gitlab's project{MessageFormatSymbol.NEWLINE}" +
-                $"{MessageFormatSymbol.DIVIDER}{MessageFormatSymbol.NEWLINE}" +
+                    $"=> Disable getting notification of Gitlab's project. " +
+                    $"Example: gitlab removeProject gitlab.nexdev.net/tools-and-components/ndict {MessageFormatSymbol.NEWLINE}" +
+                $"{MessageFormatSymbol.DOUBLE_NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}um start{MessageFormatSymbol.BOLD_END} " +
                     $"=> Start getting notification when UM starts {MessageFormatSymbol.NEWLINE}" +
                 $"{MessageFormatSymbol.BOLD_START}um stop{MessageFormatSymbol.BOLD_END} " +

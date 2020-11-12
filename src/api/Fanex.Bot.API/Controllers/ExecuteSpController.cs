@@ -1,9 +1,9 @@
 ﻿namespace Fanex.Bot.API.Controllers
 {
-    using System.Threading.Tasks;
     using Fanex.Bot.API.Services;
     using Fanex.Bot.Core.ExecuteSP.Models;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading.Tasks;
 
     [Route("api/[controller]")]
     [ApiController]
