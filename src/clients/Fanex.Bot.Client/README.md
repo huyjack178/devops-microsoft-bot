@@ -24,7 +24,7 @@ NuGet package is available [here](http://nuget.nexdev.net/packages/Fanex.Bot.Cli
     ```
 
 2. Find and add **Skynex** to your group https://join.skype.com/bot/74cab44c-d551-42a7-9bbe-4d460d320516
-3. Call **@Skynex** and send **group** to get **Conversation Id**
+3. Call **@Skynex** and send **group** to get **Conversation Id**. For telegram, please remember call **register**  
 4. Add this code to your Global.aspx (ASP.NET MVC) or Startup.cs (ASP.NET Core)
 
     **ASP.NET MVC**
