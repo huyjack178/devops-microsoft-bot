@@ -67,8 +67,11 @@ namespace Fanex.Bot
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors(builder =>
-                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); 
             app.UseExceptionHandler("/api/Error/");
 
             app.UseHangfireDashboard(options: new DashboardOptions
