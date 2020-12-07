@@ -97,6 +97,13 @@ namespace Fanex.Bot
 
         private void ConfigureCommonMiddlewares(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
             services.AddMemoryCache();
             services.AddSingleton(_ => Configuration);
             services.AddSingleton<IRestClient, RestClient>();
