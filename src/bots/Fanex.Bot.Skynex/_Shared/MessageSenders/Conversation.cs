@@ -90,30 +90,22 @@ namespace Fanex.Bot.Skynex._Shared.MessageSenders
 
         public async Task SendAsync(MessageInfo messageInfo)
         {
-            try
+            if (!string.IsNullOrEmpty(messageInfo.Text))
             {
-                if (!string.IsNullOrEmpty(messageInfo.Text))
-                {
-                    await ForwardMessage(messageInfo);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"{ex.Message}\n{ex.StackTrace}");
-
-                await SendAdminAsync(
-                    $"Can not send message to {MessageFormatSymbol.BOLD_START}{messageInfo?.ConversationId}{MessageFormatSymbol.BOLD_END} {MessageFormatSymbol.NEWLINE}" +
-                    $"{MessageFormatSymbol.BOLD_START}Exception:{MessageFormatSymbol.BOLD_END} {ex.Message} {MessageFormatSymbol.NEWLINE}" +
-                    $"Message: {messageInfo?.Text}" +
-                    $"{MessageFormatSymbol.DIVIDER}").ConfigureAwait(false);
+                await ForwardMessage(messageInfo);
             }
         }
 
         private async Task ForwardMessage(MessageInfo messageInfo)
         {
-            var messenger = messengerFactory(messageInfo.ChannelId);
+            try {
+                var messenger = messengerFactory(messageInfo.ChannelId);
 
-            await messenger.SendAsync(messageInfo);
+                await messenger.SendAsync(messageInfo);
+            }
+            catch (Exception ex){
+                logger.LogError(ex, ex.Message);
+            }
         }
 
 #pragma warning restore S1301 // "switch" statements should have at least 3 "case" clauses
