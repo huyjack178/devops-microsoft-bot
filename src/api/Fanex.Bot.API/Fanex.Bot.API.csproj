@@ -41,7 +41,10 @@
     <PackageReference Include="Fanex.Data" Version="3.1.0" />
     <PackageReference Include="Fanex.Data.Repository" Version="3.0.0" />
     <PackageReference Include="Fanex.Logging.RabbitMQ" Version="1.0.0-beta8" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.App">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="ONEbook.UM" Version="3.0.0-beta3" />
     <PackageReference Include="ONEbook.UM.AspNetCore" Version="3.0.0-beta" />

@@ -15,6 +15,7 @@ namespace Fanex.Bot
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseNLog()
+                .UseSentry()
                 .UseStartup<Startup>()
                 .Build();
     }
